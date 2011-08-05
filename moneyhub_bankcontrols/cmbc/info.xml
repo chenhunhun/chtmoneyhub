@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<main>
+  <category name="banks">
+
+<site id="cmbc" name="民生银行"  version="2.0.0.3">
+			<domains>
+				<domain name="*.cmbc.com.cn/*" />
+			</domains>
+			<requirements>
+				<system type="All" cpu="0">
+					<require type="activex" name="CFCACertKitAx" reg="reg">
+						<file name="CFCACertKitAx.dll" />
+					</require>
+					<require type="file" name="license.dll" path="%SystemRoot%\system32" replace="false">
+					</require>
+				</system>
+			</requirements>
+			<pages>
+				<page url="https://business.cmbc.com.cn/index_Private.html">
+					<require name="CFCACertKitAx" />
+				</page>
+			</pages>
+		</site>
+  </category>  
+</main>

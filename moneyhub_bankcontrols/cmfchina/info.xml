@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<main>
+  <category name="banks">
+
+<site id="cmfchina" name="招商基金" version="2.0.0.0">
+			<domains>
+				<domain name="*.cmfchina.com/*" />
+			</domains>
+		</site>
+
+  </category>
+  
+</main>

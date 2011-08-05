@@ -1,0 +1,1254 @@
+var selector, showlist;
+var bigStarInterval = new Array();
+
+function init(){
+    var wwwhost = "";
+    try {
+        wwwhost = window.external.GetHostName("web");
+    } catch (e) {
+        wwwhost = "http://www.caijinhui.com/";
+    }
+	if (window.addEventListener) {  
+		window.addEventListener('onselectstart', rfalse, false);   //firefox
+	} else if (window.attachEvent)  {
+		window.attachEvent('onselectstart', rfalse);  //IE
+	}
+    changePic(0);
+    selector = document.getElementById("selector");
+    showlist = document.getElementById("app_div");
+    showlist_1 = document.getElementById("appContent");
+    currentAppArray = "";
+    renderFav();
+    sortableFav();
+    handle(currentAppArray);
+    MH.control.resizeOk();
+    MH.control.checkAlarm();
+    MH.control.initApp();
+    
+    if (!window.location.hash) {
+        window.location.hash = "#banks";
+    }
+    shiftTab(window.location.hash);
+    selector.onkeyup = function(){
+        return findName(selector.value, "banks");
+    };
+    renderFinance();
+	renderAd();
+    DD_belatedPNG.fix('#app_box_bg_left,.apppagedoton,.apppagedotoff');
+}
+
+function rfalse() {
+	return false;
+}
+
+function showEnt(object, para){
+    MH.dom.setOpacity(object, 100);
+    object.style.display = "";
+    if (object.hideTimer) {
+        clearTimeout(object.hideTimer);
+    }
+    if (object.showTimer) {
+        clearTimeout(object.showTimer);
+    }
+    var temp;
+    var begin = para.begin;
+    var change = para.change;
+    var duration = para.duration;
+    temp = Math.ceil(Tween.strongEaseOut(para.t, begin, change, duration));
+    object.style.height = temp + "px";
+    if (para.t < duration) {
+        para.t++;
+        object.showTimer = setTimeout((function(o, p){
+            return function(){
+                showEnt(o, p);
+            }
+        })(object, para), 10);
+    }
+}
+
+function hideEnt(object, para){
+    if (object.hideTimer) {
+        clearTimeout(object.hideTimer);
+    }
+    if (object.showTimer) {
+        clearTimeout(object.showTimer);
+    }
+    var temp;
+    var begin = para.begin;
+    var change = para.change;
+    var duration = para.duration;
+    temp = Math.ceil(Tween.strongEaseOut(para.t, begin, change, duration));
+    MH.dom.setOpacity(object, temp);
+    if (para.t < duration) {
+        para.t++;
+        object.hideTimer = setTimeout((function(o, p){
+            return function(){
+                hideEnt(o, p);
+            }
+        })(object, para), 20);
+    }
+    else {
+        object.style.display = "none";
+        MH.dom.setOpacity(object, 100);
+    }
+}
+
+function findName(name, type){
+    if (name.length > 0) {
+        var resultArray = searchIndex(name, type);
+        if (resultArray.length > 0) {
+            handle(resultArray);
+        }
+        else {
+            showlist.innerHTML = '<div class="no_search">' + '<div class="search_main">' + '<h1>对不起，没有搜索到你要寻找的应用</h1>' + '<strong>建议您检查：</strong>' + '<p>您确认填写的拼音正确</p>' + '<p>您是否输入了空格</p>' + '</div></div>';
+        }
+    }
+    else 
+        handle(appList[type]);
+}
+
+
+/*
+ * 按照某一速度滚动某一距离
+ * @param d 滚动距离
+ * @param speed 滚动速度
+ */
+function favScrollRun(d, speed){
+    var Favct = document.getElementById("Favcontainer");
+    var Favcontent = document.getElementById("Favcontent");
+    i = Favct.clientWidth;
+    h = Favcontent.scrollWidth;
+    a = Favct.scrollLeft;
+    if (d > a) 
+        if (h - d > i) 
+            a += Math.ceil((d - a) / speed);
+        else 
+            a += Math.ceil((d - a - (h - d)) / speed);
+    else 
+        a += (d - a) / speed;
+    Favct.scrollLeft = a;
+    if (a == d || Favct.offsetTop == a) 
+        clearInterval(favScrollInterval);
+}
+
+/*
+ * 向某一方向滚动
+ * @param direction 滚动方向
+ */
+function favScroll(direction){
+    if (typeof favScrollInterval != "undefined") 
+        clearInterval(favScrollInterval);
+    var scrollTo = 0;
+    if (direction == "right") {
+        MH.control.currentPage++;
+    }
+    else 
+        if (direction == "left") {
+            MH.control.currentPage--;
+        }
+        else {
+            MH.control.currentPage = direction;
+        }
+    scrollTo = MH.control.favContainerWidth() * MH.control.currentPage;
+    favScrollInterval = setInterval('favScrollRun(' + scrollTo + ', 20)', 10);
+    //决定是否隐藏左或右箭头
+    if (MH.control.currentPage > 0) {
+        document.getElementById('FavLeft').style.visibility = "visible";
+    }
+    else {
+        document.getElementById('FavLeft').style.visibility = "hidden";
+    }
+    if (MH.control.currentPage < MH.control.totalPages - 1) {
+        document.getElementById('FavRight').style.visibility = "visible";
+    }
+    else {
+        document.getElementById('FavRight').style.visibility = "hidden";
+    }
+    //改变翻页圆点
+    document.getElementById('favpage').innerHTML = "";
+    for (i = 0; i < MH.control.totalPages; i++) {
+        if (MH.control.currentPage == i) {
+            document.getElementById('favpage').innerHTML += '<div class="pagedoton"></div>';
+        }
+        else {
+            document.getElementById('favpage').innerHTML += '<div class="pagedotoff" onclick="favScroll(' + i + ');"></div>';
+        }
+    }
+}
+
+
+/*添加APP部分的滚动事件*/
+function appScrollRun(d, speed){
+    var appCt = document.getElementById("appContainer");
+    var appContent = document.getElementById("appContent");
+    i = appCt.clientWidth;
+    h = appContent.scrollWidth;
+    a = appCt.scrollLeft;
+    
+    if (d > a) 
+        if (h - d > i) {
+            a += Math.ceil((d - a) / speed);
+        }
+        else {
+            a += Math.ceil((d - a - (h - d)) / speed);
+        }
+    else {
+        a += (d - a) / speed;
+    }
+    appCt.scrollLeft = a;
+    if (a == d || appCt.offsetTop == a) {
+        clearInterval(appScrollInterval);
+    }
+}
+
+function appScroll(direction){
+    if (typeof appScrollInterval != "undefined") 
+        clearInterval(appScrollInterval);
+    var scrollTo = 0;
+    if (direction == "right") {
+        MH.control.currentAppPage++;
+    }
+    else 
+        if (direction == "left") {
+            MH.control.currentAppPage--;
+        }
+        else {
+            MH.control.currentAppPage = direction;
+        }
+    
+    scrollTo = MH.control.appContainerWidth() * MH.control.currentAppPage;
+    appScrollInterval = setInterval('appScrollRun(' + scrollTo + ', 20)', 10);
+    if (MH.control.currentAppPage > 0) {
+        document.getElementById('appLeft').style.visibility = "visible";
+    }
+    else {
+        document.getElementById('appLeft').style.visibility = "hidden";
+    }
+    if (MH.control.currentAppPage < MH.control.totalAppPages - 1) {
+        document.getElementById('appRight').style.visibility = "visible";
+    }
+    else {
+        document.getElementById('appRight').style.visibility = "hidden";
+    }
+    
+    document.getElementById('appPage').innerHTML = "";
+    for (i = 0; i < MH.control.totalAppPages; i++) {
+        if (MH.control.currentAppPage == i) {
+            document.getElementById('appPage').innerHTML += '<div class="apppagedoton"></div>';
+        }
+        else {
+            document.getElementById('appPage').innerHTML += '<div class="apppagedotoff" onclick="appScroll(' + i + ');"></div>';
+        }
+    }
+}
+
+function favZoomRun(fi_id, speed, d, callback){
+    var lifav = document.getElementById("li_" + fi_id);
+    if (lifav.style.margin == "") {
+        a = 0;
+    } else {
+        a = parseInt(lifav.style.margin);
+    }
+    if (d == 1) {
+        a -= parseInt(145 / speed);
+    } else {
+        a += parseInt(145 / speed);
+    }
+    if (a <= 5) 
+        a = 0;
+    lifav.style.margin = a + "px 0 0 0";
+    if (a <= 0 || a > 145) {
+        clearInterval(favZoomInterval);
+        if (callback != null) 
+            callback(fi_id);
+    }
+}
+
+function favZoomIn(fi_id) {
+	//alert(fi_id);
+	if (typeof favZoomInterval != "undefined"){
+		clearInterval(favZoomInterval);
+	}
+	try{
+		//alert("favZoomIn1");
+	document.getElementById("li_" + fi_id).style.margin = "145px 0 0 0";
+	//alert("favZoomIn2");
+	favZoomInterval = setInterval('favZoomRun("' + fi_id + '", 15, 1, null)', 10);
+	//alert("favZoomIn3");	
+	}catch(e){
+		alert(e.message);
+	}
+	
+}
+
+function favZoomOut(fi_id) {
+    if (typeof favZoomInterval != "undefined") 
+        clearInterval(favZoomInterval);
+    favZoomInterval = setInterval('favZoomRun("' + fi_id + '", 15, 0, renderFav)', 10);
+}
+
+function renderApp(){
+    MH.control.currentAppPage = 0;
+}
+
+//设置不可拖拽元素
+function cancelFav(div,id){
+	var divId = "#"+div;
+	var cancelId = "#"+id;
+	$(divId).sortable("option", "cancel", cancelId);
+}
+
+function renderFav(currentPage){	
+	MH.interact.getFav();
+	var favUL = document.getElementById("favUL");
+	var appType, imgUrl, l, appId, appName;
+	var ebank_url, credit_url, personal_url, history_url;
+	var l = MH.favArr.length;
+	favUL.innerHTML = "";
+	var content_length = l * 196;
+	
+	document.getElementById('Favcontent').style.width = content_length + "px";
+	document.getElementById('Favcontainer').style.width = content_length + "px";
+	MH.control.favPageNum = parseInt((MH.control.screenWidth() - 62) / 196);
+	if (MH.control.favPageNum == 0) 
+		MH.control.favPageNum = 1;
+	MH.control.currentPage = 0;
+	//alert("111111");
+	/*根据页数显示*/
+	if (l > MH.control.favPageNum) {
+		/*页数大于1*/
+		document.getElementById("Favcontainer").style.marginLeft = -MH.control.favPageNum * 98 + "px";
+		MH.control.totalPages = parseInt((l - 1) / MH.control.favPageNum) + 1;
+		content_length = MH.control.totalPages * MH.control.favPageNum * 196 + 1;
+		document.getElementById('Favcontent').style.width = content_length + "px";
+		document.getElementById('Favcontainer').style.width = MH.control.favContainerWidth() + "px";
+		document.getElementById('FavLeft').style.visibility = "hidden";
+		document.getElementById('FavRight').style.visibility = "visible";
+		document.getElementById('favpage').innerHTML = '<div class="pagedoton"></div>';
+		for (i = 1; i < MH.control.totalPages; i++) {
+			document.getElementById('favpage').innerHTML += '<div class="pagedotoff" onclick="favScroll(' + i + ');"></div>';
+		}
+		document.getElementById('favpage').style.width = 18 * MH.control.totalPages + "px";
+		document.getElementById('favpage').style.marginLeft = -9 * MH.control.totalPages + "px";
+		document.getElementById('favpage').style.display = "";
+	}
+	else {
+		/*页数小于1*/
+		document.getElementById('FavLeft').style.visibility = "hidden";
+		document.getElementById('FavRight').style.visibility = "hidden";
+		document.getElementById("Favcontainer").style.marginLeft = -l * 98 + "px";
+		document.getElementById('favpage').style.display = "none";
+	}
+
+	if (l != 0) {
+		for (i = 0; i < l; i++) {
+			var tempStr = MH.favArr[i];
+			var favStatus = MH.favStatusArr[i];
+			var types = tempStr.slice(0, 1);
+			var li = document.createElement("li");
+			switch (types) {
+				case "a":
+					appType = apptypes[0];
+					break;
+				case "d":
+					appType = apptypes[1];
+					break;
+				case "e":
+					appType = apptypes[2];
+					break;
+			}
+			var bFound = false;
+			
+			for (var j in appList[appType]) {
+				if (appList[appType][j].id == MH.favArr[i]) {
+					imgUrl = appList[appType][j].favUrl;
+					appName = appList[appType][j].name;
+					appId = appList[appType][j].id;
+					
+					ebank_url = appList[appType][j]['sublink'].ebank;
+					
+					ebank_txt = appList[appType][j]['sublink'].txt_ebank;
+					vip_url = appList[appType][j]['sublink'].vip;
+					vip_txt = appList[appType][j]['sublink'].txt_vip;
+					
+					bFound = true;
+				}
+			}	
+			if (!bFound) 
+				continue;
+			var strHTML = "";
+			if (favStatus < 200) {
+				//alert("<200");
+				strHTML = '<div class="favitem"><div class="textFav" id="pro_' + appId + '">';
+				if (favStatus < 100) {
+					strHTML += "正在下载";
+				}
+				else {
+					strHTML += "正在安装";
+				}
+				strHTML += '</div>';
+				strHTML += '<div class="favlogo" style="background-image:url(' + imgUrl + ');">' + '<div class="prow">';
+				strHTML += '<div class="procCover" id="shadow_' + appId + '"><b class="rtop"><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b></b><table height="132px"><tr><td><br></td></tr></table><b class="rbottom"><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></b></div></div>';
+				strHTML += '<div class="proc" id="status_' + appId + '"><div class="nn" id="pr_' + appId + '"></div></div>';
+			} else {
+				//alert(">200");
+				strHTML = '<span class="delFav" onclick = delFavAction("'+appId+'","' + appId + '");></span>';				
+				strHTML += '<div class="favitem">';
+				strHTML += '<div class="textFav" id="pro_' + appId + '"></div>';
+				strHTML += '<div id="usb_'+appId+'" class="procUsb"><div class="nnn" id="usbPr_' + appId + '"></div></div>';
+				strHTML += '<div class="favlogo" style="background-image:url(' + imgUrl + ');">';
+				strHTML += '<dl class="itemoption" style="display:none">';
+				strHTML += '<dt id="drop_' + appId + '" class="dt" onmouseover="javascript:changeCss(\'drop_' + appId + '\',\'over\');" onmousedown="javascript:changeCss(\'drop_' + appId + '\',\'down\');" onmouseup="javascript:changeCss(\'drop_' + appId + '\',\'release\');" onmouseout="javascript:changeCss(\'drop_' + appId + '\',\'out\');">' + appName + '</dt>' + "<dd><a href=javascript:MH.control.openLink('url','" + appId + "')><span>首&nbsp;&nbsp;页</span></a></dd>";
+				if (ebank_url == undefined) {
+					strHTML += '<dd><a href="javascript:;"></a></dd>';
+				}
+				else {
+					if (favStatus < 200) {
+						strHTML += "<dd><a href=javascript:;><span>" + ebank_txt + "</span></a></dd>";
+					}
+					else {
+						strHTML += "<dd><a href=javascript:MH.control.openLink('ebank','" + appId + "')><span>" + ebank_txt + "</span></a></dd>";
+					}
+				}
+				
+				if (vip_url == undefined) {
+					strHTML += '<dd><a href="javascript:;"></a></dd>';
+				}
+				else {
+					if (favStatus < 200) {
+						strHTML += "<dd><a href='javascript:;'></dd>";
+					}
+					else {
+						strHTML += "<dd><a href=javascript:MH.control.openLink('vip','" + appId + "')><span>" + vip_txt + "</span></a></dd>";
+					}
+				}
+			}
+			strHTML += '<dd class="laone"><a href="javascript:;"> </a></dd>' + '</dl>' + '</div></div>';
+			//alert("test");
+			li.innerHTML = strHTML;
+			li.id = "li_" + appId;
+			//添加禁止拖动的效果
+			try{
+				if (favStatus < 200) {
+					MH.dom.addClass(li, 'downloading');
+					//fav("favUL", li.id);
+				} else {
+					$('#favUL').sortable('option', 'handle', 'dt');
+				}	
+			}catch(e){
+				alert(e.message);
+			}
+			
+			//alert("拖动没问题");	
+			//添加drop
+			li['onmouseover'] = (function(liEl){
+				return function(e){
+				
+					var e = window.event ? window.event : e;
+					var fromEl = e.srcElement ? e.srcElement : e.target;
+					var toEl = e.toElement ? e.toElement : e.relatedTarget;
+					var target = liEl.getElementsByTagName("dl")[0];
+					var _para;
+					liEl.className = "hvfav";
+					if (MH.control.checkType(target)) {
+						return;
+					}
+					if (liEl == fromEl && !MH.dom.isChild(toEl, liEl) || MH.dom.isChild(fromEl, liEl)) {
+						showEnt(target, _para = {
+							t: 0,
+							begin: 30,
+							change: 112,
+							duration: 50
+						});
+					}
+				}
+			})(li)
+			var method = (window.event) ? 'onmouseleave' : 'onmouseout';
+			li['onmouseout'] = (function(liEl){
+				return function(e){
+					var e = window.event ? window.event : e;
+					var fromEl = e.srcElement ? e.srcElement : e.target;
+					var toEl = e.toElement ? e.toElement : e.relatedTarget;
+					var target = liEl.getElementsByTagName("dl")[0];
+					var _para;
+					if (toEl != liEl && !MH.dom.isChild(toEl, liEl) || fromEl.tagName.toLowerCase() == 'a' && !(toEl)) {
+						liEl.className = "";
+						hideEnt(target, _para = {
+							t: 0,
+							begin: 100,
+							change: -100,
+							duration: 50
+						});
+					}
+					else 
+						if (!MH.dom.isChild(toEl, liEl) && !MH.dom.isChild(fromEl, liEl) || !toEl) {
+							return;
+						}
+				}
+			}) (li);
+			favUL.appendChild(li);
+			if (favStatus <= 100) {
+				var t = '#pr_' + appId;
+				$(t).width(favStatus);
+			}
+			//alert("test1");
+		}
+	} else {
+		displayAppNav();
+	}
+}
+
+/**下载参数方法
+ * @param appId
+ * @param spro
+ * @param param3 文字
+ * @param param4 状态   
+ */
+function setDownloadStatus(appId, spro, param3, param4) {
+	//alert(appId+":::::::::"+spro+":::::::::"+param3+":::::::::"+param4)
+	if (param4 == 0) {
+		//开始下载
+		var t = '#pr_' + appId;
+		var status = '#status_' + appId;
+        $(t).width(spro);
+        var divTextID = "#pro_" + appId;
+        if (spro < 100) {
+            $(divTextID).empty()
+            $(divTextID).append(param3);
+			$(status).show();
+        }
+        if (100 <= spro < 200) {
+            $(divTextID).empty()
+            $(divTextID).append(param3);
+			$(status).show();
+        }
+        if (spro == 200){
+            $(divTextID).empty();
+			setTimeout(function() {
+		        var shadow = "#shadow_" + appId;
+		        $(shadow).hide();
+				$(status).hide();
+				renderFav();
+	    	}, 100);
+        }	
+	} else {
+		var usb = "#usb_" + appId;
+		var t = '#usbPr_' + appId;
+		$(usb).show();
+		var divTextID = "#pro_" + appId;
+		
+		if (spro < 100) {
+			$(divTextID).empty();
+            $(divTextID).append(param3);
+			$(usb).show();
+			$(t).width(spro);
+        }
+        if (100 <= spro < 200) {
+            $(divTextID).empty();
+            $(divTextID).append(param3);
+			$(usb).show();
+			$(status).show();
+        }
+        if (spro == 200) {
+            $(divTextID).empty();
+			setTimeout(function() {
+        		$(usb).hide();
+				renderFav();
+    		}, 100);
+        }
+	}
+}
+
+/** 当fav区为空时，显示引导标志
+ */
+function displayAppNav(){
+	var content_length = 196;
+	document.getElementById("Favcontainer").style.marginLeft = -98 + "px";
+	document.getElementById('Favcontent').style.width = content_length + "px";
+	document.getElementById('Favcontainer').style.width = content_length + "px";
+	var favUL = document.getElementById("favUL");
+	var li = document.createElement("li");
+	var strHTML = '<div class="favitem" id="favitem" onclick="javascript:appDisplay()"><div class="favNav" id="favNav"></div></div>';
+	li.innerHTML = strHTML;
+	favUL.appendChild(li);
+	document.getElementById("favNav").style.backgroundImage = "url(images/cross.gif)";
+	document.getElementById("favitem").style.cursor = "pointer";
+}
+
+function appDisplay(){
+    changePic(1);
+    document.getElementById("app_box").style.display = "";
+    MH.control.appViewResize();
+}
+
+function clone(myObj){
+    if (typeof(myObj) != 'object') 
+        return myObj;
+    if (myObj == null) 
+        return myObj;
+    var myNewObj = new Object();
+    for (var i in myObj) {
+        myNewObj[i] = clone(myObj[i]);
+    }
+    return myNewObj;
+}
+
+function MergeRecursive(obj1, obj2){
+    var destObj = clone(obj1);
+    for (var p in obj2) {
+        try {
+            if (obj2[p].constructor == Object) {
+                destObj[p] = MergeRecursive(destObj[p], obj2[p]);
+            }
+            else {
+                destObj[p] = obj2[p];
+            }
+        } catch (e) {
+            destObj[p] = obj2[p];
+        }
+    }
+    return destObj;
+}
+
+function shiftTab(target){
+    var ul = document.getElementById("bank_tabs_title");
+    var lis = ul.getElementsByTagName("li");
+    var lilength = lis.length;
+    
+    var ori_index = 0;
+    var tl = target.length;
+    for (var i = 0; i < lilength; i++) {
+        lis[i].setAttribute("apptype", apptypes[i]);
+        var apptype = lis[i].getAttribute("apptype");
+        if (apptype == target.substring(1, tl)) {
+            MH.dom.addClass(lis[i], "click");
+            if (apptype == "all") {
+                currentAppArray = MergeRecursive(appList["banks"], appList["payments"]);
+                currentAppArray = MergeRecursive(currentAppArray, appList["securities"]);
+                currentAppArray = MergeRecursive(currentAppArray, appList["insurances"]);
+                currentAppArray = MergeRecursive(currentAppArray, appList["funds"]);
+                currentAppArray = MergeRecursive(currentAppArray, appList["shopping"]);
+            }
+            else {
+                currentAppArray = appList[apptype];
+            }
+            handle(currentAppArray);
+            ori_index = i;
+        }
+        lis[i].onclick = (function(n){
+            return function(){
+                if (lis[n].className == "cur") {
+                    return false;
+                }
+                else {
+                    MH.dom.removeClass(lis[ori_index], "click");
+                    MH.dom.addClass(lis[n], "click");
+                    selector.value = "";
+                    ori_index = n;
+                    selector.onkeyup = function(){
+                        return findName(selector.value, apptypes[n]);
+                    };
+                    if (n == 0) {
+                        //添加
+                        currentAppArray = appList["banks"];
+                        /*0711，历史版本修改
+                        currentAppArray = MergeRecursive(appList["banks"], appList["payments"]);
+                        currentAppArray = MergeRecursive(currentAppArray, appList["securities"]);
+                        currentAppArray = MergeRecursive(currentAppArray, appList["insurances"]);
+                        currentAppArray = MergeRecursive(currentAppArray, appList["funds"]);
+						currentAppArray = MergeRecursive(currentAppArray, appList["shopping"]);
+						*/
+                    }
+                    else {
+                        currentAppArray = appList[lis[n].getAttribute("apptype")];
+                    }
+                    MH.control.currentAppPage = 0;
+                    MH.dom.$("appContainer").scrollLeft = 0;
+                    
+                    handle(currentAppArray);
+                    window.location.hash = "#" + apptypes[n];
+                }
+            }
+        })(i);
+    }
+}
+
+//取得长度
+function getPropertyCount(o){
+    var n, count = 0;
+    for (n in o) {
+        if (o.hasOwnProperty(n)) {
+            count++;
+        }
+    }
+    return count;
+}
+
+/**改写生成方法
+ */
+function handle(jsonArray){
+    MH.interact.getFav();
+    
+    //取得app总数
+    appLength = getPropertyCount(jsonArray);
+    var l = appLength;
+	var content_length = appLength * MH.control.appLiWeight;
+	document.getElementById('appContent').style.width = content_length + "px";
+	MH.control.appPageNum = parseInt((MH.control.screenWidth() - 62) / MH.control.appLiWeight);
+	document.getElementById('appContainer').style.width = (MH.control.appPageNum * MH.control.appLiWeight) + "px";
+	
+	var bordermargin = parseInt(((MH.control.screenWidth() - 62) - MH.control.appPageNum * MH.control.appLiWeight) / 2);
+	
+	document.getElementById('appContainer').style.margin = "0 " + bordermargin + "px 0 " + bordermargin + "px";
+	document.getElementById('appContainer').style.marginLeft = -parseInt((MH.control.appPageNum * MH.control.appLiWeight) / 2) + "px";
+	
+	if (MH.control.appPageNum == 0) 
+	MH.control.appPageNum = 1;
+	
+	MH.control.currentAppPage = 0;
+	document.getElementById('appContent').style.height = "216px";
+	
+	/*根据页数显示*/
+	if (l > (MH.control.appPageNum * 3)) {
+	    if (appLength % (MH.control.appPageNum * 3) > 0) {
+	        MH.control.totalAppPages = parseInt(l / (MH.control.appPageNum * 3)) + 1;
+	    }
+	    else {
+	        MH.control.totalAppPages = parseInt(l / (MH.control.appPageNum * 3));
+	    }
+	    content_length = MH.control.totalAppPages * MH.control.appPageNum * MH.control.appLiWeight + 1;
+	    
+	    document.getElementById('appContent').style.width = content_length + "px";
+	    
+	    document.getElementById('appLeft').style.visibility = "hidden";
+	    document.getElementById('appRight').style.visibility = "visible";
+	    document.getElementById('appPage').innerHTML = '<div class="apppagedoton"></div>';
+	    
+	    for (i = 1; i < MH.control.totalAppPages; i++) {
+	        document.getElementById('appPage').innerHTML += '<div class="apppagedotoff"  onclick="appScroll(' + i + ');"></div>';
+	    }
+	    
+	    document.getElementById('appPage').style.width = 18 * MH.control.totalAppPages + "px";
+	    document.getElementById('appPage').style.marginLeft = -9 * MH.control.totalAppPages + "px";
+	    document.getElementById('appPage').style.display = "";
+	} else {
+	    document.getElementById('appContainer').style.textAlign = "left";
+	    MH.control.totalAppPages = 1;
+	    document.getElementById('appLeft').style.visibility = "hidden";
+	    document.getElementById('appRight').style.visibility = "hidden";
+	    //document.getElementById("appContainer").style.marginLeft=-98+"px";
+	    document.getElementById('appPage').style.display = "none";
+	}
+	
+	//原始方法
+	var list_1 = document.createElement("ul");
+	var list_2 = document.createElement("ul");
+	var list_3 = document.createElement("ul");
+	
+	var setAttrToElem = function(elem, elemIndex) {
+	    elem.setAttribute("apptype", jsonArray[elemIndex].apptype);
+	    elem.setAttribute("id", jsonArray[elemIndex].id);
+	    elem.setAttribute("arrayposition", jsonArray[elemIndex].position);
+	    elem.setAttribute("collected", jsonArray[elemIndex].collected);
+	};
+	showlist_1.innerHTML = "";
+	showlist_1.appendChild(list_1);
+	showlist_1.appendChild(list_2);
+	showlist_1.appendChild(list_3);
+	
+	//开始循环写入
+	var start = 0;
+	for (var o in jsonArray) {
+	    var li = document.createElement("li");
+	    var tid = jsonArray[o].id;
+	    li.id = "li_" + tid;
+	    var l = MH.favArr.length;
+	    if (l > 0) {
+	        for (n in MH.favArr) {
+	            if (tid == MH.favArr[n]) {
+	                li.className = 'hover';
+	            }
+	        }
+	    }
+	    var content = "";
+	    content += "<span id='1_" + tid + "' class='existFav'></span>" + "<img src='" + jsonArray[o].imageUrl + "'/>";
+	    content += "<span id='2_" + tid + "' class='graybg' style='display:none;'></span>";
+	    content += "<span id='3_" + tid + "' style='display:none;width:36px;height:36px;top:4px;left:54px;'></span>";
+	    content += "<img id='4_" + tid + "' class='bigstarimg' src='images/del.png' style='display:none;width:36px;height:36px;top:4px;left:54px;' />";
+	    
+	    li.innerHTML = content;
+	    li.onclick = (function(that, id) {
+	        return function() {
+	            if (that.className != "hover") {
+	                addFavAction(that, id);
+	                //增加了替换图片的操作
+	                $("#3_"+id).removeClass().addClass("bigstar2").show();
+	                if (MH.control.IEVersion() > 6) {
+	                    $("#4_"+id).attr("src", "images/del.png").show();
+	                }	                
+	            } else {
+	                delFavAction(that, id);
+	                //增加了替换图片的操作
+	                $("#3_"+id).removeClass().addClass("bigstar1").show();
+	                if (MH.control.IEVersion() > 6) {
+	                    $("#4_"+id).attr("src", "images/add.png").show();
+	                }
+	            }
+	        }
+	    })(li, tid);
+	    
+	    li.onmouseover = (function(that, id){
+	        return function(){
+	            var a = "#2_" + id;
+	            var b = "#3_" + id;
+	            var c = "#4_" + id;
+	            $(a).show();
+	            if (that.className == "hover") {
+	                $(b).removeClass().addClass("bigstar2").show();
+	                if (MH.control.IEVersion() > 6) {
+	                    $(c).attr("src", "images/del.png").show();
+	                }
+				} else {
+					$(b).removeClass().addClass("bigstar1").show();
+	                if (MH.control.IEVersion() > 6) {
+	                    $(c).attr("src", "images/add.png").show();
+	                }
+	            }
+	        }
+	    })(li, tid);
+
+	    li.onmouseout = (function(that, id){
+	        return function(){
+	            var a = "#2_" + id;
+	            var b = "#3_" + id;
+	            var c = "#4_" + id;
+	            if (that.className != "hover") {
+	                $(a).hide();
+	                $(b).hide();
+	                if (MH.control.IEVersion() > 6) {
+	                    $(c).hide();
+	                }
+	            } else {
+	                $(a).hide();
+	                $(b).hide();
+	                if (MH.control.IEVersion() > 6) {
+	                    $(c).hide();
+	                }
+	            }
+	        }
+	    })(li, tid);
+
+	    setAttrToElem(li, o);
+	    if ((parseInt((start) / MH.control.appPageNum) + 3) % 3 == 0 && 0 <= (start) % MH.control.appPageNum <= MH.control.appPageNum) {
+	        list_1.appendChild(li);
+	    }
+	    if ((parseInt((start) / MH.control.appPageNum) + 3) % 3 == 1 && 0 <= (start) % MH.control.appPageNum <= MH.control.appPageNum) {
+	        list_2.appendChild(li);
+	    }
+	    if ((parseInt((start) / MH.control.appPageNum) + 3) % 3 == 2 && 0 <= (start) % MH.control.appPageNum <= MH.control.appPageNum) {
+	        list_3.appendChild(li);
+	    }
+	    start++;
+	}
+}
+
+function ShowSlowly(appId) {
+	renderFav();
+	favZoomIn(appId);
+	//favPayAlert(appId);
+}
+
+function addFavAction(oNode, appId){
+    var cls = oNode.className;
+    if (cls != "hover") {
+        bigStarInterval[appId] = setInterval('reduces("' + appId + '")', 10);
+        oNode.className = "hover";
+        oNode.getElementsByTagName('span')[0].className = "existFav";
+        MH.interact.saveFav(appId);
+    	setTimeout("ShowSlowly('"+ appId +"');", 100);
+    }
+}
+
+//支付收藏提醒
+/*
+function favPayAlert(appId){
+	switch(appId){
+		case "e001":
+			alert("如果您需要在支付宝中通过网银充值或支付,请同时收藏相关的银行");
+		break;	
+	}
+}
+*/
+function delFavAction(o, appId){
+	MH.interact.deleteFav(appId);
+	MH.interact.getFav();
+	favZoomOut(appId);
+	document.getElementById(appId).className = "";
+}
+
+function deleteFavAction(appId){
+	MH.interact.deleteFav(appId);
+	MH.interact.getFav();
+	favZoomOut(appId);
+	document.getElementById(appId).className = "";
+}
+
+function searchIndex(name, type){
+    var resultArray = [];
+    var targetArray = [];
+    var tempArray = [];
+    if (type == "all") {
+        for (i in appList) {
+            targetArray = appList[i].concat(targetArray);
+        }
+    }
+    else {
+        targetArray = appList[type];
+    }
+    var _stringLength = name.length;
+    for (var i in targetArray) {
+        var indexArray = targetArray[i].index.split(",");
+        var indexLength = indexArray.length;
+        for (j = 0; j < indexLength; j++) {
+            if (name === indexArray[j].slice(0, _stringLength)) {
+                resultArray.push(targetArray[i]);
+                break;
+            }
+        }
+    }
+    return resultArray;
+}
+
+/*
+ * 模块名称：财金资讯
+ * 模块功能：获得股指信息
+ * 显示模式：固定显示
+ * 显示数量：九条
+ * 刷新频率：六十秒
+ */ 
+function renderFinance(){
+	var content="";
+	$.ajax({
+		url: 'http://www.moneyhub.cn/fininfo/getinfo.php?debug=1',
+		type: 'GET',
+		dataType: 'xml',
+		cache: false,
+		timeout: 3000,
+		error: function(xml, textStatus, errorThrown) {
+			//加入事件
+			if ($("#r_event").html().length==0) {
+				content+='<div id="" class="title_container"><div class="title_bg"><div class="title_img"><img src="images/icon1.png" alt="" border="0"/></div></div><div style="float:left;padding-left:0px;width:100%">';
+				content+="&nbsp;&nbsp;数据读取错误，请手动<a href='javascript:renderFinance()'>刷新</a>"
+				content+="</div></div>";
+				$("#r_event").empty().append(content);	
+			}
+		},
+		success: function(xml) {
+			content += '<div id="" class="title_container"><div class="title_bg"><div class="title_img"><img src="images/icon1.png" alt="" border="0"/></div></div><div class="dFinance">';
+			var flag = 0;
+			var tdclass;
+			$(xml).find("fininfo").each(function(i){
+				if($(this).children("name").text()!="原油"){
+					if (flag++ % 2 == 1) {
+						tdclass = "tdrow1";
+					}
+					else {
+						tdclass = "tdrow";
+					}
+					content += '<ul class=' + tdclass + '>';
+					content += '<li class="lTDRowFirst">&nbsp;' + changeFinanceName($(this).children("name").text()) + '</li>';
+					content += '<li>' + $(this).children("point").text() + '</li>';
+					if ($(this).children("uad").text() > 0) {
+						content += '<li><img src="images/shang.gif" width="10" height="10" alt="" />&nbsp;' + $(this).children("uad").text() + '</li>';
+					}
+					else {
+						content += '<li><img src="images/xia.gif" width="10" height="10" alt="" />&nbsp;' + Math.abs($(this).children("uad").text()) + '</li>';
+					}
+					content += '</ul>';	
+				}
+			});
+			content+="</div></div>";
+			$("#r_event").empty().append(content);
+		},
+		complete:function() {
+		   setTimeout("renderFinance()",60000); //定时器
+		}
+	});
+}
+
+function changeFinanceName(strName){
+	var str="";
+	switch (strName){
+		case "沪指":
+		str="上证综指";
+		break;
+		case "深指":
+		str="深证成指";
+		break;
+		case "恒数":
+		str="恒生指数";
+		break;
+		case "今日银价":
+		str="银价（美元/盎司）";
+		break;
+		case "今日金价":
+		str="金价（美元/盎司）";
+		break;
+		case "外汇":
+		str="人民币/美元中间价";
+		break;
+		default:
+		str=strName;
+	}
+	return str;
+}
+
+/** 模块名称：理财资讯抢先道
+ * 模块功能：获得理财产品信息
+ * 显示模式：随机显示
+ * 显示数量：十条
+ * 刷新频率：十秒
+ */    
+function renderAd(){
+	var test;
+	var content="";
+	var count=0;
+	var styleTab="";
+	var allPage=0;
+	var curPage=0;
+	var pageNumber=3;
+	if (test != "") {
+		content+= '<div id="tabs1" class="title_container1">';
+		content+='<span class="finantechad_bg"><div class="title_bg"><div class="title_img"><img src="images/icon2.png" alt="" border="0"/></div></div>';
+		content+= '<ul class="finantechad_ul">';
+		$.ajax({
+			url: 'http://www.moneyhub.cn/banksite/getfinprod.php?debug=1&encode=0',
+			type: 'GET',
+			dataType: 'xml',
+			cache:false,
+			timeout: 3000,
+			error: function(xml){
+				//加入事件
+				if ($("#finatech_ad").html().length==0) {
+					content+="数据读取错误，请手动<a href='javascript:renderAd()'>刷新</a>"
+					//alert(errorContent);
+					$("#finatech_ad").empty().append(content);
+				}
+				
+			},
+			success: function(xml){
+				
+				
+				$(xml).find("finprod").each(function(i){
+						//if (i < 10) {
+							content += '<li><img src="images/dian.gif" alt="" width="4" height="4" style="padding-right:8px;"/>';
+							var url = xorDecoding($(this).children("url").text());
+							var test = "http://www.icbc.com.cn/icbc/";
+							if(url.replace(/\s*$/, "") == "http://www.icbc.com.cn/icbc/" ){
+								content += '<a onclick="javascript:if(confirm(\'查看该理财产品详情需要登录网银\')) window.open(\''+url+'\')">';	
+							} else {
+								
+								content += '<a onclick="javascript:window.open(\''+url+'\')">';	
+							}
+							content += $(this).children("bank").text() + $(this).children("desc").text().substring(0,20) + '，';
+							content += '年化收益率<font color="red">'+$(this).children("interest").text()+'%</font>，';
+							content += '理财期限'+$(this).children("duration").text()+'天，';
+							content += '认购截止日'+$(this).children("enddate").text();
+							content += '</a></li>';
+						/*
+						} else {
+							return false;
+						}
+						*/
+						
+				});
+				content+="</ul></span>";
+				$("#finatech_ad").empty().append(content);
+				
+				$("#finatech_ad li").mouseover(function(){
+				});
+
+                $("#finatech_ad li").mouseout(function(){
+				});
+				
+			},
+			complete:function() {
+				//renderadSet = setTimeout("renderAd()",10000); //定时器
+			}
+		});
+	} else {
+	}
+}
+
+/*
+ 0,显示+;
+ 1,显示-;                                        
+ */
+function changePic(status){
+    var contentStr = "";
+    var disPic = "images/aplus.png";
+    if (status == 1) {
+        disPic = "images/aplus_.png";
+    }
+    contentStr = '<img src="' + disPic + '" style="padding-top:2px;"/>';
+    
+    MH.dom.$('aplusspan').innerHTML = "";
+    MH.dom.$('aplusspan').innerHTML = contentStr;
+}
+
+/**执行jquery的sortable
+ */
+var prevPagesOrder = "";
+var curFavArray = "";
+
+function sortableFav(){
+    $("#favUL").sortable({
+        revert: true,
+        scroll: true,
+        //cancel: '.downloading',
+        axis: 'x',
+        start: function(event, ui){
+            var textId = "#pro_" + $(ui.item).attr("id").substring(3, $(ui.item).attr("id").length);
+            $(textId).hide(300);
+        },
+        stop: function(event, ui){
+            var textId = "#pro_" + $(ui.item).attr("id").substring(3, $(ui.item).attr("id").length);
+            $(textId).show(300);
+        },
+        
+        update: function(event, ui){
+            var items = $('#favUL').sortable('option', 'items');
+			var cancel = $('.selector').sortable('option', 'cancel');
+		    var xx = $("#favUL").sortable("serialize");
+            var curFavArray = $("#favUL").sortable("toArray");
+            
+            var l = curFavArray.length;
+            var end = 0;
+            var start = 0;
+            
+            for (var i = 0; i < l; i++) {
+                if ($(ui.item).attr("id") == curFavArray[i]) {
+                    end = i + 1;
+                    break;
+                }
+            }
+            for (var i = 0; i < l; i++) {
+                if ($(ui.item).attr("id").substring(3, $(ui.item).attr("id").length) == MH.favArr[i]) {
+                    start = i + 1;
+                    break;
+                }
+            }
+            try {
+                window.external.ChangeOrder($(ui.item).attr("id").substring(3, $(ui.item).attr("id").length), end, start);
+            } catch (e) {
+            }
+            //renderFav();
+        }
+    });
+}
+
+//C++调用方法
+function favAction(appId){
+	var liId = "#li_" + appId;
+	//alert("开始调用");
+	if ($(liId).className != "hover") {
+	    bigStarInterval[appId] = setInterval('reduces("' + appId + '")', 10);
+	    $(liId).className = "hover";
+	    $("#1_" + appId).removeClass().addClass("existFav");
+	    MH.interact.saveFav(appId);
+		renderFav();
+	    favZoomIn(appId);
+	    handle(currentAppArray);
+		//favPayAlert(appId);
+		
+	}
+	//alert("结束调用");
+}
+
+function changeCss(div,status){
+	$('#' + div).removeClass();
+	if (status == "over") {
+		$('#' + div).addClass("dt1");
+	}
+	if (status == "down") {
+		$('#' + div).addClass("dt2");
+	}
+	if (status == "release") {
+		$('#' + div).addClass("dt");
+	}
+	if (status == "out") {
+		$('#' + div).addClass("dt");
+	}
+}
+
+function setAlarm(){
+	MH.control.checkAlarm();
+}
+
+function createXml(str){ 
+	if (document.all) { 
+		var xmlDom=new ActiveXObject("Microsoft.XMLDOM") 
+		xmlDom.loadXML(str) 
+		return xmlDom 
+	} else {
+		return new DOMParser().parseFromString(str, "text/xml")
+	}
+}
+
+/** base64解码
+ */
+var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+
+function decode64(input) {
+  var output = "";
+  var chr1, chr2, chr3 = "";
+  var enc1, enc2, enc3, enc4 = "";
+  var i = 0;
+      
+      if(input.length%4!=0)
+      {
+                return "";
+      }
+  var base64test = /[^A-Za-z0-9\+\/\=]/g;
+      if (base64test.exec(input))
+      {
+                return "";
+      }
+
+  do {
+     enc1 = keyStr.indexOf(input.charAt(i++));
+     enc2 = keyStr.indexOf(input.charAt(i++));
+     enc3 = keyStr.indexOf(input.charAt(i++));
+     enc4 = keyStr.indexOf(input.charAt(i++));
+
+     chr1 = (enc1 << 2) | (enc2 >> 4);
+     chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+     chr3 = ((enc3 & 3) << 6) | enc4;
+             
+             output = output + String.fromCharCode(chr1);
+
+     if (enc3 != 64) {
+                    output+=String.fromCharCode(chr2);
+     }
+     if (enc4 != 64) {
+                    output+=String.fromCharCode(chr3);
+     }
+
+     chr1 = chr2 = chr3 = "";
+     enc1 = enc2 = enc3 = enc4 = "";
+
+  } while (i < input.length);
+  return output;
+}
+
+function xorDecoding(_str) {
+   return decode64(_str);
+}
+
+function debug(string){
+	try{
+		window.external.WriteLog(string);
+	}catch(e){
+		
+	}
+}

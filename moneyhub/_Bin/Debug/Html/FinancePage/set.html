@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>设置</title>
+<link type="text/css" href="style/set.css" rel="stylesheet" />
+<!--<script type="text/javascript" src="scripts/set.js"></script>-->
+<script type="text/javascript" src="scripts/jquery/jquery.min.js"></script>
+<script type="text/javascript">
+var divcss = { 
+background: '#e6f4ec',
+border: '1px solid #71c495', 
+}; 
+$(document).ready(function(){
+$(".select").click(function(){
+$(this).css(divcss);
+});
+});
+</script>
+</head>
+<body>
+<div id="dSetPage" style="width:100%;
+	height:100%;
+	float:left;">
+  <div id="dSetLeft">
+    <h3>账户</h3>
+    <h3>分类</h3>
+    <h3>收/付款方</h3>
+    <h3>金融机构</h3>
+  </div>
+    <div class="dSetRight">
+      <div id="dSRnewaccount">
+        <div id="dSRnewaccount1"></div>
+        <div id="dSRnewaccount2"></div>
+        <div id="dSRnewaccount3"></div>
+        <div id="dSRnewaccountInfo">新建账户</div>
+      </div>
+      <div class="dSRBankcard">
+      <div id="dSRBBackground">
+      <div class="dSRBB1"></div>
+      <div class="dSRBB2"></div>
+      <div class="dSRBB3"></div>
+      <div id="dSRBInfo" class="dSRBtree">银行卡</div>
+      </div>
+      <table id="tSRBankcard" class="tSRBankcard">
+      <tr class="tSRBrow">
+      <td id="tSRBname1">招行一卡通</td>
+      <td id="tSRBamount">￥23,456</td>
+      <td id="tSRBfunction"><span id="subaccount">新增子账户</span></td>
+      </tr>
+      <tr class="tSRBrow select">
+      <td id="tSRBname2">活期存款</td>
+      <td id="tSRBamount">￥203,456</td>
+      <td id="tSRBfunction">新增子账户</td>
+      </tr>
+      <tr class="tSRBrow">
+      <td id="tSRBname2">定期存款</td>
+      <td id="tSRBamount">￥2,456</td>
+      <td id="tSRBfunction">新增子账户</td>
+      </tr>
+      <tr>
+      <td id="tSRBname1">浦发工资卡</td>
+      <td id="tSRBamount">￥3,456</td>
+      <td id="tSRBfunction">新增子账户</td>
+      </tr>
+      </table>
+      </div>
+      <div class="dSRBankcard" style="top:180px;">
+      <div id="dSRBBackground">
+      <div class="dSRBB1"></div>
+      <div class="dSRBB2"></div>
+      <div class="dSRBB3"></div>
+      <div id="dSRBInfo" class="dSRBtree">信用卡</div>
+      </div>
+      <table id="tSRBankcard" class="tSRBankcard">
+      <tr class="tSRBrow">
+      <td id="tSRBname1">123</td>
+      <td id="tSRBamount">456</td>
+      <td id="tSRBfunction">789</td>
+      </tr>
+      <tr class="tSRBrow">
+      <td id="tSRBname2">123</td>
+      <td id="tSRBamount">456</td>
+      <td id="tSRBfunction">789</td>
+      </tr>
+      <tr class="tSRBrow">
+      <td id="tSRBname2">123</td>
+      <td id="tSRBamount">456</td>
+      <td id="tSRBfunction">789</td>
+      </tr>
+      <tr class="tSRBrow">
+      <td id="tSRBname2">123</td>
+      <td id="tSRBamount">456</td>
+      <td id="tSRBfunction">789</td>
+      </tr>
+      <tr class="tSRBrow">
+      <td id="tSRBname2">123</td>
+      <td id="tSRBamount">456</td>
+      <td id="tSRBfunction">789</td>
+      </tr>
+      <tr>
+      <td id="tSRBname2">123</td>
+      <td id="tSRBamount">456</td>
+      <td id="tSRBfunction">789</td>
+      </tr>
+      </table>
+      </div>
+      <div class="dSRBankcard" style="top:427px;">
+      <div id="dSRBBackground">
+      <div class="dSRBB1"></div>
+      <div class="dSRBB2"></div>
+      <div class="dSRBB3"></div>
+      <div id="dSRBInfo" class="dSRBInfo">现金</div>
+      </div>
+      <table id="tSRBankcard" class="tSRBankcard">
+      <tr class="tSRBrow">
+      <td id="tSRBname1">123</td>
+      <td id="tSRBamount">456</td>
+      <td id="tSRBfunction">789</td>
+      </tr>
+      <tr class="tSRBrow">
+      <td id="tSRBname2">123</td>
+      <td id="tSRBamount">456</td>
+      <td id="tSRBfunction">789</td>
+      </tr>
+      <tr class="tSRBrow">
+      <td id="tSRBname2">123</td>
+      <td id="tSRBamount">456</td>
+      <td id="tSRBfunction">789</td>
+      </tr>
+      <tr class="tSRBrow">
+      <td id="tSRBname2">123</td>
+      <td id="tSRBamount">456</td>
+      <td id="tSRBfunction">789</td>
+      </tr>
+      <tr class="tSRBrow">
+      <td id="tSRBname2">123</td>
+      <td id="tSRBamount">456</td>
+      <td id="tSRBfunction">789</td>
+      </tr>
+      <tr>
+      <td id="tSRBname2">123</td>
+      <td id="tSRBamount">456</td>
+      <td id="tSRBfunction">789</td>
+      </tr>
+      </table>
+      </div>
+</div>
+<!--
+      <div style="width:71%; border:1px solid #CC99FF; overflow:hidden; float:left; position:absolute; left:220px; top:300px;">454444444444444444444444444444444444444444444444444444444444444444444444444444444444466666666666666666444444444444444488888888888888777777777777722222222222</div>
+    </div>
+-->    <div class="dSetRight">2.自动将含有这个交易摘要的交易记录的收款方设为这个收款方若监测到用户习惯变化，则下次导入时按变化后的习惯设置支出分类与收款方则在下次导入时</div>
+    <div class="dSetRight">3.对于同一个交易摘要的交易记录，用户连续3次以上将其修改为同一个支出分类，则在下次导入时，自动将含有这个交易摘要的交易记录的支出分类设为这个分类对于同一个交易摘要的交易记录，用户连续3次以上将其修改为同一个收款方</div>
+    <div class="dSetRight" id="dise4">4.自动将含有这个交易摘要的交易记录的收款方设为这个收款方若监测到用户习惯变化，则下次导入时按变化后的习惯设置支出分类与收款方则在下次导入时</div>
+  </div>
+<script type="text/javascript" src="scripts/set.js"></script>
+</body>
+</html>

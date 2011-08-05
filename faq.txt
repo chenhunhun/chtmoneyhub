@@ -1,0 +1,76 @@
+F:\moneyhub\_Bin\Encryption
+MakeCHK_debug.bat
+
+
+F:\moneyhub\_Bin\Debug
+moneyhub.exe -i
+
+%appdata% 
+del  BankUpdate
+
+sc query moneyhubprt
+
+http://andyfurong.googlecode.com/svn/trunk
+
+
+f:\moneyhub\BankCore\Main.cpp
+void RunIECore(LPCTSTR lpszCmdline)
+{
+	
+	CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_THREAD_ID_INIT, L"进入RunIECore线程");
+
+	::DebugBreak();
+
+
+f:\moneyhub\Security\BankDrv\MapViewOfSection.cpp
+VOID HookSSDT()
+{
+	NtMapViewOfSection = (NTMAPVIEWOFSECTION)UpdateService(g_NtMapViewOfSectionID, (PVOID)MyMapViewOfSection);
+	//sstHook_OpenProcess();
+}
+
+VOID UnHookSSDT()
+{
+	UpdateService(g_NtMapViewOfSectionID, (PVOID)NtMapViewOfSection);
+	//sstUnhook_OpenProcess();
+}
+
+/**
+*  检查钩子状态函数
+*/
+bool checkHookSafe()
+{
+	return true;
+
+
+新加工程 去掉mix platfom
+64driver   去掉编译新工程
+64test    去掉编译新工程
+
+
+Hello, dear Git developer.
+This is a minimal MSYS environment to work on Git.
+You are in the git working tree, and all is ready for you to hack.
+Welcome to msysGit
+
+Run 'git help git' to display the help index.
+Run 'git help <command>' to display help for specific commands.
+Run '/share/msysGit/add-shortcut.tcl' to add a shortcut to msysGit.
+
+It appears that you installed msysGit using the full installer.
+To set up the Git repositories, please run /share/msysGit/initialize.sh
+
+
+
+gclient runhooks –force
+
+http://chromium-browser-source.commondatastorage.googleapis.com/chromium.r85375.tgz
+http://chromium-browser-source.commondatastorage.googleapis.com/
+
+gclient sync --revision src@85305 --force
+
+
+hg clone --insecure https://blog-sample-code.jtianling.googlecode.com/hg/ jtianling-blog-sample-code
+
+
+abcd1234

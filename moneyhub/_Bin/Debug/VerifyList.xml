@@ -1,0 +1,8 @@
+<Verify>
+	<Binary Name = "DigsigGen.exe" />
+	<Binary Name = "BankPrt.sys" />
+	<Binary Name = "BankLoaderTester.exe" />
+	<Binary Name = "ModuleVerifierTester.exe" />
+	<Binary Name = "BankUI.exe" />
+	<Binary Name = "updater.exe" />
+</Verify>

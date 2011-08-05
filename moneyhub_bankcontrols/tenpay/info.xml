@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<main>
+  <category name="banks">
+
+<site id="tenpay" name="财付通"  version="2.0.0.0">
+			<domains>
+				<domain name="*.tenpay.com/*" />
+			</domains>
+			<requirements>
+				<system type="Win7" cpu="0">
+					<require type="activex" name="qqedit" reg="reg-win7">
+						<file name="qqedit.dll" />
+					</require>
+					</system>
+			      <system type="WinXP" cpu="0">
+					<require type="activex" name="qqedit" reg="reg-xp">
+						<file name="qqedit.dll" />
+					</require>
+					 <require type="driver" name="TenpayKeyboard" service="TenpayKeyboard">
+						<file name="TenpayKeyboard.sys" />
+					</require>
+			     </system>
+			<system type="WinVista" cpu="0">
+					<require type="activex" name="qqedit" reg="reg-win7">
+						<file name="qqedit.dll" />
+					</require>
+					<require type="cert" name="1">
+						<file name="56502166.cer" />
+					</require>
+				    <require type="driver" name="TenpayKeyboard" service="TenpayKeyboard">
+						<file name="TenpayKeyboard.sys" />
+					</require>
+			</system>
+			</requirements>
+			<pages>
+				<page url="https://www.tenpay.com/zft/login.shtml">
+					
+				</page>
+			</pages>
+		</site>
+  </category>  
+</main>
