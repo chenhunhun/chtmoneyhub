@@ -1,0 +1,1344 @@
+/*
+ * sql中的变量统一使用单引号"'"
+ */
+
+/** 取得某一类型的所有金融机构
+ * @param classId 金融机构类型编号
+ */
+function getBankInfo(classId){
+	try {
+		result = JSON.parse(window.external.QuerySQL("SELECT id, name, bankId, classId FROM tbbank WHERE classId=" + classId + " ORDER BY id ASC"));
+    } 
+    catch (e) {
+        var result = [{
+            "id": 1,
+            "name": "中国银行",
+			"bnakId":"a001"
+        }, {
+            "id": 2,
+            "name": "中国工商银行",                                           
+			"bnakId":"a003"
+        }, {
+            "id": 3,
+            "name": "中国农业银行",
+			"bnakId":"a002"
+        }, {
+            "id": 10003,
+            "name": "中国假银行",
+			"bnakId":"a006"
+        }, {
+            "id": 10004,
+            "name": "中国最假银行",
+			"bnakId":"a006"
+        }];
+    }
+    return result;
+}
+
+/** 取得某金融机构的所有信息
+ * @param id 金融机构编号
+ */
+function getSingleBankInfo(id){
+	try {
+        result = JSON.parse(window.external.QuerySQL("SELECT id, name, bankId, classId FROM tbbank WHERE id=" + id));
+    } 
+    catch (e) {
+        var result = [{
+            "id": 1,
+            "name": "中国银行",
+			"bnakId":"a001"
+        }, {
+            "id": 2,
+            "name": "中国工商银行",
+			"bnakId":"a003"
+        }, {
+            "id": 3,
+            "name": "中国农业银行",
+			"bnakId":"a002"
+        }];
+    }
+    return result;
+}
+
+/** 添加用户金融机构
+ * @param name 金融机构名称
+ * @param classes 金融机构类型
+ */  
+function insertBank(name,classes){
+	//用户初始基准
+	var result=false;
+	var initPre = 10000;
+	var bankId=-1;
+	try {
+        result = JSON.parse(window.external.QuerySQL("select max(id) as id from tbBank"));
+    } catch (e) {
+        var result = [{
+            "id": 100
+        }];
+    }
+	$.each(result, function(i, n){
+		if(n.id>=initPre){
+			bankId=n.id+1;
+		} else{
+			bankId=initPre;
+		}
+	});
+	try {
+		name=replaceSQLStr(name);
+		if(window.external.ExecuteSQL("insert into tbBank (id,name,classId) values ("+bankId+",'"+name+"',"+classes+")")>0){
+			result=true;
+		}
+    } catch (e) {
+    }
+	return bankId;
+}
+
+/** 更改金融机构名称
+ * @param id 金融机构编号
+ * @param name 金融机构名称
+ */  
+function updateBank(id,name){
+	name=replaceSQLStr(name);
+	var result=false;
+	var sql1="update tbBank set name='"+name+"' where id="+id;
+	try {
+		if(window.external.ExecuteSQL(sql1)>0){
+			result=true;
+		}
+    } catch (e) {
+    }
+	return result;
+}
+
+/** 删除金融机构
+ * @param id 金融机构编号
+ */ 
+function deteteBank(id){
+	var sql1="delete from tbBank where id = "+id;
+	var sql2="update tbAccount set tbBank_id ='' where tbBank_id="+id;
+	try {
+		window.external.ExecuteSQL(sql2);
+		window.external.ExecuteSQL(sql1)
+    } 
+    	catch (e) {
+    }
+}
+
+/** 取得分类相关信息
+ * @return classID:0,一级分类；1，二级分类；
+ */
+function getCategoryInfo(){
+	try {
+        result = JSON.parse(window.external.QuerySQL("select a.id as id1, b.id as id2, a.name as name1, b.name as name2, type from tbCategory1 a, tbCategory2 b where a.id=b.tbCategory1_id and a.id not in (10018,10019,10020,10021,10023,10024) and name2!='CATA420' order by a.id asc"));
+    } catch (e) {
+        var result = [{
+            "id1": 1,
+			"id2": 1,
+            "name1":"交通",
+			"name2":"CATA420",
+			"Type":0
+        }, {
+            "id1": 1,
+			"id2": 2,
+            "name1":"交通",
+			"name2":"打车",
+			"Type":0
+        }, {
+           "id1": 2,
+			"id2": 4,
+            "name1":"饮食",
+			"name2":"鸡蛋",
+			"Type":0
+        }, {
+            "id1": 2,
+			"id2": 5,
+            "name1":"工资",
+			"name2":"工资",
+			"Type":1
+        }, {
+           "id1": 3,
+			"id2": 6,
+            "name1":"礼物",
+			"name2":"压岁钱",
+			"Type":1
+        }];
+    }
+    return result;
+}
+
+function getCategory1Default(type){
+	try {
+        result = JSON.parse(window.external.QuerySQL("select a.id as id1, b.id as id2, a.name as name1, b.name as name2, type from tbCategory1 a, tbCategory2 b where a.id=b.tbCategory1_id and a.id not in (10018,10019,10020,10021,10023,10024) and name2='CATA420' and type= "+type+" order by a.id asc"));
+    } catch (e) {
+        var result = [{
+            "id1": 1,
+			"id2": 1,
+            "name1":"交通",
+			"name2":"CATA420",
+			"Type":0
+        }, {
+            "id1": 1,
+			"id2": 2,
+            "name1":"交通",
+			"name2":"打车",
+			"Type":0
+        }, {
+           "id1": 2,
+			"id2": 4,
+            "name1":"饮食",
+			"name2":"鸡蛋",
+			"Type":0
+        }, {
+            "id1": 2,
+			"id2": 5,
+            "name1":"工资",
+			"name2":"工资",
+			"Type":1
+        }, {
+           "id1": 3,
+			"id2": 6,
+            "name1":"礼物",
+			"name2":"压岁钱",
+			"Type":1
+        }];
+    }
+    return result;
+}
+
+/** 获取所有一级分类
+ * @param type 收入还是支出
+ */ 
+function getCategory1Info(type){
+	try {
+        result = JSON.parse(window.external.QuerySQL("select id,name,type from tbCategory1 where type="+type));
+    } catch (e) {
+        var result = [{
+            "id1": 1,
+			"id2": 1,
+            "name1":"人民币",
+			"name2":"人民币",
+			"type":0
+        }, {
+           "id1": 1,
+			"id2": 2,
+            "name1":"人民币",
+			"name2":"人民币",
+			"type":0
+        }, {
+            "id1": 2,
+			"id2": 3,
+            "name1":"人民币",
+			"name2":"人民币",
+			"type":1
+        }, {
+           "id1": 2,
+			"id2": 4,
+            "name1":"人民币",
+			"name2":"人民币",
+			"type":1
+        }];
+    }
+    return result;
+}
+
+/** 添加一级分类
+ * @param name1 一级分类名称
+ * @param type 收入还是支出
+ */  
+function addCategory1(name1,type){
+	var id1=0;
+	name1=replaceSQLStr(name1);
+	try {
+		id1=window.external.ExecuteSQL("insert into tbCategory1 (name,type) values ('" + name1 + "'," + type + ")");
+	}catch(e){
+	}
+	return id1;
+}
+
+/** 添加二级分类
+ * @param id 一级分类编号
+ * @param name1 二级分类名称
+ */  
+function addCategory2(id,name){
+	name=replaceSQLStr(name);
+	var id1=0;
+	try {
+		id1=window.external.ExecuteSQL("insert into tbCategory2 (name,tbCategory1_id) values ('" + name + "'," + id + ")");
+	}catch(e){
+	}
+	return id1;
+}
+
+/** 更改分类信息
+ * @param classId 0表示修改一级分类，1表示修改二级分类
+ * @param name 分类名称
+ * @param id 分类编号
+ */   
+function updateCategory(classId,name,id){
+	var result=false;
+	var table="tbCategory2";
+	name=replaceSQLStr(name);
+	if(classId==0) table="tbCategory1";
+	try {
+		if(window.external.ExecuteSQL("update "+table+" set name='"+name+"' where id ="+id)>0)
+			result=true;
+    } catch (e) {
+    }
+	return result;
+}
+
+/** 删除分类
+ * @param classId 0表示删除一级分类，1表示删除二级分类
+ * @param id 分类编号
+ */  
+function deleteCategory(classId,id){
+	var result=false;
+	var table="tbCategory2";
+	if(classId==0) table="tbCategory1";
+	var sql1="delete from "+table+" where id ="+id;
+	try {
+		if(window.external.ExecuteSQL(sql1)>0) result=true;
+    } 
+    catch (e) {
+    }
+	return result;
+}
+
+/** 取得所有币种
+ */
+function getCurrencyInfo(){
+	try {
+		result = JSON.parse(window.external.QuerySQL("SELECT id, name FROM tbCurrency ORDER BY id ASC"));
+    } catch (e) {
+        var result = [{
+            "id": 1,
+            "Name":"人民币"
+        }, {
+            "id": 2,
+            "Name":"美<元"
+        }, {
+            "id": 3,
+            "Name":"欧元"
+        }, {
+            "id": 4,
+            "Name":"日元"
+        }, {
+            "id": 5,
+            "Name":"英镑"
+        }, {
+            "id": 6,
+            "Name":"日元"
+        }, {
+            "id": 7,
+            "Name":"日元"
+        }, {
+            "id": 8,
+            "Name":"日元"
+        }, {
+            "id": 9,
+            "Name":"日元"
+        }, {
+            "id": 10,
+            "Name":"日元"
+		}];
+    }
+    return result;
+}
+
+/** 取得支付对象相关信息
+ * @param id 支付对象编号
+ * @return 支付对象列表 
+ */ 
+function getPayeeInfo(id){
+	try {
+        var queryString= "";
+        if(id === undefined )
+			queryString= "SELECT id, name, email, tel FROM tbPayee ORDER BY id ASC";
+        else
+			queryString= "SELECT id, name, email, tel FROM tbPayee WHERE id=" + id;
+		result = JSON.parse(window.external.QuerySQL(queryString));
+    } catch (e) {
+        var result = [{
+            "id": 1,
+            "Name": "&amp;&lt;&amp;"
+        }, {
+            "id": 2,
+            "Name": "对象2"
+        }, {
+            "id": 3,
+            "Name": "对象3"
+        }, {
+            "id": 4,
+            "Name": "对象3"
+        }, {
+            "id": 5,
+            "Name": "对象3"
+        }, {
+            "id": 6,
+            "Name": "对象3"
+        }, {
+            "id": 7,
+            "Name": "对象3"
+        }, {
+            "id": 8,
+            "Name": "对象3"
+        }];
+    }
+    return result;
+}
+
+/** 获取支付对象名称
+ * @param id 支付对象编号
+ * @return 支付对象名称 
+ */
+function getSinglePayeeName(id){
+	try {
+        var temp="";
+		result = JSON.parse(window.external.QuerySQL("SELECT name as pName FROM tbPayee where id="+id));
+        $.each(result, function(i,n) {
+           	temp=n.pName;
+           	return false;
+        });
+    } catch (e) {
+        var result = [{
+            "pName": "对象1"
+        }];
+    }
+    return temp;
+}
+
+//添加支付对象
+function addNewPayee(name,email,tel){
+	//用户初始基准
+	name=replaceSQLStr(name);
+	email=replaceSQLStr(email);
+	tel=replaceSQLStr(tel);
+	var test=-1;
+	try {
+		var test=window.external.ExecuteSQL("insert into tbPayee (name,email,tel) values ('"+name+"','"+email+"','"+tel+"')");
+    } catch (e) {
+    }
+	return test;
+}
+
+function updatePayee(id,name,email,tel){
+	name=replaceSQLStr(name);
+	email=replaceSQLStr(email);
+	tel=replaceSQLStr(tel);
+	var result=false;
+	try {
+		if(window.external.ExecuteSQL("update tbPayee set name='"+name+"', email='"+email+"', tel='"+tel+"' where id="+id)>0)
+			result=true;
+    } catch (e) {
+    }
+	return result;
+}
+
+/** 删除支付对象
+ * @param id 支付对象编号
+ */ 
+function deletePayee(id){
+	var result=false;
+	try {
+		if(window.external.ExecuteSQL("delete from tbPayee where id = "+id)>0)
+			result=true;
+    } catch (e) {      
+    }
+	return result;
+}
+
+/** 取得账户种类相关信息
+ */
+function getAccountTypeInfo(){
+	try {
+		result = JSON.parse(window.external.QuerySQL("SELECT id,name FROM tbAccountType where id < 100 ORDER BY id ASC"));
+    } catch (e) {
+		var result = [{
+            "id": 1,
+            "Name":"现金"
+        }, {
+            "id": 2,
+            "Name":"信用卡"
+        }, {
+            "id": 3,
+            "Name":"储蓄卡"
+        }, {
+            "id": 4,
+            "Name":"支付"
+        }, {
+            "id": 5,
+            "Name": "投资"
+        }, {
+            "id": 7,
+            "Name":"借入的钱"
+        }];
+    }
+    return result;
+}
+
+/** 取得账户子账户相关信息
+ * @param id 子账户编号
+ */
+function getAccountSubInfo(id){
+	try {
+        if(id!=0){
+			result = JSON.parse(window.external.QuerySQL("SELECT b.id as bid, balance, c.name as cname FROM tbAccount a, tbSubAccount b, tbCurrency c where b.tbAccount_id = a.id and c.id = b.tbCurrency_id and a.id = "+id+"  ORDER BY b.id ASC"));
+		} 
+    } catch (e) {
+		var result = [{
+            "bid": 1,
+			"balance": 123.21,
+            "cname":"美元"
+        }, {
+           "bid": 2,
+			"balance": 123.21,
+            "cname":"人民币"
+        }, {
+            "bid": 3,
+			"balance": 123.21,
+            "cname":"不知道"
+        }, {
+            "bid": 4,
+			"balance": 123.21,
+            "cname":"不清楚"
+        }];
+    }
+    return result;
+}
+
+//添加账户
+function addAccount(name,accountTypeId,bankId,content){
+	var result=0;
+	var sql1="";
+	name=replaceSQLStr(name);
+	content=replaceSQLStr(content);
+	//var accountTypeId=accountTypeId;
+	if(accountTypeId==1||accountTypeId==6||accountTypeId==7||accountTypeId==8||accountTypeId==9){
+		//以上分类不涉及金融机构
+		sql1+="INSERT into tbAccount ( name, tbAccountType_id, comment) values ('"+name+"',"+accountTypeId+",'"+content+"')";
+	}else{
+		if(bankId==""||bankId==null) bankId="";
+		sql1+="INSERT into tbAccount ( name, tbAccountType_id, tbBank_id, comment ) values ('"+name+"','"+accountTypeId+"','"+bankId+"','"+content+"')";
+	}
+	try {
+		result=window.external.ExecuteSQL(sql1);
+    } catch (e) {
+    }
+	return result;
+}
+
+//添加子账户
+function addAccountSub(accountId, tbCurrency_id,openbalance,balance,days,enddate,tbAccountType_id,subName){
+	subName=replaceSQLStr(subName);
+	var result=-1;
+	if(tbAccountType_id==""||tbAccountType_id==null) tbAccountType_id=8756;
+	
+	var sql="INSERT into tbSubAccount (tbAccount_id,tbCurrency_id,openbalance,balance,days,enddate,name,tbAccountType_id) values ('"+accountId+"','"+tbCurrency_id+"','"+openbalance+"','"+balance+"','"+days+"','"+enddate+"','"+subName+"','"+tbAccountType_id+"')";
+	try {
+		result=window.external.ExecuteSQL(sql);
+    } catch (e) {
+    }
+	return result;
+}
+
+//编辑账户
+function editAccount(id,accountTypeId,name,bankId,content){
+	var result=0;
+	name=replaceSQLStr(name);
+	content=replaceSQLStr(content);
+	var sql1="";
+	//var accountTypeId=accountTypeId;
+	if(accountTypeId==1||accountTypeId==6||accountTypeId==7||accountTypeId==8||accountTypeId==9){
+		//以上分类不涉及金融机构
+		if(bankId==""||bankId==null) bankId="";
+		sql1="update tbAccount set name='"+name+"', comment='"+content+"' where id="+id;
+	}else{
+		sql1="update tbAccount set name='"+name+"', comment='"+content+"', tbBank_id='"+bankId+"' where id="+id;
+	}
+	try {
+		result=window.external.ExecuteSQL(sql1);
+    } catch (e) {
+    }
+	return result;
+}
+
+//编辑子账户
+function editAccountSub(id, openbalance,balance,days,enddate,tbAccountType_id,subName,myTid){
+	var result=-1;
+	subName=replaceSQLStr(subName);
+	try {
+		var sql="";
+		
+		var sql1="update tbSubAccount set balance=balance+("+openbalance+"-openbalance) where id="+id;
+		window.external.ExecuteSQL(sql1);
+		sql+="update tbSubAccount set openbalance="+openbalance+", days='"+days+"',enddate='"+enddate+"'";
+		if(myTid==3){
+			sql+=" , name='"+subName+"' ";
+		} 
+		sql+=", tbAccountType_id='"+tbAccountType_id+"' where id="+id;			
+		result=window.external.ExecuteSQL(sql);
+    } catch (e) {
+       	debug(sql);
+    }
+	return result;
+}
+
+//添加交易
+function addTransaction(transdate,payee_id,tbCategory2_id,amount,direction,tbSubaccount_id,exchangerate,comment,tbSubaccount_id1){
+	var result=-1;
+	comment=replaceSQLStr(comment);
+	//用户未选择分类，则定义为未分类处理
+	if(tbCategory2_id==10000){
+		//支出
+		tbCategory2_id=10065;
+	} else if(tbCategory2_id==10001){
+		tbCategory2_id=10066;
+	}
+	try {
+		result=window.external.ExecuteSQL("insert into tbTransaction (transdate,tbPayee_id,tbCategory2_id,amount,direction,tbSubaccount_id, exchangerate, comment,tbSubaccount_id1) values( '"+transdate+"',"+payee_id+","+tbCategory2_id+","+amount+",'"+direction+"',"+tbSubaccount_id+",'"+exchangerate+"','"+comment+"','"+tbSubaccount_id1+"')");
+		////////alert("insert into tbTransaction (transdate,tbPayee_id,tbCategory2_id,amount,direction,tbSubaccount_id, exchangerate, comment,tbSubaccount_id1) values( '"+transdate+"',"+payee_id+","+tbCategory2_id+","+amount+",'"+direction+"',"+tbSubaccount_id+",'"+exchangerate+"','"+comment+"','"+tbSubaccount_id1+"')");
+    } catch (e) {
+    }
+	return result;
+}
+
+//编辑交易
+function editTrans(transdate,payee_id,tbCategory2_id,amount,direction,tbSubaccount_id,exchangerate,comment,id){
+	var result=false;
+	comment=replaceSQLStr(comment);
+	if(tbCategory2_id==10000){
+		//支出
+		tbCategory2_id=10065;
+	} else if(tbCategory2_id==10001){
+		tbCategory2_id=10066;
+	}
+	try {
+		if(window.external.ExecuteSQL("update tbTransaction set transdate='"+transdate+"',payee_id="+payee_id+",tbCategory2_id="+tbCategory2_id+",amount="+amount+",direction='"+direction+"',tbSubaccount_id="+tbSubaccount_id+", exchangerate='"+exchangerate+"', comment='"+comment+"' where id="+id)>0)
+			result=true;
+    } catch (e) {
+    }
+	return result;
+}
+
+//删除交易
+function delTransaction(id){
+	var result=false;
+	try {
+		if(window.external.ExecuteSQL("delete from tbtranaction where id="+id)>0)
+			result=true;
+    } catch (e) {
+    }
+	return result;
+}
+
+//获取全部交易
+function getTransaction(aid,sid){
+	var result="";
+	try {
+		var sql1 = "SELECT e.id AS eid, a.id AS aid, transdate, tbPayee_id, tbCategory2_id, amount, direction, tbSubAccount_id, tbSubAccount_id1, a.tbPayee_id AS pid,direction AS deric, a.comment AS acomment, type, e.name AS dname, d.name AS aname, b.name AS bname, f.name AS fname, c.name AS cname";
+		sql1 += " FROM tbTransaction a, tbCategory2 b, tbCategory1 c, tbAccount d, tbSubAccount e, tbCurrency f";
+		sql1 += " WHERE b.tbCategory1_id=c.id AND a.tbCategory2_id=b.id AND a.tbSubAccount_id=e.id AND e.tbAccount_id=d.id AND f.id=e.tbCurrency_id";
+		if(typeof(aid)!="undefined"&&aid!=""){
+			
+			sql1+= " and d.id=" + aid;
+		}
+		if(typeof(sid)!="undefined"&&sid!=""){
+			sql1+= " and e.id="+sid;
+		}
+		sql1+= " order by transDate asc ";
+		result = JSON.parse(window.external.QuerySQL(sql1));
+	} catch (e) {
+		result = [{
+            "aid": 1,
+            "transdate": "2011-01-01",
+			"tbPayee_id": 1,
+			"tbCategory2_id": 1,
+			"amount": 123,
+			"direction": 1,
+			"tbSubAccount_id": 1,
+			"tbSubAccount_id1": 0,
+			"acomment": "aaaa",
+			"type": 1,
+			"dname": "aaaa",
+			"gname": "bbbb",
+			"aname": "&amp;&amp;",
+			"bname": "bbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc fdsfsafasdf",
+			"fname": "dddd" 
+        }];
+	}
+	return result;
+}
+
+//获取单个交易记录
+function getSingleTransaction(id){
+	var result="";
+	try{
+		result = JSON.parse(window.external.QuerySQL("select transDate, a.id as aid, c.id as cid, tbPayee_id,tbCategory2_id,amount,direction,tbSubAccount_id,tbSubAccount_id1,a.comment as acomment from tbTransaction a, tbSubAccount b, tbAccount c  where a.tbSubAccount_id=b.id and c.id = b.tbAccount_id and a.id="+id));
+	}catch(e){
+	}
+	return result;
+}
+
+//获取子分类的accountType;
+function getSubAccountType(){
+	try {
+		var queryString= "SELECT id,Name FROM tbAccountType where id > 99 ORDER BY id asc";
+        var result = window.external.QuerySQL(queryString);
+        if (typeof result == 'string') {
+			result = JSON.parse(result);
+        }
+    } catch (e) {
+		var result = [{
+            "id": 100,
+            "Name":"活期存款"
+        }, {
+            "id": 101,
+            "Name":"定期存款"
+        },{
+            "id": 102,
+            "Name":"理财产品"
+        }];
+    }
+    return result;
+}
+
+//获取用户存款期限
+function getAccountSubDuringData(){
+	var result = [{
+            "value": 90,
+            "Name":"3个月"
+        }, {
+			"value": 180,
+            "Name":"6个月"
+        }, {
+			"value": 365,
+            "Name":"1年"
+        }, {
+			"value": 730,
+            "Name":"2年"
+        }, {
+            "value": 1095,
+            "Name":"3年"
+        }, {
+            "value": 1825,
+            "Name":"5年"
+        },{
+            "value": 0,
+            "Name":"(空)"
+        }];
+	return result;
+}
+
+/** 获取饼图数据
+ * @param startDate 开始日期
+ * @param endDate 结束日期
+ * @param during 按周还是按月
+ * @param curStyle   
+ */
+function getXML(startDate, endDate, during, curStyle){
+	var xmlStr = "";
+	try {
+		xmlStr = window.external.GetXMLData(startDate, endDate, during, curStyle);
+	} catch (e) {
+		xmlStr="";
+		xmlStr+='<chart>';
+			xmlStr+='<set seriesName="保险费" value="25" />';
+		  	xmlStr+='<set seriesName="待报销" value="75" />';
+		xmlStr+='</chart>';
+		xmlStr+='<chart>';
+		    xmlStr+='<set seriesName="其它收入" value="100" />';
+		xmlStr+='</chart>';
+		xmlStr+='<chart>';
+		if (during != "month") {
+		    xmlStr+='<set seriesName="支出" value="67" />';
+		    xmlStr+='<set seriesName="收入" value="33" />';
+		} else {
+		    xmlStr+='<set seriesName="支出" value="20" />';
+		    xmlStr+='<set seriesName="收入" value="80" />';
+		}
+		xmlStr+='</chart>';
+		xmlStr+='<chart>';
+		    xmlStr+='<set seriesName="保险费" value="1000.00" />';
+		    xmlStr+='<set seriesName="待报销" value="3000.00" />';
+		xmlStr+='</chart>';
+		xmlStr+='<chart>';
+		    xmlStr+='<set seriesName="其它收入" value="2000.00" />';
+		xmlStr+='</chart>';
+		xmlStr+='<chart>';
+		    xmlStr+='<set seriesName="支出" value="4000.00" />';
+		    xmlStr+='<set seriesName="收入" value="2000.00" />';
+		xmlStr+='</chart>';
+	}
+	return xmlStr;
+}
+
+//bar图数据生成
+function getBarXml(startDate,endDate,during){
+	var xmlStr="";
+	try{
+		xmlStr=window.external.GetXMLData(startDate,endDate,during,"bar");
+	}catch(e){
+		xmlStr+='<chart>';
+			xmlStr+='<categories>';
+			xmlStr+='<category name="1月" />';
+			xmlStr+='<category name="2月" />';
+			xmlStr+='<category name="3月" />';
+			xmlStr+='<category name="4月" />';
+			xmlStr+='<category name="5月" />';
+			xmlStr+='</categories>';
+			xmlStr+='<dataset seriesName="Product A" showValues="0">';
+			xmlStr+='<set value="25601.34" />';
+			xmlStr+='<set value="20148.82" />';
+			xmlStr+='<set value="17372.76" />';
+			xmlStr+='<set value="35407.15" />';
+			xmlStr+='<set value="38105.68" />';
+			xmlStr+='</dataset>';
+			xmlStr+='<dataset seriesName="Product B" showValues="0">';
+			xmlStr+='<set value="57401.85" />';
+			xmlStr+='<set value="41941.19" />';
+			xmlStr+='<set value="45263.37" />';
+			xmlStr+='<set value="117320.16" />';
+			xmlStr+='<set value="114845.27" />';
+			xmlStr+='</dataset>';
+			xmlStr+='<dataset seriesName="Product C" showValues="0">';
+			xmlStr+='<set value="45000.65" />';
+			xmlStr+='<set value="44835.76" />';
+			xmlStr+='<set value="18722.18" />';
+			xmlStr+='<set value="77557.31" />';
+			xmlStr+='<set value="92633.68" />';
+			xmlStr+='</dataset>';
+		xmlStr+='</chart>';
+	}
+	return xmlStr;
+}
+
+
+//生成随机颜色
+function randomColor() {
+	//16进制方式表示颜色0-F
+	var arrHex = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"];
+	var strHex = "#";
+	var index;
+	for(var i = 0; i < 6; i++) {
+		//取得0-15之间的随机整数
+		index = Math.round(Math.random() * 15);
+		strHex += arrHex[index];
+	}
+	return strHex;
+}
+
+/** 处理饼图数据
+ * @param xml 原始数据
+ */ 
+function handlePieXmlData(xml){
+	var result;
+	try {
+		result = xml.split("</chart>");	
+	} catch(e){
+	}
+	return result;
+}
+
+var renderData = "";
+
+/** 生成下方收支比例图的XML
+ * @param str 原始XML
+ * @param style 图表类型
+ * @param classId 0表示支出，1表示收入
+ * @param myValue 金额
+ */    
+function createXmlData(str, style, classId, myValue){
+	var result = "";
+	if(style == "pie"){
+		var result1 ="";
+		if (classId == 0) {
+			//支出
+			result1 = '<graph lineThickness="1" animation="1" showNames="0" alpha="100" showLimits="1"  formatNumberScale="0" numberSuffix="%" numDivLines="3" limitsDecimalPrecision="0" showValues="0" showPercentageValues="0" hoverCapSepChar="，" baseFont="宋体" baseFontSize="12" showCanvasBase="1" showLegend="1">';
+		} else {
+			//收入
+			result1 = '<graph lineThickness="1" animation="1" showNames="0" alpha="100" showLimits="1"  formatNumberScale="0" numberSuffix="%" numDivLines="3" limitsDecimalPrecision="0" showValues="0" showPercentageValues="0" hoverCapSepChar="，" baseFont="宋体" baseFontSize="12" showCanvasBase="1" showLegend="1">';
+		}
+		result = str.replace(/<chart>/g, result1) + "</graph>";
+		result = getColor(result,style);
+		result = renderData;
+	} else if (style == "newPie") {
+		if (classId == 0) {
+			//支出
+			result1='<graph lineThickness="1" animation="1" showNames="0" alpha="100" showLimits="1"  formatNumberScale="0" numberSuffix="%" numDivLines="3" limitsDecimalPrecision="0" showValues="0" showPercentageValues="1" hoverCapSepChar="，" baseFont="宋体" baseFontSize="12" showCanvasBase="1" showLegend="1">';
+		} else {
+			//收入
+			result1='<graph lineThickness="1" animation="1" showNames="0" alpha="100" showLimits="1"  formatNumberScale="0" numberSuffix="%" numDivLines="3" limitsDecimalPrecision="0" showValues="0" showPercentageValues="1" hoverCapSepChar="，" baseFont="宋体" baseFontSize="12" showCanvasBase="1" showLegend="1">';
+		}
+		result=str.replace(/<chart>/g,result1)+"</graph>";
+		result=getColor(result,style);
+		result=renderData;
+	} else if(style == "bar") {
+		var result1='<graph caption="收入支出趋势图"  lineThickness="1" animation="1" showNames="1" alpha="100" showLimits="1"  formatNumberScale="0"  numberPrefix="￥"  numberSuffix="元"  numDivLines="3"  limitsDecimalPrecision="0" showValues="0" baseFont="宋体" baseFontSize="12"  showCanvasBase="1" showLegend="1">';
+		result=str.replace(/<chart>/g,result1);
+		result=result.replace("</chart>","</graph>");
+		getColor(result,style);
+		result=renderData;
+	}	
+	return result;
+}
+
+var colorIndex=0;
+
+//颜色数组
+var colorDesc = ["#f75556",  "#bf9bd1",  "#f8cf4d",  "#78cc8f",  "#73cfe1",  "#ff72aa",  "#e99b31",  "#a4b3f1",  "#65bbbf",  "#ffc4f9",  "#7eb7df",  "#a68064",  "#a23737",  "#6b6bb4",  "#6b8323",  "#db7093",  "#527f76",  "#448bc3",  "#9eb2ba",  "#dfb597"];
+
+function getColor(str,style){
+	var result1="";
+	
+	if(style=="pie"){
+		if(str.indexOf('<set seriesName=')!=-1){
+			result1=str.replace('<set seriesName=', '<set color="'+colorDesc[colorIndex]+'" name=');
+			if(colorIndex<19) colorIndex++;
+			else colorIndex=0;
+			this.getColor(result1,style);
+		}else{
+			if(result1==""){
+				renderData=str;		
+			}
+		}	
+	} else if(style=="newPie"){
+		if(str.indexOf('<set seriesName=')!=-1){
+			result1=str.replace('<set seriesName=', '<set color="'+colorDesc[colorIndex]+'" name=');
+			if(colorIndex<19) colorIndex++;
+			else colorIndex=0;
+			this.getColor(result1,style);
+		}else{
+			if(result1==""){
+				renderData=str;		
+			}
+		}	
+	} else {
+		var test=str.indexOf('<dataset seriesName=');
+		if(test!=-1){
+			result1=str.replace('<dataset seriesName=','<dataset color="'+colorDesc[colorIndex]+'" seriesName=');
+			
+			if(colorIndex<19) colorIndex++;
+			else colorIndex=0;
+			this.getColor(result1,style);
+		}else{
+			if(result1==""){
+				renderData=str;		
+			}
+		}	
+	}
+	colorIndex=0;
+	return result1;
+}
+
+/**
+ * 从xml字符串得到xml对象
+ * @param {} data 传入的xml字符串
+ * @return {} xml 得到的xml对象
+ */
+function getXMLInstance(data)   
+{
+    var xml;
+    if($.browser.msie){
+        xml = new ActiveXObject("Microsoft.XMLDOM");
+        xml.async = false;
+        xml.loadXML(data);
+    }else{
+        xml = new DOMParser().parseFromString(data, "text/xml");
+    }
+    return xml;
+}
+
+/** 获取账户信息
+ */
+function getAccountInfo(){
+	var result="";
+	try {
+		result = JSON.parse(window.external.QuerySQL("SELECT a.id as aid, a.tbAccountType_id as aType, a.name as aname, b.id as bid, b.name as bname FROM tbAccount a, tbSubAccount b where b.tbAccount_id = a.id group by bid"));
+    } catch (e) {
+        var result = [{
+            "aid": 1,
+            "aname": "&amp;&amp;",
+            "bid": 1,
+            "bname": "人民币"
+        }, {
+            "aid": 1,
+            "aname": "招行信用卡",
+            "bid": 2,
+            "bname": "美元"
+        }, {
+            "aid": 2,
+            "aname": "工行信用卡",
+            "bid": 3,
+            "bname": "人民币"
+        }, {
+            "aid": 2,
+            "aname": "工行信用卡",
+            "bid": 4,
+            "bname": "美元"
+        }];
+    }
+    return result;
+}
+
+//根据币种id，账户id取得相应的子账户信息
+function getSubAccount(aid,cid){
+    try{
+		result = JSON.parse(window.external.QuerySQL("select id from tbsubAccount where tbAccount_id = "+aid+ " and tbCurrency_id = " + cid));
+	} catch(e) {
+		var result = [{
+            "id": 1
+		}];
+	}
+	return result;
+}
+
+
+//获取汇率信息
+
+/** 取得所有外币与人民币的兑换结果
+ * @param id 外币币种id
+ * @return 数组 
+ */
+function getRMBExchangeInfo(id){
+    try {
+		result = JSON.parse(window.external.QuerySQL("select sysCurrency_id1 as id,exchangeRate as rate from datExchangeRate where sysCurrency_id="+id, "DataDB"));
+	} catch(e) {
+		var result = [{
+            "id": 1,
+			"rate": 100
+		},{
+            "id": 2,
+			"rate": 650
+		},{
+            "id": 3,
+			"rate": 1000
+		},{
+            "id": 4,
+			"rate": 7
+		},{
+            "id": 5,
+			"rate": 1100
+		},{
+            "id": 6,
+			"rate": 80
+		},{
+            "id": 7,
+			"rate": 500
+		},{
+            "id": 8,
+			"rate": 400
+		},{
+            "id": 9,
+			"rate": 450
+		},{
+            "id": 10,
+			"rate": 300
+		}];
+	}
+	return result;
+}
+
+/** 取得两种不同币种间的兑换结果
+ * @param id1 币种1
+ * @param id2 币种2
+ * @return 结果  
+ */
+function getRMBExchangeInfo1(id1, id2){
+	var sql1="";
+	if (id2 === undefined) {
+		sql1 = "SELECT exchangeRate AS rate FROM datExchangeRate WHERE sysCurrency_id1=" + id1;
+	} else {
+		sql1 = "SELECT round((SELECT exchangerate FROM datExchangeRate WHERE sysCurrency_id1=" + id1 + ")/(SELECT exchangerate FROM datExchangeRate WHERE sysCurrency_id1=" + id2 + ")*100, 2) AS rate";
+	}
+	
+	//此结果为每100外币与人民币的兑换结果
+    try {
+		result = JSON.parse(window.external.QuerySQL(sql1, "DataDB"));
+	} catch(e) {
+		if (id1 == 2) {
+			var result = [{
+				"rate": 647.90
+			}];
+		} else {
+			var result = [{
+				"rate": 916.69
+			}];
+		}
+	}
+	$.each(result, function(i, n){
+		result1 = n.rate;
+	});
+	return result1;
+}
+
+/** 更新子账户余额
+ * @param id 子账户编号
+ * @param amount 子账户余额
+ * @param type 账本类型
+ */
+
+function modifySubAccountBalance(id, amount, type){
+	var result = false;
+	try {
+		var sql1 = "UPDATE tbSubAccount SET balance=";
+		if(type == 0)
+			sql1 += "balance-" + amount;
+		else
+			sql1 += "balance+" + amount;
+		sql1 += " where id=" + id;
+		if (window.external.ExecuteSQL(sql1) > 0)
+			result = true;
+    } catch (e) {
+    }
+	return result;
+}
+
+/** 获取账户类型内容
+ * @param id 账户类型编号
+ */ 
+function getAccountType(id){
+	var result = "";
+	try {
+		result = JSON.parse(window.external.QuerySQL("SELECT id, Name FROM tbAccountType WHERE id=" + id));
+    } catch (e) {
+		var result = [{
+            "id": 1,
+            "Name": "美元"
+        }, {
+            "id": 2,
+            "Name":"人民币"
+        }, {
+            "id": 3,
+            "Name":"人民币"
+        }];
+    }
+    return result;
+}
+/*
+ * id 为主账户id
+ * 
+ */
+function deleteAccount(id){
+ //删除子账户相关交易
+	 //将转账的类型修改为未定义收入，未定义支出
+	
+	var result = window.external.QuerySQL("select id from tbsubaccount where tbAccount_id  = '" +id+ "'");;
+	result = JSON.parse(result);
+	$.each(result, function(i, n) {
+		////alert(n.id)
+		var sql00="update tbTransaction set direction='', tbcategory2_id =10065, tbsubaccount_id1 = '' where tbcategory2_id = 10059 and tbsubaccount_id1 = "+n.id;
+		////alert(sql00);
+		window.external.ExecuteSQL(sql00);
+		var sql01="update tbTransaction set direction='', tbcategory2_id =10066, tbsubaccount_id1 = '' where tbcategory2_id = 10060 and tbsubaccount_id1 = "+n.id;  	
+		window.external.ExecuteSQL(sql01);
+		////alert(sql01);
+		//删除交易
+		var deleteSql1="delete from tbTransaction where tbSubAccount_id = "+n.id;
+		////alert(deleteSql1);
+		window.external.ExecuteSQL(deleteSql1);
+		//删除子账户
+		
+		var deleteSql2="delete from tbSubAccount where id = "+n.id;
+		////alert(deleteSql2);
+		window.external.ExecuteSQL(deleteSql2);	
+	});
+	 //删除账户
+	 var deleteSql3="delete from tbAccount where id="+id;
+	 window.external.ExecuteSQL(deleteSql3);
+	 
+ }
+
+/* 处理子账户删除操作
+ * id 子账户ID
+ */
+function deleteSubAccount(id){
+	 //计算交易余额
+	 //以下取得子账户币种
+	 //17-63,22-64
+	 //更新转账状态
+	 try{
+		 //将转账的类型修改为未定义收入，未定义支出
+		 var sql00="update tbTransaction set direction='', tbcategory2_id =10065, tbsubaccount_id1 = '' where tbcategory2_id = 10059 and tbsubaccount_id1 = "+id;
+		// //alert(sql00);
+		 window.external.ExecuteSQL(sql00);
+		 var sql01="update tbTransaction set direction='', tbcategory2_id =10066, tbsubaccount_id1 = '' where tbcategory2_id = 10060 and tbsubaccount_id1 = "+id;  	
+		 window.external.ExecuteSQL(sql01);
+		 //删除交易
+		 var deleteSql1="delete from tbTransaction where tbSubAccount_id = "+id;
+		 window.external.ExecuteSQL(deleteSql1);
+		 //删除子账户
+		 var deleteSql2="delete from tbSubAccount where id = "+id;
+		 window.external.ExecuteSQL(deleteSql2);
+	 }catch(e){
+	 }
+}
+
+/*
+ * classes 校验的类型
+ * checkValue 校验值
+ * 有false，没true
+ */
+ /*
+function checkUnique(classes,checkValue,id){
+	//alert(classes+"::::"+checkValue+"::::"+id);
+	var sql="";
+	var rs = false;
+	switch (classes){
+		case "newPayee":
+			sql="select count(id) as myCount from tbPayee where name = '"+checkValue+"'";
+			break;
+		case "name":
+			sql="select count(id) as myCount from tbAccount where name = '"+checkValue+"'";
+			break;
+		case "newBank":
+			sql="select count(id) as myCount from tbBank where name = '"+checkValue+"'";
+			if(currentTbAccountType==4){
+				sql+=" and classId = 2";
+			} else if(currentTbAccountType==5){
+				sql+=" and classId = 1";
+			} else {
+				sql+=" and classId = 0";
+			}
+			break;
+		
+		case "subName":
+			sql="select count(id) as myCount from tbsubaccount where name = '"+checkValue+"'";
+			break;
+			//此为子账户时校验，子账户校验只需要从subAccount校验即可		
+	}
+	//alert(rs);
+		
+	var temp="";
+	if(classes=="newBank"){
+		temp=currentBankEditType;
+	} else if (classes=="newPayee"){
+		temp=currentPayeeEditType;
+	} else if (classes == "name"){
+		temp=currentEditType;
+	} else {
+		if(id===undefined) temp="add";
+	}
+	
+	if(temp!="add"&&id>0){
+		sql+=" and id != "+id;
+	}
+	try {	
+		//window.external.WriteLog(sql);
+	} catch (e) {
+	}
+	//debug(sql);
+	try {
+		result = JSON.parse(window.external.QuerySQL(sql));
+		//////////alert(result);
+	} catch (e) {
+		result = [{
+			"myCount": 0
+		}]
+	}
+	$.each(result, function(i,n) {
+		if(n.myCount==0) rs=true;
+	});
+	//子账户模式做特殊的处理
+	if(classes=="subName"&&rs){
+		var arrayLength=subAccount.length;
+		//alert(arrayLength);
+		if(arrayLength>0){			
+			for(var i=0;i<arrayLength;i++){
+				if(id === undefined ){
+					if(subAccount[i][5]==checkValue){
+						rs=false;
+						break;
+					}
+				} else {
+					//编辑校验
+					if(subAccount[i][5]==checkValue&&id!=subAccount[i][6]){
+						rs=false;
+						break;			
+					}
+				}	
+			}
+		}
+	}
+	return rs;
+}
+*/
+
+//以下为根据0721，同一账户下子账户名需要唯一处理
+function checkUnique(classes,checkValue,id){
+	//alert(classes+"::::"+checkValue+"::::"+id);
+	var sql="";
+	var rs = false;
+	switch (classes){
+		case "newPayee":
+			sql="select count(id) as myCount from tbPayee where name = '"+checkValue+"'";
+			break;
+		case "name":
+			sql="select count(id) as myCount from tbAccount where name = '"+checkValue+"'";
+			break;
+		case "newBank":
+			sql="select count(id) as myCount from tbBank where name = '"+checkValue+"'";
+			if(currentTbAccountType==4){
+				sql+=" and classId = 2";
+			} else if(currentTbAccountType==5){
+				sql+=" and classId = 1";
+			} else {
+				sql+=" and classId = 0";
+			}
+			break;
+		
+		case "subName":
+			//此为子账户时校验，子账户校验只需要从subAccount校验即可
+				rs = true;
+				var arrayLength=subAccount.length;
+				if(arrayLength>0){			
+					for(var i=0;i<arrayLength;i++){
+						if(id === undefined ){
+							if(subAccount[i][5]==checkValue){
+								rs=false;
+								break;
+							}
+						} else {
+							//编辑校验
+							if(subAccount[i][5]==checkValue&&id!=subAccount[i][6]){
+								rs=false;
+								break;			
+							}
+						}	
+					}
+				}
+			
+	}
+	//子账户名校验无需进入数据库校验；
+	if(classes != "subName") 
+	{
+		var temp="";
+		if(classes=="newBank"){
+			temp=currentBankEditType;
+		} else if (classes=="newPayee"){
+			temp=currentPayeeEditType;
+		} else {
+			temp=currentEditType;
+		} 
+		//下面是编辑模式下的sql组装
+		if(temp!="add"&&id>0){
+			sql+=" and id != "+id;
+		}
+		try {	
+			//window.external.WriteLog(sql);
+		} catch (e) {
+		}
+		//debug(sql);
+		try {
+			result = JSON.parse(window.external.QuerySQL(sql));
+			//////////alert(result);
+		} catch (e) {
+			result = [{
+				"myCount": 0
+			}]
+		}
+		$.each(result, function(i,n) {
+			if(n.myCount==0) rs=true;
+		});
+	}
+	return rs;
+}

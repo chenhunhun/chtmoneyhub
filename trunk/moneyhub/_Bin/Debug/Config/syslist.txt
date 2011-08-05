@@ -1,0 +1,1381 @@
+#
+# 帮助请看syslist.help.txt
+#
+
+%systemroot%\explorer.exe
+
+##农业银行
+#飞天诚信K宝
+%systemroot%\system32\abchFTCX21.dll	
+%systemroot%\system32\abcPrintCtl4RA.dll	
+%systemroot%\system32\abcsFTCX21.dll	
+%systemroot%\system32\CEA_Crypt.dll	
+%systemroot%\system32\ePassAutocsp11_ABChina.dll	
+%systemroot%\system32\ePassAutocsp11_ABChina_s.dll	
+%systemroot%\system32\JCIDFTCX21.dll	
+%systemroot%\system32\NetSign.dll	
+%ProgramFiles%\95599 Certificate Tools\FTSafe\CertD_abchina.exe
+#华大K宝
+%ProgramFiles%\95599 Certificate Tools\ZGHD\GP_ADM.exe
+%systemroot%\system32\abchZGHD11.dll	
+%systemroot%\system32\abcsZGHD11.dll	
+%systemroot%\system32\CIDCUSB.sys	
+%systemroot%\system32\GP_ADM.exe		
+%systemroot%\system32\GP_APP.dll	
+%systemroot%\system32\GP_CLT.exe		
+%systemroot%\system32\GP_CLT_Service.exe	
+%systemroot%\system32\GP_COS.dll	
+%systemroot%\system32\GP_EBANK.exe	
+%systemroot%\system32\GP_IFD.dll	
+%systemroot%\system32\GP_MINCSP.dll	
+%systemroot%\system32\GP_RES.dll	
+%systemroot%\system32\GP_Root.exe	
+%systemroot%\system32\GP_UNI.exe	
+#天安信K宝
+%ProgramFiles%\95599 Certificate Tools\TIAN\tax3.0_abcchecker.dll
+%ProgramFiles%\95599 Certificate Tools\TIAN\TaxRegTool.exe
+%ProgramFiles%\95599 Certificate Tools\TIAN\TAXClientTool.exe
+%ProgramFiles%\95599 Certificate Tools\TIAN\TAX20002.sys
+%systemroot%\system32\abchTIAN10.dll	
+%systemroot%\system32\abcsTIAN10.dll	
+%systemroot%\system32\capicom.dll	
+%systemroot%\system32\DriverInstall.dll	
+%systemroot%\system32\jcin000101.dll	
+%systemroot%\system32\TAX_CosVer.dll	
+%systemroot%\system32\TAX_CSP.dll
+%systemroot%\system32\TAX_Device.dll		
+%systemroot%\system32\TAX_HDCOS.dll		
+%systemroot%\system32\TAX_InterFace.dll		
+%systemroot%\system32\TAX_KEYMANAGE.dll	
+%systemroot%\system32\TAX_TYCOS.dll	
+%systemroot%\system32\TAX_TYHD.dll
+#天地融K宝
+%ProgramFiles%\95599 Certificate Tools\Tendyron\I3BTool_ABC.exe
+%systemroot%\system32\abchTDRN51.dll	
+%systemroot%\system32\abcsTDRN51.dll	
+%systemroot%\system32\I3BCSP_ABC.dll		
+%systemroot%\system32\I3BCSP_ABCs.dll		
+%systemroot%\system32\I3BDev10_ABC.dll	
+%systemroot%\system32\I3BDev11_ABC.dll		
+%systemroot%\system32\I3BMon_ABC.exe		
+%systemroot%\system32\I3BP11_ABC.dll		
+%systemroot%\system32\I3BPinpad_ABC.dll		
+%systemroot%\system32\I3BSer_ABC.exe	
+%systemroot%\system32\I3BSvr_ABC.exe		
+%systemroot%\system32\I3BToken_ABC.dll	
+%systemroot%\system32\I3BUpdate_ABC.exe	
+%systemroot%\system32\I3BVD_ABC.dll	
+%systemroot%\system32\jcTDRN51.dll
+#握奇K宝
+%ProgramFiles%\95599 Certificate Tools\WatchData\ABCUsertool.exe
+%systemroot%\system32\ABC\ABC SAFE CSP v3.2\abchWTDT41.dll	
+%systemroot%\system32\ABC\ABC SAFE CSP v3.2\abcsWTDT41.dll		
+%systemroot%\system32\ABC\ABC SAFE CSP v3.2\clrcert.exe	
+%systemroot%\system32\ABC\ABC SAFE CSP v3.2\FindProcess.exe	
+%systemroot%\system32\ABC\ABC SAFE CSP v3.2\RegTrustedSite.exe	
+%systemroot%\system32\ABC\ABC SAFE CSP v3.2\TokenMgr.dll	
+%systemroot%\system32\ABC\ABC SAFE CSP v3.2\UIResC3.dll		
+%systemroot%\system32\ABC\ABC SAFE CSP v3.2\UIResE3.dll	
+%systemroot%\system32\ABC\ABC SAFE CSP v3.2\UIResT3.dll		
+%systemroot%\system32\ABC\ABC SAFE CSP v3.2\WDAlg.dll	
+%systemroot%\system32\ABC\ABC SAFE CSP v3.2\WDCertM_ABC.exe	
+%systemroot%\system32\ABC\ABC SAFE CSP v3.2\WDCSP03.dll		
+%systemroot%\system32\ABC\ABC SAFE CSP v3.2\wdcspui.dll	
+%systemroot%\system32\ABC\ABC SAFE CSP v3.2\WDEvent.dll
+%systemroot%\system32\ABC\ABC SAFE CSP v3.2\WDKeyMonitorABC.exe		
+%systemroot%\system32\ABC\ABC SAFE CSP v3.2\wdkmgr.dll	
+%systemroot%\system32\ABC\ABC SAFE CSP v3.2\wdpkcs.dll		
+%systemroot%\system32\ABC\ABC SAFE CSP v3.2\wdsafe3.dll	
+%systemroot%\system32\WD_NDP11_ABC.DLL
+#旋极K宝
+%ProgramFiles%\95599 Certificate Tools\Watertek\c20ukdrwsvr.exe
+%ProgramFiles%\95599 Certificate Tools\Watertek\Comyct20.exe
+%ProgramFiles%\95599 Certificate Tools\Watertek\ComyTool20.exe
+%systemroot%\system32\abchBJXJ31.dll	
+%systemroot%\system32\abcsBJXJ31.dll	
+%systemroot%\system32\ComyCP20.dll	
+%systemroot%\system32\ComyCPs20.dll
+
+%systemroot%\system32\hid.dll
+%systemroot%\System32\authui.dll
+%systemroot%\System32\imageres.dll
+%systemroot%\System32\VaultCredProvider.dll
+%systemroot%\System32\SmartcardCredentialProvider.dll
+%systemroot%\System32\BioCredProv.dll
+%systemroot%\System32\certCredProvider.dll
+%systemroot%\System32\abcPrintCtl4RA.dll	
+%systemroot%\System32\CEA_Crypt.dll
+%systemroot%\System32\cmyikdel.bat	
+%systemroot%\System32\cmyikreg.bat	
+%systemroot%\System32\NetSign.dll
+
+##建设银行
+%systemroot%\System32\WinSCard.dll
+%systemroot%\System32\netbios.dll
+%systemroot%\System32\mfc42u.dll
+%systemroot%\System32\input.dll
+%systemroot%\System32\NetSign.dll
+%systemroot%\System32\CertEnroll.dll
+%systemroot%\System32\lsasrv.dll
+#捷德
+%ProgramFiles%\StarSec\plugins\plugstarkey220.dll
+%ProgramFiles%\StarSec\PlugServer.exe
+%ProgramFiles%\StarSec\ssMgr_ccb.exe
+%systemroot%\system32\GDCCBUtil.dll	
+%systemroot%\system32\sscsp_ccb.csp		
+%systemroot%\system32\sscsp_ccb.dll		
+%systemroot%\system32\ssp11_ccb.dll	
+#普通版32
+%ProgramFiles%\CCBComponents\Detector\CCBNetSignCom.dll
+%ProgramFiles%\CCBComponents\Detector\Ccb_Cert_dmwz.dll
+%ProgramFiles%\CCBComponents\Detector\Ccb_Cert_hdzb.dll
+%ProgramFiles%\CCBComponents\Detector\Ccb_Cert_watchdata.dll
+%ProgramFiles%\CCBComponents\Detector\Ccb_detect_hdzb.dll
+%ProgramFiles%\CCBComponents\Detector\ccb_pin_cert.dll
+%ProgramFiles%\CCBComponents\Detector\HD_ClientChangeCert.dll
+%ProgramFiles%\CCBComponents\Detector\HD_Comm.dll
+%ProgramFiles%\CCBComponents\Detector\InfoScan.dll
+%ProgramFiles%\CCBComponents\uninst.exe
+%ProgramFiles%\CCBComponents\Detector\CCBClientChgCert.exe
+%ProgramFiles%\CCBComponents\Detector\CCBDetector.exe
+%ProgramFiles%\CCBComponents\Detector\建行网银盾管理工具V1.0.0.13.exe
+%ProgramFiles%\CCBComponents\DMWZ\CCBCertificate.exe
+%ProgramFiles%\CCBComponents\DMWZ\uninst.exe
+%ProgramFiles%\CCBComponents\HDZB\uninst.exe
+%ProgramFiles%\CCBComponents\HDZB\USBKeyTools.exe
+%ProgramFiles%\CCBComponents\WATCHDATA\CCBUsertool.exe
+%ProgramFiles%\CCBComponents\WATCHDATA\registerocx.exe
+%ProgramFiles%\CCBComponents\WATCHDATA\rootcert.exe
+%ProgramFiles%\CCBComponents\WATCHDATA\WD_Uninstall.exe
+#普通版64
+#零点击
+%ProgramFiles%\CCBComponents\Euninst.exe
+%ProgramFiles%\CCBComponents\uninst.exe
+%ProgramFiles%\CCBComponents\Detector\CCBClientChgCert.exe
+%ProgramFiles%\CCBComponents\Detector\CCBDetector.exe
+%ProgramFiles%\CCBComponents\Detector\CCBUSBTools.exe
+%ProgramFiles%\CCBComponents\DMWZ\CCBCertificate.exe
+%ProgramFiles%\CCBComponents\DMWZ\CCBInstaller.exe
+%ProgramFiles%\CCBComponents\DMWZ\uninst.exe
+%ProgramFiles%\CCBComponents\HDZB\CCIDDriverInstall.exe
+%ProgramFiles%\CCBComponents\HDZB\uninst.exe
+%ProgramFiles%\CCBComponents\HDZB\USBKeyTools.exe
+%ProgramFiles%\CCBComponents\Plugins\CARoot\AddCert.exe
+%ProgramFiles%\CCBComponents\Plugins\CARoot\certutil.exe
+%ProgramFiles%\CCBComponents\Plugins\CARoot\modutil.exe
+%ProgramFiles%\CCBComponents\WATCHDATA\CCBUsertool.exe
+%ProgramFiles%\CCBComponents\WATCHDATA\MDUninst_x86.exe
+%ProgramFiles%\CCBComponents\WATCHDATA\registCCID.exe
+%ProgramFiles%\CCBComponents\WATCHDATA\registerocx.exe
+%ProgramFiles%\CCBComponents\WATCHDATA\rootcert.exe
+%ProgramFiles%\CCBComponents\WATCHDATA\WDPKCSUtil.exe
+%ProgramFiles%\CCBComponents\WATCHDATA\WD_Uninstall.exe
+%ProgramFiles%\CCBComponents\DMWZ\CCBeSafe.sys
+%ProgramFiles%\CCBComponents\WATCHDATA\usbccid.sys
+%ProgramFiles%\CCBComponents\Detector\CCBNetSignCom.dll
+%ProgramFiles%\CCBComponents\Detector\CCBSignCom.dll
+%ProgramFiles%\CCBComponents\Detector\Ccb_Cert_dmwz.dll
+%ProgramFiles%\CCBComponents\Detector\Ccb_Cert_hdzb.dll
+%ProgramFiles%\CCBComponents\Detector\Ccb_Cert_watchdata.dll
+%ProgramFiles%\CCBComponents\Detector\Ccb_detect_hdzb.dll
+%ProgramFiles%\CCBComponents\Detector\ccb_pin_cert.dll
+%ProgramFiles%\CCBComponents\Detector\HD_ClientChangeCert.dll
+%ProgramFiles%\CCBComponents\Detector\HD_Comm.dll
+%ProgramFiles%\CCBComponents\Detector\InfoScan.dll
+%ProgramFiles%\CCBComponents\DMWZ\DM_CoInstaller.dll
+%ProgramFiles%\CCBComponents\Plugins\npCCBEnckey.dll
+%ProgramFiles%\CCBComponents\Plugins\npCCBInfoScan.dll
+%ProgramFiles%\CCBComponents\Plugins\npCCBNetSignCom.dll
+%ProgramFiles%\CCBComponents\Plugins\npWDImportCertCtrl.dll
+%ProgramFiles%\CCBComponents\Plugins\npwdkctrl.dll
+%ProgramFiles%\CCBComponents\Plugins\CARoot\freebl3.dll
+%ProgramFiles%\CCBComponents\Plugins\CARoot\libnspr4.dll
+%ProgramFiles%\CCBComponents\Plugins\CARoot\libplc4.dll
+%ProgramFiles%\CCBComponents\Plugins\CARoot\libplds4.dll
+%ProgramFiles%\CCBComponents\Plugins\CARoot\msvcr90.dll
+%ProgramFiles%\CCBComponents\Plugins\CARoot\nspr4.dll
+%ProgramFiles%\CCBComponents\Plugins\CARoot\nss3.dll
+%ProgramFiles%\CCBComponents\Plugins\CARoot\nssckbi.dll
+%ProgramFiles%\CCBComponents\Plugins\CARoot\nssdbm3.dll
+%ProgramFiles%\CCBComponents\Plugins\CARoot\nssutil3.dll
+%ProgramFiles%\CCBComponents\Plugins\CARoot\plc4.dll
+%ProgramFiles%\CCBComponents\Plugins\CARoot\plds4.dll
+%ProgramFiles%\CCBComponents\Plugins\CARoot\smime3.dll
+%ProgramFiles%\CCBComponents\Plugins\CARoot\softokn3.dll
+%ProgramFiles%\CCBComponents\Plugins\CARoot\sqlite3.dll
+%ProgramFiles%\CCBComponents\Plugins\CARoot\ssl3.dll
+%ProgramFiles%\CCBComponents\Detector\CCBEnckey.ocx
+%ProgramFiles%\CCBComponents\WATCHDATA\registerocx.exe
+
+%systemroot%\system32\CCBeSafe.sys	
+%systemroot%\system32\CCBKCAPI.dll	
+%systemroot%\system32\CCBKCSP.dll	
+%systemroot%\system32\CCBNetSignCom.dll	
+%systemroot%\system32\CCB_CIDC_CSP.dll	
+%systemroot%\system32\ccb_hdcsp.dll	
+%systemroot%\system32\GetID.ocx	
+%systemroot%\system32\HDCCBCtrl.dll	
+%systemroot%\system32\hdcsp.dll	
+%systemroot%\system32\HZ_CommSrv.exe	
+%systemroot%\system32\TerminateProcess_dmwz.dll
+%systemroot%\system32\WDCCB.dll	
+%systemroot%\system32\WDCCBpkcs11.dll	
+
+%systemroot%\system32\drivers\CCBeSafe.sys	
+%systemroot%\system32\drivers\usbccid.sys	
+%systemroot%\system32\watchdata\Watchdata CCB CSP v3.2\clrcert.exe	
+%systemroot%\system32\watchdata\Watchdata CCB CSP v3.2\hodll.dll	
+%systemroot%\system32\watchdata\Watchdata CCB CSP v3.2\TokenMgr.dll	
+%systemroot%\system32\watchdata\Watchdata CCB CSP v3.2\UIResC3.dll	
+%systemroot%\system32\watchdata\Watchdata CCB CSP v3.2\UIResE3.dll		
+%systemroot%\system32\watchdata\Watchdata CCB CSP v3.2\UIResT3.dll	
+%systemroot%\system32\watchdata\Watchdata CCB CSP v3.2\WDAlg.dll		
+%systemroot%\system32\watchdata\Watchdata CCB CSP v3.2\WDCertM_CCB.exe	
+%systemroot%\system32\watchdata\Watchdata CCB CSP v3.2\WDCSP03.dll	
+%systemroot%\system32\watchdata\Watchdata CCB CSP v3.2\wdcspui.dll
+%systemroot%\system32\watchdata\Watchdata CCB CSP v3.2\WDEvent.dll	
+%systemroot%\system32\watchdata\Watchdata CCB CSP v3.2\WDKeyMonitorCCB.exe	
+%systemroot%\system32\watchdata\Watchdata CCB CSP v3.2\wdkmgr.dll	
+%systemroot%\system32\watchdata\Watchdata CCB CSP v3.2\wdpkcs.dll		
+%systemroot%\system32\watchdata\Watchdata CCB CSP v3.2\wdsafe3.dll	
+
+#大明
+%systemroot%\system32\CCBKCAPI.dll		
+%systemroot%\system32\CCBKCSP.dll	
+%systemroot%\system32\CCBKCSP.sig	
+%systemroot%\system32\CCBK_CRYPT.dll	
+%systemroot%\system32\CCBK_EDI.dll		
+%systemroot%\system32\CCBK_UI.dll	
+%systemroot%\system32\CCBK_UNIDI.dll	
+%systemroot%\system32\ccbssleay.dll		
+%systemroot%\system32\GetID.ocx
+#华大
+%systemroot%\system32\CIDC_CSP.DLL		
+%systemroot%\system32\HDCCBCTRL.DLL		
+%systemroot%\system32\HDCSP.DLL	
+%systemroot%\system32\HZ_CommSrv.exe	
+#握奇
+%systemroot%\system32\WDCCB.dll	
+%systemroot%\system32\WDP11.dll	
+%systemroot%\system32\WatchData\Watchdata CCB CSP v3.2\clrcert.exe	
+%systemroot%\system32\WatchData\Watchdata CCB CSP v3.2\TokenMgr.dll	
+%systemroot%\system32\WatchData\Watchdata CCB CSP v3.2\UIResC3.dll
+%systemroot%\system32\WatchData\Watchdata CCB CSP v3.2\UIResE3.dll	
+%systemroot%\system32\WatchData\Watchdata CCB CSP v3.2\UIResT3.dll	
+%systemroot%\system32\WatchData\Watchdata CCB CSP v3.2\WDAlg.dll	
+%systemroot%\system32\WatchData\Watchdata CCB CSP v3.2\WDCertM_CCB.exe	
+%systemroot%\system32\WatchData\Watchdata CCB CSP v3.2\WDCSP03.dll	
+%systemroot%\system32\WatchData\Watchdata CCB CSP v3.2\wdcspui.dll		
+%systemroot%\system32\WatchData\Watchdata CCB CSP v3.2\WDEvent.dll	
+%systemroot%\system32\WatchData\Watchdata CCB CSP v3.2\WDKeyMonitorCCB.exe		
+%systemroot%\system32\WatchData\Watchdata CCB CSP v3.2\wdkmgr.dll		
+%systemroot%\system32\WatchData\Watchdata CCB CSP v3.2\wdpkcs.dll		
+%systemroot%\system32\WatchData\Watchdata CCB CSP v3.2\wdsafe3.dll	
+
+
+
+##华夏银行
+#飞天诚信
+%systemroot%\system32\ShuttleCsp11_3003_hxb.dll	
+%systemroot%\system32\ShuttleCsp11_3003_hxb_s.dll	
+%ProgramFiles%\华夏银行网银证书管理工具\ePassManager_3003_hxb.exe
+%ProgramFiles%\华夏银行网银证书管理工具\shuttle_certd3003_hxb.exe
+%ProgramFiles%\华夏银行网银证书管理工具\uninst.exe
+#明华澳汉
+%ProgramFiles%\MwDriver\InstallDriverDll.dll
+%ProgramFiles%\MwDriver\UnInstallDriver.exe
+%ProgramFiles%\MwDriver\UNWISE.EXE
+%ProgramFiles%\MwDriver\UsbKDev.sys
+%ProgramFiles%\PKCS11_client\Uninstall.exe
+%ProgramFiles%\PKCS11_client\XEkeyManUser.exe
+%systemroot%\system32\xpkcs11.dll
+%systemroot%\system32\drivers\usbkdev.sys
+
+
+%systemroot%\system32\e2acsp11_hxb_s.dll
+%systemroot%\system32\e2acsp11_hxb.dll
+
+
+##交通银行
+#07型
+%ProgramFiles%\BOCOM\07USBKey\bc_mwdrv_cidc.dll
+%ProgramFiles%\BOCOM\07USBKey\bc_mwdrv_ftgd.dll
+%ProgramFiles%\BOCOM\07USBKey\bc_unite_cidc.dll
+%ProgramFiles%\BOCOM\07USBKey\bc_unite_ftgd.dll
+%ProgramFiles%\BOCOM\07USBKey\check_sp.dll
+%ProgramFiles%\BOCOM\07USBKey\lang0404.dll
+%ProgramFiles%\BOCOM\07USBKey\lang0409.dll
+%ProgramFiles%\BOCOM\07USBKey\lang115c.dll
+%ProgramFiles%\BOCOM\Controls\NetSign.dll
+%ProgramFiles%\BOCOM\07USBKey\bcmgr.exe
+%ProgramFiles%\BOCOM\07USBKey\uninst.exe
+%ProgramFiles%\BOCOM\07USBKey\中国华大\JHRegCertTool.exe
+%ProgramFiles%\BOCOM\07USBKey\中国华大\JH_Cert_Service.exe
+%ProgramFiles%\ngsrv\epsng_certd_bc_2.exe
+%ProgramFiles%\ngsrv\ngslotd.exe
+%ProgramFiles%\ngsrv\CSPInstaller.dll
+%ProgramFiles%\ngsrv\slotmon\hidmon.dll
+%ProgramFiles%\ngsrv\slotmon\hidmon_gd.dll
+%ProgramFiles%\ngsrv\tsp\tsp_eps3k_hid_bc.dll
+%ProgramFiles%\ngsrv\tsp\tsp_ft11_hid_bc.dll
+%ProgramFiles%\ngsrv\tsp\tsp_sk220_hid_gd.dll
+%systemroot%\system32\bcp11v211_2.dll
+%systemroot%\system32\bc_switch.dll
+%systemroot%\system32\Cidcex_jzh.dll
+%systemroot%\system32\hdbcctlcore.dll
+%systemroot%\system32\hdevent_jh.dll
+%systemroot%\system32\HDIFD20B_jzh.dll
+%systemroot%\system32\hdpkcs11_jh.dll
+%systemroot%\system32\hd_acpew_jh.dll
+%systemroot%\system32\HD_CSP_JH.dll
+%systemroot%\system32\HD_DEVICE_JH.dll
+%systemroot%\system32\hd_gcew_jh.dll
+%systemroot%\system32\hd_gkpew_jh.dll
+%systemroot%\system32\HD_HDCOS480_JH.dll
+%systemroot%\system32\HD_HDCOS_JH.dll
+%systemroot%\system32\HD_Interface_JH.dll
+%systemroot%\system32\hd_template_enc_jh.dll
+%systemroot%\system32\hd_token_jh.dll
+%systemroot%\system32\HD_TYHD_JH.dll
+%systemroot%\system32\hd_win_info_jh.dll
+%systemroot%\system32\HsInst.dll
+%systemroot%\system32\jcin000102.dll
+%systemroot%\system32\ngcsp_bc_2.dll
+#飞天
+%ProgramFiles%\BOCOM\2010USBKey\FeiTian\AddTrustSite.exe
+%ProgramFiles%\BOCOM\2010USBKey\FeiTian\BOCOM_2010USBKey_FTE_mon.exe
+%ProgramFiles%\BOCOM\2010USBKey\FeiTian\uninst.exe
+%ProgramFiles%\BOCOM\2010USBKey\FeiTian\bocomDrv\dpinstx86.exe
+%ProgramFiles%\BOCOM\2010USBKey\FeiTian\bocomDrv\usbccid.sys
+%systemroot%\system32\bocom_csp11.dll	
+%systemroot%\system32\bocom_csp11_s.dll	
+#华大
+%ProgramFiles%\BOCOM\2010USBKey\HuaDa\BOCOM_2010USBKey_HDE_mon.exe
+%ProgramFiles%\BOCOM\2010USBKey\HuaDa\BOCOM_2010USBKey_HDE_mon_Srv.exe
+%ProgramFiles%\BOCOM\2010USBKey\HuaDa\HDADM_JH.exe
+%systemroot%\system32\HDADM_JH.exe	
+%systemroot%\system32\HDAPP_JH.dll	
+%systemroot%\system32\HDCOS_JH.dll	
+%systemroot%\system32\HDCSP_JH.dll	
+%systemroot%\system32\HDIFD_JH.dll		
+%systemroot%\system32\HDUNI_JH.exe		
+%systemroot%\system32\usbccid.sys	
+#捷德
+%ProgramFiles%\Common Files\InstallShield\Engine\6\Intel 32\IKernel.exe
+%ProgramFiles%\Common Files\InstallShield\Engine\6\Intel 32\ctor.dll
+%ProgramFiles%\Common Files\InstallShield\Engine\6\Intel 32\iuser.dll
+%ProgramFiles%\Common Files\InstallShield\Engine\6\Intel 32\objectps.dll
+%systemroot%\system32\CheckGD.exe	
+%systemroot%\system32\ChipCo.dll	
+%systemroot%\system32\ep2csp32_bc.dll	
+%systemroot%\system32\ep2kssp_bc.dll		
+%systemroot%\system32\ep2k_certd_bc.exe	
+%systemroot%\system32\ep2k_mon_bc.exe	
+%systemroot%\system32\ep2pk11_bc.dll		
+%systemroot%\system32\ft2kco.dll	
+%systemroot%\system32\NetSign.dll
+%systemroot%\system32\drivers\Chip_smc.sys	
+%systemroot%\system32\drivers\Chip_usb.sys	
+%systemroot%\system32\drivers\eps2kt1.sys	
+%systemroot%\system32\drivers\IC2KENUM.SYS	
+%systemroot%\system32\drivers\usbic2k.sys		
+%ProgramFiles%\BOCOM\GidiUSBKey\ep2k_certd_bc.exe
+%ProgramFiles%\BOCOM\GidiUSBKey\uninst.exe
+%ProgramFiles%\BOCOM\GidiUSBKey\Setup32-100.dll
+%ProgramFiles%\BOCOM\GidiUSBKey\Setup32-200.dll
+%systemroot%\system32\ChipCo.dll	
+%systemroot%\system32\ep2csp32_bc.dll	
+%systemroot%\system32\ep2pk11_bc.dll	
+%systemroot%\system32\netsign.dll	
+%systemroot%\system32\R5CoInst.dll
+%systemroot%\system32\drivers\Chip_smc.sys		
+%systemroot%\system32\drivers\Chip_usb.sys		
+%systemroot%\system32\drivers\eps2kt1.sys			
+%systemroot%\system32\drivers\smccard.sys
+
+
+
+
+
+
+
+%systemroot%\System32\hdbcctlcore.dll
+%systemroot%\System32\HDCSP_JH.dll
+%systemroot%\System32\HDIFD_JH.dll
+%systemroot%\System32\HDAPP_JH.dll
+%systemroot%\System32\HDCOS_JH.dll
+%ProgramFiles%\BOCOM\Controls\netsign.dll
+%systemroot%\System32\advpack.dll
+%systemroot%\System32\hdevent_jh.dll
+%systemroot%\System32\winbio.dll
+%systemroot%\System32\certcli.dll
+%systemroot%\System32\bc_switch.dll
+%systemroot%\System32\vaultcli.dll
+%systemroot%\System32\HD_CSP_JH.dll
+%systemroot%\System32\SPInf.dll
+%systemroot%\System32\HD_Interface_JH.dll
+%systemroot%\System32\HD_DEVICE_JH.dll
+%systemroot%\System32\HD_TYHD_JH.dll
+%systemroot%\System32\Cidcex_jzh.dll
+%systemroot%\System32\HD_HDCOS_JH.dll
+%systemroot%\System32\samsrv.dll
+%systemroot%\System32\lsasrv.dll
+%systemroot%\System32\sspisrv.dll
+%systemroot%\System32\spfileq.dll
+
+##民生银行
+#贵宾版飞天
+%systemroot%\System32\cmbcp11ft.dll	
+%systemroot%\System32\cmbc_csp_ft.dll
+%ProgramFiles%\ngsrv\tsp\tsp_cmbc_ft11.dll
+%ProgramFiles%\ngsrv\slotmon\hidmon.dll
+%ProgramFiles%\ngsrv\CSPInstaller.dll	
+#贵宾版海泰
+%systemroot%\system32\CertAdd.exe	
+%systemroot%\system32\CMBC_Ubao_HT.exe
+%systemroot%\system32\FoxHdd.dll	
+%systemroot%\system32\HKCommand.dll	
+%systemroot%\system32\HtPkcs11.dll	
+%systemroot%\system32\LYCMBCCSP.dll	
+%systemroot%\system32\RunCMBCExe.exe
+%systemroot%\system32\LYCMBCCSP\CheckFileVer.dll	
+%systemroot%\system32\LYCMBCCSP\GECSP.dll	
+%systemroot%\system32\LYCMBCCSP\KillApp.exe		
+#贵宾版恒宝
+%ProgramFiles%\CMBC HBSafe CSP v1.0\ASP.dll	
+%ProgramFiles%\CMBC HBSafe CSP v1.0\CMBC_Ubao_HB.exe	
+%ProgramFiles%\CMBC HBSafe CSP v1.0\CSP.dll		
+%ProgramFiles%\CMBC HBSafe CSP v1.0\CSP.sig	
+%ProgramFiles%\CMBC HBSafe CSP v1.0\HCSP.dll		
+%ProgramFiles%\CMBC HBSafe CSP v1.0\Rerun.exe	
+%ProgramFiles%\CMBC HBSafe CSP v1.0\TSP_BOT.dll	
+%ProgramFiles%\CMBC HBSafe CSP v1.0\TSP_COMM.dll	
+%ProgramFiles%\CMBC HBSafe CSP v1.0\TSP_HID.dll	
+%ProgramFiles%\CMBC HBSafe CSP v1.0\uninstall.exe
+%ProgramFiles%\CMBC HBSafe CSP v1.0\Language\L0C04UserRes.dll
+%ProgramFiles%\CMBC HBSafe CSP v1.0\Language\L0409UserRes.dll
+#贵宾版捷德
+%ProgramFiles%\ngsrv\tsp\tsp_sk220_hid_gd.dll
+%ProgramFiles%\ngsrv\slotmon\hidmon_gd.dll
+%ProgramFiles%\ngsrv\cmbc_certd_gd.exe
+%systemroot%\system32\CMBCCSP_GD.DLL
+%systemroot%\system32\cmbcp11gd.dll
+#贵宾升级版海泰
+%systemroot%\CheckFileVer.dll	
+%systemroot%\HKCommand_Temp.dll	
+%systemroot%\HTCloseCSP.exe	
+%systemroot%\Htcsp.dll	
+%systemroot%\HTCSPAct.dll	
+%systemroot%\HTCSPApi.dll	
+%systemroot%\HTCSPRel.dll	
+%systemroot%\HTDLLUI.dll	
+%systemroot%\HTHW.dll	
+%systemroot%\HTPCSCBase.dll	
+%systemroot%\HTUIReq.dll	
+%systemroot%\ht_cosapi.dll
+%ProgramFiles%\Haitai\HaiKey\CMBC_Vip.exe	
+%ProgramFiles%\Haitai\HaiKey\RunCMBCExe.exe	
+%ProgramFiles%\Haitai\HaiKey\driver\HKDriver32.exe
+%ProgramFiles%\Haitai\HaiKey\driver\HKDriver.dll
+#民生贵宾升级版恒宝
+%ProgramFiles%\HENGBAO\UranuSafe\UKeymgrPri.exe
+%ProgramFiles%\HENGBAO\UranuSafe\Drivers\hbcard.sys	
+%ProgramFiles%\HENGBAO\UranuSafe\Drivers\hbcoin.dll
+%ProgramFiles%\HENGBAO\UranuSafe\Drivers\HBKey.sys	
+%ProgramFiles%\HENGBAO\UranuSafe\Drivers\hbusb.sys	
+%ProgramFiles%\HENGBAO\UranuSafe\Drivers\UDISK.sys
+%systemroot%\capicom.dll	
+%systemroot%\ELCSP.dll	
+%systemroot%\ELUSBCSP.Dll	
+%systemroot%\FormatDll.dll	
+%systemroot%\HBGetATR.dll	
+%systemroot%\HBKeyCSP.dll	
+%systemroot%\HBKeyPKCS.dll	
+%systemroot%\HBPKCS11.dll	
+%systemroot%\HB_MATH.dll	
+%systemroot%\libeay32.dll	
+%systemroot%\UKeyBot.dll
+%systemroot%\UKeyPcsc.dll	
+%systemroot%\UKeyUsb.dll	
+%systemroot%\wdmstub.vxd	
+%systemroot%\WNASPI32.DLL
+%systemroot%\drivers\hbcard.sys	
+%systemroot%\drivers\HBKey.sys	
+%systemroot%\drivers\hbusb.sys
+#民生贵宾升级版捷德
+%ProgramFiles%\ngsrv\tsp\tsp_sk220_hid_gd.dll
+%ProgramFiles%\ngsrv\slotmon\hidmon_gd.dll
+%ProgramFiles%\ngsrv\cmbc_certd_gd.exe
+%systemroot%\system32\CMBCCSP_GD.DLL
+%systemroot%\system32\cmbcp11gd.dll
+
+%systemroot%\system32\mssign32.dll
+
+
+
+
+##招商银行
+%systemroot%\system32\PersonalBankMain.ocx
+%systemroot%\system32\Cmb_Pb_LiveUpdate.exe
+%systemroot%\system32\PBHttpComm.dll
+%systemroot%\system32\mui\0804\hhctrlui.dll
+%USERPROFILE%\CMB\PB40\SysProp\MSHttpComExt.dll
+%systemroot%\system32\hhctrl.ocx
+
+
+
+##工商银行
+#飞天二代
+%ProgramFiles%\ICBCEbankTools\Feitian-InterPass3000\certd_nps3000_ICBC.exe
+%ProgramFiles%\ICBCEbankTools\Feitian-InterPass3000\FtKeyManager.exe
+%systemroot%\system32\InterPass3000_ICBC_CSP11.dll	
+%systemroot%\system32\InterPass3000_ICBC_CSP11_s.dll	
+#华虹1
+%ProgramFiles%\ICBCEbankTools\HuaHong\bhdcukey.exe	
+%ProgramFiles%\ICBCEbankTools\HuaHong\regsvr32.exe	
+%ProgramFiles%\ICBCEbankTools\HuaHong\UKey2kAdmin.dll	
+%systemroot%\system32\bcsp0009.dll	
+%systemroot%\system32\bcsp0404.dll	
+%systemroot%\system32\bcsp0804.dll	
+%systemroot%\system32\bhdcCSP.dll	
+%systemroot%\system32\bhdccsp_old.dll		
+%systemroot%\system32\BHDCRegC.exe	
+%systemroot%\system32\BHDCUKSH.dll	
+%systemroot%\system32\CAccess.dll	
+%systemroot%\system32\certdll.dll	
+%systemroot%\system32\COMCTL32.OCX	
+%systemroot%\system32\hhjcid.dll	
+%systemroot%\system32\hhjcin.dll		
+%systemroot%\system32\hhjcinpub.dll		
+%systemroot%\system32\hhkpk11m.dll		
+%systemroot%\system32\hholdcheck.dll		
+%systemroot%\system32\hhukapi.dll		
+%systemroot%\system32\hhukcert.exe			
+%systemroot%\system32\HHUKcssh.dll		
+%systemroot%\system32\hhukey3ksh.dll			
+%systemroot%\system32\ukTool_chs.dll	
+%systemroot%\system32\uktool_cht.dll		
+%systemroot%\system32\uktool_EN.dll	
+%systemroot%\system32\hhdriver\HHInst.dll	
+%systemroot%\system32\hhdriver\HHInst_x86.dll	
+%systemroot%\system32\hhdriver\InstallDriver.exe	
+%systemroot%\system32\drivers\HHVRdr.sys
+#华虹2
+%ProgramFiles%\ICBCEbankTools\HuaHongLCD\MKeyManager02.exe	
+%ProgramFiles%\ICBCEbankTools\HuaHongLCD\ukTool_chs.dll	
+%ProgramFiles%\ICBCEbankTools\HuaHongLCD\uktool_cht.dll	
+%ProgramFiles%\ICBCEbankTools\HuaHongLCD\uktool_EN.dll	
+%systemroot%\system32\hhlcdview02	
+%systemroot%\system32\hhpkcs1102.dll	
+%systemroot%\system32\hhukcert02.exe	
+%systemroot%\system32\HHUKCSP02.dll	
+%systemroot%\system32\hhukey3k02.dll	
+%systemroot%\system32\HHUKSH02.dll
+#捷德
+%ProgramFiles%\ICBCEbankTools\G&D\StarKey\Setup.dll	
+%ProgramFiles%\ICBCEbankTools\G&D\StarKey\Setup_100.dll	
+%ProgramFiles%\ICBCEbankTools\G&D\StarKey\Setup_200.dll
+%ProgramFiles%\ICBCEbankTools\G&D\Management Utility\tokenadmin.exe
+%systemroot%\system32\aetcsss1.dll		
+%systemroot%\system32\aetdlss1.dll			
+%systemroot%\system32\aetjcss1.dll		
+%systemroot%\system32\aetpkss1.dll		
+%systemroot%\system32\aetpksse.dll		
+%systemroot%\system32\aetpkssw.dll		
+%systemroot%\system32\aetsprov.dll	
+%systemroot%\system32\ChipCo.dll		
+%systemroot%\system32\ft2kco.dll		
+%systemroot%\system32\msvcp71.dll		
+%systemroot%\system32\msvcr71.dll		
+%systemroot%\system32\scardspen.dll
+%systemroot%\system32\drivers\Chip_smc.sys	
+%systemroot%\system32\drivers\Chip_usb.sys	
+%systemroot%\system32\drivers\eps2kt1.sys	
+%systemroot%\system32\drivers\IC2KENUM.SYS	
+%systemroot%\system32\drivers\usbic2k.sys
+#金邦达
+%systemroot%\system32\CertReg.dll	
+%systemroot%\system32\CSPnet.dll	
+%systemroot%\system32\gemstrmw.exe		
+%systemroot%\system32\GPKPCSC.dll		
+%systemroot%\system32\ICBCPersUnins.exe		
+%systemroot%\system32\jc_setup.dll	
+%systemroot%\system32\MsnPass.dll	
+%systemroot%\system32\Netcapi.dll		
+%systemroot%\system32\NetSignAPI.dll		
+%systemroot%\system32\NetSignText.ocx	
+%systemroot%\system32\NPCard.dll	
+%systemroot%\system32\npOpenStore.dll		
+%systemroot%\system32\NPPKCS11.dll		
+%systemroot%\system32\RegCsp.exe		
+%systemroot%\system32\RsaFun.dll		
+%systemroot%\system32\SignText.dll	
+%systemroot%\system32\_IsUser.dll	
+%ProgramFiles%\Gemplus\ReaderTools\Installer\GemPCKey\GKeyUSB.SYS	
+%ProgramFiles%\Gemplus\ReaderTools\Installer\GemPCKeyInstaller.dll	
+%ProgramFiles%\Gemplus\ReaderTools\Installer\GetStartedInstaller.dll	
+%ProgramFiles%\Gemplus\ReaderTools\Installer\Resources.dll	
+%ProgramFiles%\Gemplus\ReaderTools\Installer\setup.exe	
+%ProgramFiles%\netting\ICBC Personal Internet Banking Certificate Tools\NPPKCS11.dll
+%ProgramFiles%\netting\ICBC Personal Internet Banking Certificate Tools\Uninstall.exe		
+%ProgramFiles%\netting\ICBC Personal Internet Banking Certificate Tools\UserTool.exe
+%ProgramFiles%\Common Files\InstallShield\Professional\RunTime\09\00\Intel32\ctor.dll	
+%ProgramFiles%\Common Files\InstallShield\Professional\RunTime\09\00\Intel32\DotNetInstaller.exe	
+%ProgramFiles%\Common Files\InstallShield\Professional\RunTime\09\00\Intel32\iGdi.dll	
+%ProgramFiles%\Common Files\InstallShield\Professional\RunTime\09\00\Intel32\iKernel.dll		
+%ProgramFiles%\Common Files\InstallShield\Professional\RunTime\09\00\Intel32\iscript.dll	
+%ProgramFiles%\Common Files\InstallShield\Professional\RunTime\09\00\Intel32\iuser.dll	
+%ProgramFiles%\Common Files\InstallShield\Professional\RunTime\09\00\Intel32\Setup.dll
+#金邦达2006
+%systemroot%\system32\ghidwsc.dll	
+%systemroot%\system32\GSCDLG.dll		
+%systemroot%\system32\gwscm.dll
+%systemroot%\system32\mfc71.dll	
+%systemroot%\system32\mfc71u.dll	
+%systemroot%\system32\RRM.dll	
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\BIN\gck2014x.dll
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\BIN\gclib.dll
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\BIN\GemPPM.dll
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\BIN\ghidwsc.dll
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\BIN\GSafeCsp.dll
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\BIN\GSCDLG.dll
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\BIN\GUICore.dll
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\BIN\gwscm.dll
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\BIN\pk2GemID.dll
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\BIN\RRM.dll
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\BIN\SignatureChecker.dll
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\GemPCKey\GemPCKeyInstaller.dll
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\GemPCKey\GetStartedInstaller.dll
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\GemPCKey\MFC42.DLL
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\GemPCKey\MSUpdatesInstaller.dll
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\GemPCKey\Resources.dll
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\GemPCKey\SCBASE\SCardDat.dll
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\GemPCKey\SCBASE\SCardDlg.dll
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\GemPCKey\SCBASE\SCardMgr.dll
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\GemPCKey\SCBASE\SCardSrv.dll
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\GemPCKey\SCBASE\SCNtvSSP.dll
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\GemPCKey\SCBASE\WinSCard.dll
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\GemPCKey\GemPCKey\GKeyUSB.sys
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\GemPCKey\GemPCKey\9x_ME\GKEY98ME.SYS
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\GemPCKey\GemPCKey\9x_ME\WDMSTUB.SYS
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\GemPCKey\GemPCKey\Serv2003\GKeyUSB.sys
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\GemPCKey\SCBASE\SMCLIB.SYS
+%ProgramFiles%\ICBCEbankTools\Gemplus\unins000.exe
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\BIN\RegTool.exe
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\BIN\RRMSVR.exe
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\BIN\SetEnv.exe
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\BIN\StopReg.exe
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\BIN\ToolBox.exe
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\GemPCKey\Setup.exe
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\GemPCKey\GetStarted\gemstrmw.exe
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\GemPCKey\SCBASE\SCardSvr.exe
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\GemPCKey\GemPCKey\9x_ME\SMCSTUB.VXD
+%ProgramFiles%\ICBCEbankTools\Gemplus\GemSafe Libraries\GemPCKey\SCBASE\SMCLIB.VXD
+%ProgramFiles%\Gemplus\Common\Resources\LocHub.dll
+#明华二代
+%ProgramFiles%\ICBCEbankTools\MingWah\MWICBCUKeyToolU.exe
+%ProgramFiles%\ICBCEbankTools\MingWah\MWREGICBC.exe
+%systemroot%\system32\icbccsps.dll	
+%systemroot%\system32\ICBCPkcs11_v1.DLL
+#天地融二代
+%ProgramFiles%\ICBCEbankTools\Tendyron\d4TOOL_ICBC.EXE
+%systemroot%\system32\D4CSP_ICBC.dll	
+%systemroot%\system32\D4CSP_ICBCs.dll	
+%systemroot%\system32\D4Dev03_ICBC.dll	
+%systemroot%\system32\D4Dev05_ICBC.dll	
+%systemroot%\system32\D4Mon_ICBC.exe	
+%systemroot%\system32\D4P11_ICBC.dll	
+%systemroot%\system32\D4Pinpad_ICBC.dll	
+%systemroot%\system32\D4Ser_ICBC.exe	
+%systemroot%\system32\D4Svr_ICBC.exe
+%systemroot%\system32\D4Token_ICBC.dll	
+
+
+
+
+
+
+
+
+%systemroot%\system32\D4CSP_ICBC.dll
+%systemroot%\system32\D4Token_ICBC.dll
+%systemroot%\system32\D4Pinpad_ICBC.dll
+%systemroot%\system32\D4Dev03_ICBC.dll
+%systemroot%\system32\D4Dev05_ICBC.dll
+%systemroot%\system32\D4P11_ICBC.dll
+%systemroot%\system32\D4CSP_ICBCs.dll
+
+##浦发银行
+#天地融
+%systemroot%\system32\OnKeyCSPs_spdb.dll	
+%systemroot%\system32\OnKeyCsp_spdb.dll	
+%systemroot%\system32\OnKeyDev01_spdb.dll	
+%systemroot%\system32\OnKeyP11_spdb.dll	
+%systemroot%\system32\OnKeyPinpad_spdb.dll		
+%systemroot%\system32\OnKeySvr_spdb.exe	
+%systemroot%\system32\OnKeyToken_spdb.dll
+#飞天诚信
+%systemroot%\system32\SPDBP11.dll	
+%systemroot%\system32\SPDBP11_s.dll
+#捷德
+%systemroot%\system32\aetcsss1.dll	
+%systemroot%\system32\aetdlss1.dll	
+%systemroot%\system32\aetpkss1.dll	
+%systemroot%\system32\aetpksse.dll		
+%systemroot%\system32\aetpkssw.dll	
+%systemroot%\system32\ft2kco.dll	
+%systemroot%\system32\SafeSignCertReg.exe
+%systemroot%\system32\drivers\eps2kt1.sys		
+%systemroot%\system32\drivers\IC2KENUM.SYS	
+%systemroot%\system32\drivers\usbic2k.SYS	
+%ProgramFiles%\SafeSign for SPDB\SafeSign\StarKey100\instdrv.dll
+
+##中信银行
+#飞天诚信
+%systemroot%\system32\CITICCSP.dat	
+%systemroot%\system32\CITICCSP.DLL	
+%systemroot%\system32\citicp11.dll	
+%systemroot%\system32\R6CoInst.dll
+%ProgramFiles%\CITICBank\FeiTianCheck_SCard.dll	
+%ProgramFiles%\CITICBank\check_sp.dll	
+%ProgramFiles%\CITICBank\UnistMW.dll
+%ProgramFiles%\CITICBank\citic_certd.exe
+%ProgramFiles%\ngsrv\ngslotd.exe
+%ProgramFiles%\ngsrv\slotmon\hidmon.dll
+%ProgramFiles%\ngsrv\slotmon\scardmon.dll
+%ProgramFiles%\ngsrv\tsp\tsp_eps3k_sc_citic.dll	
+%ProgramFiles%\ngsrv\tsp\tsp_ft11_hid_31.dll	
+%ProgramFiles%\ngsrv\tsp\tsp_ft11_hid_citic.dll
+#捷德
+%ProgramFiles%\ngsrv\CSPInstaller.dll
+%ProgramFiles%\ngsrv\tsp\tsp_sk220_hid_gd.dll
+%ProgramFiles%\ngsrv\slotmon\hidmon_gd.dll
+%systemroot%\system32\CITICCSP_GD.DLL	
+%systemroot%\system32\citicp11gd.dll	
+
+##北京农村商业
+#飞天诚信
+%systemroot%\system32\bjrcb_11.dll
+%systemroot%\system32\ngcsp_bjrcb.dat
+%systemroot%\system32\ngcsp_bjrcb.dll
+%ProgramFiles%\ngsrv\CSPInstaller.dll
+%ProgramFiles%\ngsrv\epsng_certd_bjrcb.exe
+%ProgramFiles%\ngsrv\ngslotd.exe
+%ProgramFiles%\ngsrv\tsp\tsp_eps3k_hid_bjns.dll
+%ProgramFiles%\ngsrv\tsp\tsp_ft11_hid_bjrcb.dll
+#恒宝志久
+%systemroot%\system32\drivers\vserion.dll
+%ProgramFiles%\Cryptography\ZHIJIU SZD32A CSP1.0.0\ASP.dll
+%ProgramFiles%\Cryptography\ZHIJIU SZD32A CSP1.0.0\CSP.dll
+%ProgramFiles%\Cryptography\ZHIJIU SZD32A CSP1.0.0\HCSP.Dll
+%ProgramFiles%\Cryptography\ZHIJIU SZD32A CSP1.0.0\L0804CspRes.dll
+%ProgramFiles%\Cryptography\ZHIJIU SZD32A CSP1.0.0\TSP_BOT.dll
+%ProgramFiles%\Cryptography\ZHIJIU SZD32A CSP1.0.0\TSP_COMM.dll
+%ProgramFiles%\Cryptography\ZHIJIU SZD32A CSP1.0.0\TSP_HID.dll
+
+##北京银行
+#明华
+%systemroot%\system32\BCA_ALL.dll
+%systemroot%\system32\bca_dll.dll
+%systemroot%\system32\BjcaKey_MH.dll
+%systemroot%\system32\BJCASecCOM.dll
+%systemroot%\system32\BjcaUserCtrl.ocx
+%systemroot%\system32\BjcaVerson.ocx
+%systemroot%\system32\BJCA_API.dll
+%systemroot%\system32\BJCA_ConfigManage.dll
+%systemroot%\system32\BJCA_ConfigManageCall.dll
+%systemroot%\system32\certc_all.dll
+%systemroot%\system32\CNG_DLL.dll
+%systemroot%\system32\InPutCtrl.ocx
+%systemroot%\system32\swpkcs11.dll
+%systemroot%\system32\USBKeyPnPActiveX.ocx
+%systemroot%\system32\xcsp_eclib.dll
+
+#bjca02
+%systemroot%\system32\BCA_ALL.dll
+%systemroot%\system32\bca_dll.dll
+%systemroot%\system32\BjBankUpdateCtrl.ocx
+%systemroot%\system32\bjcacsp11_ft11.dll
+%systemroot%\system32\bjcacsp11_ft11_s.dll
+%systemroot%\system32\bjcakey.dll
+%systemroot%\system32\bjcakey_FT11.dll
+%systemroot%\system32\BJCASecCOM.dll
+%systemroot%\system32\BjcaUserCtrl.ocx
+%systemroot%\system32\BjcaVerson.ocx
+%systemroot%\system32\BJCA_API.dll
+%systemroot%\system32\BJCA_ConfigManage.dll
+%systemroot%\system32\BJCA_ConfigManageCall.dll
+%systemroot%\system32\certc_all.dll
+%systemroot%\system32\CNG_DLL.dll
+%systemroot%\system32\InPutCtrl.ocx
+%systemroot%\system32\swpkcs11.dll
+%systemroot%\system32\USBKeyPnPActiveX.ocx
+%ProgramFiles%\Feitian\BJCA-FT11\bjcacertd_ft11.exe
+
+
+##深圳发展
+#飞天诚信
+%systemroot%\system32\sdbCsp11.dll
+%systemroot%\system32\sdbCsp11_s.dll
+#捷德
+%systemroot%\system32\aetcsss1.dll
+%systemroot%\system32\aetdlss1.dll
+%systemroot%\system32\aetjcss1.dll
+%systemroot%\system32\aetpkss1.dll
+%systemroot%\system32\aetpksse.dll
+%systemroot%\system32\aetpkssw.dll
+%systemroot%\system32\aetsprov.dll
+%systemroot%\system32\ChipCo.dll
+%systemroot%\system32\ft2kco.dll
+%systemroot%\system32\GDClearKey.exe
+%systemroot%\system32\GDStartIE.exe
+%systemroot%\system32\scardspen.dll
+%systemroot%\system32\drivers\Chip_smc.sys
+%systemroot%\system32\drivers\Chip_usb.sys
+%systemroot%\system32\drivers\eps2kt1.sys
+%systemroot%\system32\drivers\IC2KENUM.SYS
+%systemroot%\system32\drivers\usbic2k.sys
+%ProgramFiles%\GDChina\Setup.dll
+%ProgramFiles%\GDChina\Setup_100.dll
+%ProgramFiles%\GDChina\Setup_200.dll
+%ProgramFiles%\GDChina\P12Import.dll
+%ProgramFiles%\GDChina\TokenToolcn.exe
+
+%systemroot%\system32\iesign.ocx
+%systemroot%\system32\sscsp_sdb.dll
+%systemroot%\system32\ssp11_sdb.dll
+%ProgramFiles%\StarSec\PlugServer.exe
+%ProgramFiles%\StarSec\ssMgr_sdb.exe
+%ProgramFiles%\StarSec\plugins\plugstarkey220.dll
+#天地融
+%systemroot%\system32\OnKeyCSPs_sdb.dll
+%systemroot%\system32\OnKeyCSP_sdb.dll
+%systemroot%\system32\OnKeyP11_sdb.dll
+%systemroot%\system32\OnKeyDev01_sdb.dll
+%systemroot%\system32\OnKeyPinpad_sdb.dll
+%systemroot%\system32\OnKeySvr_sdb.exe
+%systemroot%\system32\OnKeyToken_sdb.dll
+%systemroot%\system32\UpOnkey_SDB.dll
+%ProgramFiles%\OnKey_sdb\OnKeyTool.exe
+#握奇
+%ProgramFiles%\WatchData\WatchSafe\Win98\wdkeyifd.sys
+%ProgramFiles%\WatchData\WatchSafe\Win98\WDSetupAPI.dll
+%ProgramFiles%\WatchData\WatchSafe\Win98\wdtoken.sys
+%ProgramFiles%\WatchData\WatchSafe\InputCert.exe
+%ProgramFiles%\WatchData\WatchSafe\jitenc.dll
+%ProgramFiles%\WatchData\WatchSafe\SCard.dll
+%ProgramFiles%\WatchData\WatchSafe\USER_watchsafe.exe
+%ProgramFiles%\WatchData\WatchSafe\wdcrwv.dll
+%ProgramFiles%\WatchData\WatchSafe\wdcsp.dll
+%ProgramFiles%\WatchData\WatchSafe\WDPFX.dll
+%ProgramFiles%\WatchData\WatchSafe\WDSCard.dll
+%ProgramFiles%\WatchData\WatchSafe\Win2k\wdkey.sys
+%ProgramFiles%\WatchData\WatchSafe\Win2k\WDSetupAPI.dll
+%systemroot%\system32\AlgLib.dll
+%systemroot%\system32\InstCSP.exe
+%systemroot%\system32\NFCA.dll
+%systemroot%\system32\UIResC.dll
+%systemroot%\system32\UIResE.dll
+%systemroot%\system32\WDAlg.dll
+%systemroot%\system32\WDCRWV.DLL
+%systemroot%\system32\wdcsp02.dll
+%systemroot%\system32\WDPFX.dll
+%systemroot%\system32\wdsafe02.dll
+%systemroot%\system32\WDSAFEUI.dll
+%systemroot%\system32\WDSCard.dll
+%systemroot%\system32\WDSFKM.dll
+%systemroot%\system32\WSRegC.exe
+%systemroot%\system32\drivers\wdkeyifd.sys
+%systemroot%\system32\drivers\wdtoken.sys
+
+##中国邮政
+#飞天
+%systemroot%\system32\PSBCP11V211.dll
+%systemroot%\system32\PSBCP11V211_s.dll
+%systemroot%\system32\VistaTools.dll
+%ProgramFiles%\PSBC\飞天\certd_nps3000_PSBC.exe
+#恒宝
+%ProgramFiles%\HengBao for PSBC\ASP.dll
+%ProgramFiles%\HengBao for PSBC\CSP.dll
+%ProgramFiles%\HengBao for PSBC\HCSP.dll
+%ProgramFiles%\HengBao for PSBC\TSP_BOT.dll
+%ProgramFiles%\HengBao for PSBC\TSP_COMM.dll
+%ProgramFiles%\HengBao for PSBC\User.exe
+#天诚盛业
+%systemroot%\system32\TCSP11_PSBC.dll
+%ProgramFiles%\Techshino\KillProcess.exe
+%ProgramFiles%\Techshino\regrootcert.exe
+%ProgramFiles%\Techshino\TCSUTool.exe
+%systemroot%\system32\Techshino\Techshino for PSBC\clrcert.exe
+%systemroot%\system32\Techshino\Techshino for PSBC\FindProcess.exe
+%systemroot%\system32\Techshino\Techshino for PSBC\hodll.dll
+%systemroot%\system32\Techshino\Techshino for PSBC\skpress.dll
+%systemroot%\system32\Techshino\Techshino for PSBC\TCSAlg.dll
+%systemroot%\system32\Techshino\Techshino for PSBC\TCSCSPUI.dll
+%systemroot%\system32\Techshino\Techshino for PSBC\TCSEvent.dll
+%systemroot%\system32\Techshino\Techshino for PSBC\TCSkmgr.dll
+%systemroot%\system32\Techshino\Techshino for PSBC\TCSMNPSBC.exe
+%systemroot%\system32\Techshino\Techshino for PSBC\TCSPKCS.dll
+%systemroot%\system32\Techshino\Techshino for PSBC\TCSrvPSBC.exe
+%systemroot%\system32\Techshino\Techshino for PSBC\tcsyCSP03.DLL
+%systemroot%\system32\Techshino\Techshino for PSBC\tcsysafe.dll
+%systemroot%\system32\Techshino\Techshino for PSBC\TokenMgr.dll
+%systemroot%\system32\Techshino\Techshino for PSBC\UIResC3.dll
+%systemroot%\system32\Techshino\Techshino for PSBC\UIResE3.dll
+%systemroot%\system32\Techshino\Techshino for PSBC\UIResT3.dll
+#天地融
+%ProgramFiles%\Tendyron Tools\Tendyron\OnKey193_PSBC\admin tools\OnKeyToolAdm_PSBP.exe
+%systemroot%\system32\OnKeyCom_PSBP.dll
+%systemroot%\system32\OnKeyCSP_PSBP.dll
+%systemroot%\system32\OnKeyCSP_PSBPs.dll
+%systemroot%\system32\OnKeyDev10_PSBP.dll
+%systemroot%\system32\OnKeyDev11_PSBP.dll
+%systemroot%\system32\OnKeyDev40_PSBP.dll
+%systemroot%\system32\OnKeyDev41_PSBP.dll
+%systemroot%\system32\OnKeyMon_PSBP.exe
+%systemroot%\system32\OnKeyP11_PSBP.dll
+%systemroot%\system32\OnKeyPinpad_PSBP.dll
+%systemroot%\system32\OnKeyReg_PSBP.exe
+%systemroot%\system32\OnKeySer_PSBP.exe
+%systemroot%\system32\OnKeyToken_PSBP.dll
+
+#wmi
+%systemroot%\system32\ntdsapi.dll
+%systemroot%\system32\wbem\fastprox.dll
+%systemroot%\system32\wbem\wbemsvc.dll
+%systemroot%\system32\wbem\wbemcomn.dll
+%systemroot%\system32\wbem\wbemprox.dll
+%systemroot%\system32\advpack.dll
+%systemroot%\system32\imageres.dll
+%systemroot%\system32\mshtmler.dll
+%systemroot%\system32\pstorec.dll
+%systemroot%\system32\ntprint.dll
+%systemroot%\system32\d2d1.dll
+%systemroot%\system32\PEERDIST.DLL
+%systemroot%\system32\activeds.dll
+%systemroot%\system32\actxprxy.dll
+%systemroot%\system32\adsldpc.dll
+%systemroot%\system32\advapi32.dll
+%systemroot%\system32\apphelp.dll
+%systemroot%\system32\atl.dll
+%systemroot%\system32\audiodev.dll
+%systemroot%\system32\audioses.dll
+%systemroot%\system32\avrt.dll
+%systemroot%\system32\bcrypt.dll
+%systemroot%\system32\bcryptprimitives.dll
+%systemroot%\system32\browcli.dll
+%systemroot%\system32\browselc.dll
+%systemroot%\system32\browseui.dll
+%systemroot%\system32\cabinet.dll
+%systemroot%\system32\cfgmgr32.dll
+%systemroot%\system32\c_g18030.dll
+%systemroot%\system32\clbcatq.dll
+%systemroot%\system32\comctl32.dll
+%systemroot%\system32\comdlg32.dll
+%systemroot%\system32\comres.dll
+%systemroot%\system32\credssp.dll
+%systemroot%\system32\credui.dll
+%systemroot%\system32\crypt32.dll
+%systemroot%\system32\cryptbase.dll
+%systemroot%\system32\cryptnet.dll
+%systemroot%\system32\cryptsp.dll
+%systemroot%\system32\cryptui.dll
+%systemroot%\system32\cscapi.dll
+%systemroot%\system32\cscdll.dll
+%systemroot%\system32\cscui.dll
+%systemroot%\system32\davclnt.dll
+%systemroot%\system32\davhlpr.dll
+%systemroot%\system32\dciman32.dll
+%systemroot%\system32\ddraw.dll
+%systemroot%\system32\ddrawex.dll
+%systemroot%\system32\devobj.dll
+%systemroot%\system32\devrtl.dll
+%systemroot%\system32\dfscli.dll
+%systemroot%\system32\dhcpcsvc6.dll
+%systemroot%\system32\dhcpcsvc.dll
+%systemroot%\system32\dispex.dll
+%systemroot%\system32\dnsapi.dll
+%systemroot%\system32\drmclien.dll
+%systemroot%\system32\drprov.dll
+%systemroot%\system32\dsound.dll
+%systemroot%\system32\dssenh.dll
+%systemroot%\system32\dtsh.dll
+%systemroot%\system32\dui70.dll
+%systemroot%\system32\duser.dll
+%systemroot%\system32\dwmapi.dll
+%systemroot%\system32\dxtmsft.dll
+%systemroot%\system32\dxtrans.dll
+%systemroot%\system32\ehstorapi.dll
+%systemroot%\system32\ehstorshell.dll
+%systemroot%\system32\explorerframe.dll
+%systemroot%\system32\faultrep.dll
+%systemroot%\system32\fdproxy.dll
+%systemroot%\system32\fdwcn.dll
+%systemroot%\system32\fdwnet.dll
+%systemroot%\system32\firewallapi.dll
+%systemroot%\system32\fontsub.dll
+%systemroot%\system32\fundisc.dll
+%systemroot%\system32\fwpuclnt.dll
+%systemroot%\system32\gdi32.dll
+%systemroot%\system32\gpapi.dll
+%systemroot%\system32\hlink.dll
+%systemroot%\system32\hnetcfg.dll
+%systemroot%\system32\iconcodecservice.dll
+%systemroot%\system32\ieframe.dll
+%systemroot%\system32\ieframe.dll.mui
+%systemroot%\system32\iepeer.dll
+%systemroot%\system32\iepeers.dll
+%systemroot%\system32\iertutil.dll
+
+%systemroot%\system32\imagehlp.dll
+%systemroot%\system32\imageres.dll
+%systemroot%\system32\imgutil.dll
+%systemroot%\system32\imm32.dll
+%systemroot%\system32\imsc40a.ime
+%systemroot%\system32\inetcpl.cpl
+%systemroot%\system32\iphlpapi.dll
+%systemroot%\system32\jschs.dll
+%systemroot%\system32\jscript.dll
+%systemroot%\system32\kernel32.dll
+%systemroot%\system32\kernelbase.dll
+%systemroot%\system32\ksuser.dll
+%systemroot%\system32\linkinfo.dll
+%systemroot%\system32\lpk.dll
+%systemroot%\system32\midimap.dll
+%systemroot%\system32\mlang.dll
+%systemroot%\system32\mmdevapi.dll
+%systemroot%\system32\mpr.dll
+%systemroot%\system32\msacm32.dll
+%systemroot%\system32\msacm32.drv
+%systemroot%\system32\msasn1.dll
+%systemroot%\system32\mscms.dll
+%systemroot%\system32\mscoree.dll
+%systemroot%\system32\msctf.dll
+%systemroot%\system32\msctfime.ime
+%systemroot%\system32\msftedit.dll
+%systemroot%\system32\msgina.dll
+%systemroot%\system32\mshtml.dll
+%systemroot%\system32\mshtmled.dll
+%systemroot%\system32\mshtml.tlb 
+%systemroot%\system32\msimg32.dll
+%systemroot%\system32\msimtf.dll
+%systemroot%\system32\msls31.dll
+%systemroot%\system32\msratelc.dll
+%systemroot%\system32\msrating.dll
+%systemroot%\system32\msshsq.dll
+%systemroot%\system32\mssprxy.dll
+%systemroot%\system32\msv1_0.dll
+%systemroot%\system32\msvcrt.dll
+%systemroot%\system32\mswsock.dll
+%systemroot%\system32\msxml3.dll
+%systemroot%\system32\msxml3r.dll
+%systemroot%\system32\msxml6.dll
+%systemroot%\system32\msxml6r.dll
+%systemroot%\system32\mydocs.dll
+%systemroot%\system32\napinsp.dll
+%systemroot%\system32\ncrypt.dll
+%systemroot%\system32\netapi32.dll
+%systemroot%\system32\netmsg.dll
+%systemroot%\system32\netprofm.dll
+%systemroot%\system32\netrap.dll
+%systemroot%\system32\netui0.dll
+%systemroot%\system32\netui1.dll
+%systemroot%\system32\netutils.dll
+%systemroot%\system32\networkexplorer.dll
+%systemroot%\system32\networkitemfactory.dll
+%systemroot%\system32\nlaapi.dll
+%systemroot%\system32\normaliz.dll
+%systemroot%\system32\npmproxy.dll
+%systemroot%\system32\nsi.dll
+%systemroot%\system32\ntdll.dll
+%systemroot%\system32\ntlanman.dll
+%systemroot%\system32\ntmarta.dll
+%systemroot%\system32\ntshrui.dll
+%systemroot%\system32\odbc32.dll
+%systemroot%\system32\odbcint.dll
+%systemroot%\system32\ole32.dll
+%systemroot%\system32\oleacc.dll
+%systemroot%\system32\oleaccrc.dll
+%systemroot%\system32\oleaut32.dll
+%systemroot%\system32\p2pcollab.dll
+%systemroot%\system32\pintlgnt.ime
+%systemroot%\system32\pngfilt.dll
+%systemroot%\system32\pnrpnsp.dll
+%systemroot%\system32\portabledeviceapi.dll
+%systemroot%\system32\powrprof.dll
+%systemroot%\system32\printui.dll
+
+%systemroot%\system32\profapi.dll
+%systemroot%\system32\propsys.dll
+%systemroot%\system32\psapi.dll
+%systemroot%\system32\puiapi.dll
+%systemroot%\system32\qagentrt.dll
+%systemroot%\system32\rasadhlp.dll
+%systemroot%\system32\rasapi32.dll
+%systemroot%\system32\rasman.dll
+%systemroot%\system32\rdpendp.dll
+%systemroot%\system32\rdpsnd.dll
+%systemroot%\system32\riched20.dll
+%systemroot%\system32\rpcrt4.dll
+%systemroot%\system32\rpcrtremote.dll
+%systemroot%\system32\rpcss.dll
+%systemroot%\system32\rsaenh.dll
+%systemroot%\system32\rtutils.dll
+%systemroot%\system32\samcli.dll
+%systemroot%\system32\samlib.dll
+%systemroot%\system32\schannel.dll
+%systemroot%\system32\searchfolder.dll
+%systemroot%\system32\sechost.dll
+%systemroot%\system32\secur32.dll
+%systemroot%\system32\sensapi.dll
+%systemroot%\system32\setupapi.dll
+%systemroot%\system32\shdoclc.dll
+%systemroot%\system32\shdocvw.dll
+%systemroot%\system32\shell32.dll
+%systemroot%\system32\shellstyle.dll
+%systemroot%\system32\shgina.dll
+%systemroot%\system32\shlwapi.dll
+%systemroot%\system32\slc.dll
+%systemroot%\system32\srvcli.dll
+%systemroot%\system32\sspicli.dll
+%systemroot%\system32\stdole2.tlb 
+%systemroot%\system32\structuredquery.dll
+%systemroot%\system32\sxs.dll
+%systemroot%\system32\tapi32.dll
+%systemroot%\system32\thumbcache.dll
+%systemroot%\system32\tzres.dll
+%systemroot%\system32\urlmon.dll
+%systemroot%\system32\user32.dll
+%systemroot%\system32\userenv.dll
+%systemroot%\system32\usp10.dll
+%systemroot%\system32\uxtheme.dll
+%systemroot%\system32\verclsid.exe
+%systemroot%\system32\version.dll
+%systemroot%\system32\wcnapi.dll
+%systemroot%\system32\wdmaud.drv
+%systemroot%\system32\wdscore.dll
+%systemroot%\system32\webcheck.dll
+%systemroot%\system32\webio.dll
+%systemroot%\system32\wevtapi.dll
+%systemroot%\system32\winabc.ime
+%systemroot%\system32\windowscodecs.dll
+%systemroot%\system32\winhttp.dll
+%systemroot%\system32\wininet.dll
+%systemroot%\system32\winlogon.exe 
+%systemroot%\system32\winmm.dll
+%systemroot%\system32\winnsi.dll
+%systemroot%\system32\winpy.ime
+%systemroot%\system32\winrnr.dll
+%systemroot%\system32\winshfhc.dll
+%systemroot%\system32\winspool.drv
+%systemroot%\system32\winsta.dll
+%systemroot%\system32\wintrust.dll
+%systemroot%\system32\winzm.ime
+%systemroot%\system32\wkscli.dll
+%systemroot%\system32\wldap32.dll
+%systemroot%\system32\wmvcore.dll
+%systemroot%\system32\wpc.dll
+%systemroot%\system32\wpdshext.dll
+%systemroot%\system32\ws2_32.dll
+%systemroot%\system32\ws2help.dll
+%systemroot%\system32\wship6.dll
+%systemroot%\system32\wshtcpip.dll
+%systemroot%\system32\wsock32.dll
+%systemroot%\system32\wtsapi32.dll
+%systemroot%\system32\wuapi.dll
+%systemroot%\system32\xmllite.dll
+%systemroot%\system32\xpsp2res.dll
+%systemroot%\system32\xpsp3res.dll
+%systemroot%\system32\xpssvcs.dll
+
+%systemroot%\system32\msapsspc.dll
+%systemroot%\system32\digest.dll
+%systemroot%\system32\msnsspc.dll
+%systemroot%\system32\cryptdll.dll
+%systemroot%\system32\d3dim700.dll
+%systemroot%\system32\riched32.dll
+%systemroot%\system32\msvcrt40.dll
+
+%systemroot%\system32\audioeng.dll
+%systemroot%\system32\prnfldr.dll
+%systemroot%\system32\prncache.dll
+%systemroot%\system32\prntvpt.dll
+%systemroot%\system32\compstui.dll
+
+%systemroot%\system32\mfc42.dll
+%systemroot%\system32\olepro32.dll
+%systemroot%\system32\mfc42loc.dll
+%systemroot%\system32\corpol.dll
+%systemroot%\system32\mprapi.dll
+%systemroot%\system32\javacypt.dll
+%systemroot%\system32\msjava.dll
+%systemroot%\system32\vmhelper.dll
+%systemroot%\system32\lsass.exe
+
+%systemroot%\system32\imageres.dll
+%systemroot%\system32\mshtmler.dll
+%systemroot%\system32\unidrvui.dll
+
+%systemroot%\system32\logoncli.dll
+%systemroot%\system32\dsrole.dll
+%systemroot%\system32\comsvcs.dll
+
+
+%systemroot%\system32\WMSYS8p.dll
+%systemroot%\system32\wmdytfup.dll
+%systemroot%\system32\wmdytjmp.dll
+%systemroot%\system32\wmdyt5jsp.dll
+%systemroot%\system32\wmdyt5jwp.dll
+%systemroot%\system32\kerberos.dll
+%systemroot%\system32\asycfilt.dl
+%systemroot%\system32\security.dll
+
+
+;%systemroot%\system32\zh-cn\*.mui
+;%systemroot%\system32\en-us\*.mui
+
+
+;%systemroot%\ime\*.*|s
+;%systemroot%\system32\ime\*.*|s
+;%systemroot%\system32\macromed\flash\*.*
+
+;%systemroot%\system32\spool\drivers\w32x86\*.*|s
+
+%CommonProgramFiles%\microsoft shared\ink\zh-cn\*.mui
+%CommonProgramFiles%\system\ole db\*.dll
+%ProgramFiles%\Windows NT\TableTextService.dll
+%ProgramFiles%\Windows NT\TableTextService\TableTextService.dll
+
+@comctl32.dll.mui
+@comctl32.dll
+@gdiplus.dll
+@ieframe.dll.mui
+@mshtml.tlb
+@jscript.dll.mui
+@cryptui.dll.mui
+
+$[HKCR\CLSID\{A4A1A128-768F-41E0-BF75-E4FDDD701CBA}\InProcServer32\.]
+
+
+
+# 根据bug 1122增加的
+%ProgramFiles%\MONEYHUB\MONEYHUB.EXE
+%ProgramFiles%\INTERNET EXPLORER\IEXPLORE.EXE
+%ProgramFiles%\MICROSOFT OFFICE\OFFICE11\OUTLLIB.DLL
+%ProgramFiles%\COMMON FILES\MICROSOFT SHARED\VGX\VGX.DLL
+%systemroot%\SYSTEM32\IGDUMDX32.DLL
+%systemroot%\SYSTEM32\WBEMCOMN.DLL
+%systemroot%\SYSTEM32\NVD3DUM.DLL
+
+#根据bug 1132增加的
+%ProgramFiles%\COMMON FILES\MICROSOFT SHARED\INK\PENCHS.DLL    
+%ProgramFiles%\COMMON FILES\MICROSOFT SHARED\INK\SKCHUI.DLL
+
+#根据bug 1139增加的
+%systemroot%\SYSTEM32\SPOOL\DRIVERS\W32X86\3\UNIDRV.DLL   
+%systemroot%\SYSTEM32\SPOOL\DRIVERS\W32X86\3\HPZ6R5MC.DLL  
+%systemroot%\SYSTEM32\SPOOL\DRIVERS\W32X86\3\HPZPI5MC.DLL  
+%systemroot%\SYSTEM32\SPOOL\DRIVERS\W32X86\3\HPZUI5MC.DLL   
+%ProgramFiles%\SOGOUINPUT\5.0.1.4192\RESOURCE.DLL
+
+#根据bug1149添加的
+%systemroot%\SYSTEM32\BTREZ.DLL    
+%systemroot%\SYSTEM32\MSXML4R.DLL  
+
+#根据bug1154添加的
+%systemroot%\SYSTEM32\MSISIP.DLL
+
+# 根据bug1158添加的
+#工行捷德
+%systemroot%\SYSTEM32\CPSECCTRL.DLL
+%systemroot%\SYSTEM32\CPSECSHELL.DLL
+
+#ATI显卡驱动
+%ProgramFiles%\RAY ADAMS\ATI TRAY TOOLS\RAPHOOK.DLL
+
+#ADOBE PDF阅读器
+%ProgramFiles%\COMMON FILES\ADOBE\ACROBAT\ACTIVEX\PDFSHELL.CHS
+
+#根据bug1175添加的
+%ProgramFiles%\MONEYHUB\BANKACTIVEX.DLL
+%ProgramFiles%\MONEYHUB\KSAFESDK.DLL 
+
+#微软安装程序
+%systemroot%\SYSTEM32\MSI.DLL
+
+#惠普打印机
+%systemroot%\SYSTEM32\SPOOL\DRIVERS\W32X86\3\PCLXL.DLL 
+
+#王码五笔输入法
+%ProgramFiles%\WANGMA\DYTP\WMDYTR86.DLL     
+%ProgramFiles%\WANGMA\DYTP\WMDYTR5J.DLL
+
+#根据bug1181添加
+%systemroot%\SYSTEM32\FREEIME.IME  
+%systemroot%\SYSTEM32\JJ.IME 
+%systemroot%\SYSTEM32\HDCOS_JH.DLL      
+%systemroot%\SYSTEM32\HDAPP_JH.DLL 
+
+#根据bug1229添加
+%systemroot%\SYSTEM32\USBKEYPNPLIB.DLL  
+%ProgramFiles%\ICBC CORPORATE INTERNET BANKING CERTIFICATE TOOLS\ICBC\BHDC(CORP)\LAUNCHIE.EXE 
+%ProgramFiles%\COMMON FILES\MICROSOFT SHARED\OFFICE11\2052\MSXML5R.DLL   
+%systemroot%\SYSTEM32\GDREAD~1.DLL  
+
+#03月18日 迅游
+%SystemRoot%\SYSTEM32\XUNYOUNT.DLL
+
+#根据bug1274添加
+%ProgramFiles%\COMMON FILES\MICROSOFT SHARED\OFFICE11\MSXML5.DLL  
+
+#根据bug1468添加
+
+#建行
+%ProgramFiles%\CCBComponents\DETECTOR\INFOSCAN.DLL   
+%systemroot%\SYSTEM32\CCB_HDCSP.DLL  
+%systemroot%\SYSTEM32\BXSCARD.DLL
+
+#工行
+%systemroot%\SYSTEM32\AETPKSS1.DLL 
+%systemroot%\SYSTEM32\AETSPROV.DLL
+
+#Microsoft VC库
+%systemroot%\SYSTEM32\MSVCP71.DLL
+
+#根据bug1401添加
+%systemroot%\SYSTEM32\JSCRIPT9.DLL 
+%systemroot%\SYSTEM32\D3D10WARP.DLL  
+%systemroot%\SYSTEM32\DXTMSFT.DLL   
+%systemroot%\SYSTEM32\MSHTML.DLL  
+%systemroot%\SYSTEM32\D3D10_1.DLL
+%systemroot%\SYSTEM32\DXTRANS.DLL
+%systemroot%\SYSTEM32\JSCRIPT.DLL
+%systemroot%\SYSTEM32\MSLS31.DLL  
+%systemroot%\SYSTEM32\D3D10_1CORE.DLL
+%systemroot%\SYSTEM32\IEFRAME.DLL 
+%systemroot%\SYSTEM32\URLMON.DLL
+%systemroot%\SYSTEM32\DNSAPI.DLL
+%systemroot%\SYSTEM32\IERTUTIL.DLL
+%systemroot%\SYSTEM32\D2D1.DLL 
+%systemroot%\SYSTEM32\WININET.DLL 
+%systemroot%\SYSTEM32\DWRITE.DLL  
+%systemroot%\SYSTEM32\ZH-CN\IEFRAME.DLL.MUI
+%systemroot%\SYSTEM32\ZH-CN\JSCRIPT9.DLL.MUI
+%systemroot%\SYSTEM32\ZH-CN\MSHTML.DLL.MUI
+%systemroot%\SYSTEM32\ZH-CN\URLMON.DLL.MUI
+
+#根据bug1314添加
+%systemroot%\SYSTEM32\DWWIN.EXE
+%systemroot%\SYSTEM32\MSI.DLL
+
+#根据bug1454添加
+%systemroot%\SYSTEM32\MSWSOCK.DLL
+%systemroot%\SYSTEM32\SHELL32.DLL
+%systemroot%\SYSTEM32\IEPEERS.DLL 
+
+#根据bug1708添加
+%systemroot%\SYSTEM32\OLEAUT32.DLL
+%systemroot%\SYSTEM32\IKUTM.DLL
+%systemroot%\SYSTEM32\JSCRIPT.DLL 
+%systemroot%\SYSTEM32\MSHTML.DLL 
+%systemroot%\SYSTEM32\MSWSOCK.DLL

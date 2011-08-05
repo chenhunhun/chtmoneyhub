@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<main>
+  <category name="banks">
+
+<site id="efunds" name="易方达基金"  version="2.0.0.0">
+			<domains>
+				<domain name="*.efunds.com.cn/*" />
+				
+			</domains>
+		</site>
+
+
+
+  </category>
+  
+</main>

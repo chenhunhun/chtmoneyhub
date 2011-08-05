@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<main>
+ <category name="banks">
+		<site id="bankcomm" name="交通银行" version="2.0.0.2">
+			<domains>
+				<domain name="*.bankcomm.com/*" />
+				<domain name="*.95559.com.cn/*" />
+			</domains>
+			<requirements>
+			<system type="All" cpu="0">
+				<require type="activex" name="safeInput4jh" reg="reg">
+					<file name="safeInput4jh.dll" />
+				</require>
+				 </system>
+			</requirements>
+			<pages>
+				<page url="https://pbank.95559.com.cn/personbank/logon.jsp">
+					<require name="safeInput4jh" />
+				</page>
+				<page url="https://pbank.95559.com.cn/personbank/common_logon.jsp">
+					<require name="BcActiveX" />
+				</page>
+				<page url="https://pbank.95559.com.cn/personbank/index_cert_logon.html">
+					<require name="BcActiveX" />
+				</page>
+			</pages>
+		</site>
+	</category>
+</main>

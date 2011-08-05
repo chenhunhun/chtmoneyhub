@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<main>
+  <category name="banks">
+
+<site id="ecitic" name="中信银行"  version="2.0.0.2">
+			<domains>
+				<domain name="*.ecitic.com/*" />
+			</domains>
+            <requirements>
+				<system type="All" cpu="32">
+					<require type="activex" name="Init_Tool_ft" reg="reg">
+						<file name="Init_Tool_ft.ocx" />
+					</require>
+					<require type="driver" name="32bitProtector" service="protectorecitic32" rstart="3" rtype="1">
+						<file name="32bitProtector.sys" />
+					</require>
+					<require type="driver" name="32bitProtectorA" service="protectorecitic32A" rstart="3" rtype="1">
+						<file name="32bitProtectorA.sys" />
+					</require>
+					<require type="file" name="LocalInfo.dat" path="%SystemRoot%\system32" replace="false">
+					</require>
+					<require type="exe" btype="reg" IsInstallName="[HKEY_CLASSES_ROOT\CLSID\{209A59F6-A3EA-45F3-9C9D-21CD2BC832AB}]" name="CNCBPayCtl.exe">
+					</require>
+					<require type="exe" btype="file" IsInstallName="%ProgramFiles%\CNCB\SecPkg\unins000.exe" name="CNCBSecPkg_CN.exe">
+					</require>
+				</system>
+				<system type="All" cpu="64">
+					<require type="activex" name="Init_Tool_ft" reg="reg">
+						<file name="Init_Tool_ft.ocx" />
+					</require>
+					<require type="driver" name="64bitProtectorA" service="protectorecitic64A" rstart="3" rtype="1">
+						<file name="64bitProtectorA.sys" />
+					</require>
+					<require type="file" name="LocalInfo.dat" path="%SystemRoot%\SysWOW64" replace="false">
+					</require>
+					<require type="exe" btype="reg" IsInstallName="[HKEY_CLASSES_ROOT\CLSID\{209A59F6-A3EA-45F3-9C9D-21CD2BC832AB}]" name="CNCBPayCtl.exe">
+				    </require>
+					<require type="exe" btype="file" IsInstallName="%ProgramFiles%\CNCB\SecPkg\unins000.exe" name="CNCBSecPkg_CN.exe">
+					</require>
+				</system>
+			</requirements>
+			<pages>
+				<page url="https://e.bank.ecitic.com/perbank5/signIn.do">
+				</page>
+			</pages>				
+		</site>
+  </category>
+</main>

@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<modules>
+	<status>
+  		<id>200</id> 
+  		<message>已是最新版本，无需升级！</message> 
+  </status>
+	<module>
+ 			<name>Main</name> 
+  		<version>1.1.1.1</version> 
+  		<path>http://update.finantech.cn/moneyhub/pack1111.exe</path>
+  </module>
+</modules>

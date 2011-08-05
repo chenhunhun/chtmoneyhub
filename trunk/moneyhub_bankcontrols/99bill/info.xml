@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<main>
+  <category name="banks">
+
+<site id="99bill" name="快钱"  version="2.0.0.0">
+			<domains>
+				<domain name="*.99bill.com/*" />
+			</domains>
+			<requirements>
+				<system type="All" cpu="0">
+					<require type="activex" name="capicom" reg="reg">
+						<file name="capicom.dll" />
+					</require>
+					</system>
+			   </requirements>
+			<pages>
+				<page url="https://passport.99bill.com/sso/login/authentication1.htm">
+					
+				</page>
+			</pages>
+		</site>
+  </category>  
+</main>

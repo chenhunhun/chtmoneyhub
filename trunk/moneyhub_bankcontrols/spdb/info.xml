@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<main>
+	<category name="banks">
+		<site id="spdb" name="浦发银行" version="2.0.0.2">
+			<domains>
+				<domain name="*.spdb.com.cn/*" />
+			</domains>
+            <requirements>
+				<system type="All" cpu="0">
+					<require type="activex" name="InstallCertListAx" reg="reg">
+						<file name="InstallCertListAx.ocx" />
+					</require>
+				</system>
+			</requirements>
+			<pages>
+				<page url="http://ebank.spdb.com.cn/login/perlogin.html">
+					<require name="InstallCertListAx" />
+					</page>
+			</pages>						
+		</site>
+	</category>
+</main>

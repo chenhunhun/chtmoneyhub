@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>精选理财产品</title>
+<link type="text/css" rel="stylesheet" href="../style/style.css" />
+<link type="text/css" rel="stylesheet" href="./style/style.css" />
+<script type="text/javascript" src="../scripts/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="./scripts/functions.mhs"></script>
+</head>
+<body>
+<div id="dLeft">
+	<div id="dLeftHeader">
+		筛选条件
+	</div>
+	<div id="dLeftContent">
+		<div class="customScrollBox">
+			<div class="container">
+				<div class="content">
+		    		<div class="dBlock">
+		    			<div class="dBlockHeader">
+		    				<span>
+		    					预期收益率
+							</span>
+		    			</div>
+		    			<div class="dBlockContent">
+		    				<div class="dBItem">
+		    					<span class="sCheckBox">
+								</span>
+								<span class="sDBItem">
+									3%以下
+								</span>
+		    				</div>
+		    				<div class="dBItem">
+		    					<span class="sCheckBox">
+								</span>
+								<span class="sDBItem">
+									3%到6%
+								</span>
+		    				</div>
+		    			</div>
+					</div>
+		    		<div class="dBlock">
+		    			<div class="dBlockHeader">
+		    				<span>
+		    					币种
+							</span>
+		    			</div>
+		    			<div class="dBlockContent">
+		    				<div class="dBItem">
+		    					<span class="sCheckBox">
+								</span>
+								<span class="sDBItem">
+									人民币
+								</span>
+		    				</div>
+		    				<div class="dBItem">
+		    					<span class="sCheckBox">
+								</span>
+								<span class="sDBItem">
+									其它币种
+								</span>
+		    				</div>
+		    			</div>
+					</div>
+				</div>
+			</div>
+			<div class="dragger_container" id="dLeftDragger">
+	    		<div class="dragger">=</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="dRight">
+	<div id="dRightRecords">
+		<div class="dRRBackground">
+			<div class="dRRBLeft"></div>
+			<div class="dRRBCenter"></div>
+			<div class="dRRBRight"></div>
+		</div>
+		<div id="dRTHeader">
+			<table class="dRTTable">
+				<tr>
+					<td>产品名称</td>
+					<td>银行</td>
+					<td>认购起始日期</td>
+					<td>理财期限</td>
+					<td>币种</td>
+					<td>预期收益</td>
+					<td>&nbsp;</td>
+				</tr>
+			</table>
+		</div>
+		<div id="dRRDetail">
+			<div id="dLoading" style="display:none;">
+				<img src="images/loading.png" />
+			</div>
+			<div class="customScrollBox">
+				<div class="container" id="dRightContainer">
+		    		<div id="transContent" class="content" validate="{rangelength:[1,30]}">
+						<table id="dRightTableTrans" class="dRightTable">
+							<tr>
+								<td>产品1</td>
+								<td>中国工商银行</td>
+								<td>2009-01-01</td>
+								<td>6个月</td>
+								<td>人民币</td>
+								<td>6.4%</td>
+								<td>aaa</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div class="dragger_container" id="dRightDragger">
+		    		<div class="dragger">=</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

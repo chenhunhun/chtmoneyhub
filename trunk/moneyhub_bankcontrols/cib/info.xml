@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<main>
+  <category name="banks">
+
+<site id="cib" name="兴业银行"  version="2.0.0.2">
+			<domains>
+				<domain name="*.cib.com/*" />
+				<domain name="*.cib.com.cn/*" />
+			</domains>
+			<requirements>
+				<system type="All" cpu="0">
+					<require type="activex" name="cibclient" reg="cibclient">
+						<file name="CIBClient.ocx" />
+					</require>
+				</system>
+			</requirements>
+			<pages>
+				<page url="https://www.cib.com.cn/index.jsp">
+					<require name="cibclient" />
+				</page>
+			</pages>
+		</site>
+  </category>
+  
+</main>

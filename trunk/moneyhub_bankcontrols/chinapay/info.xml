@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<main>
+  <category name="banks">
+
+<site id="chinapay" name="银联在线"  version="2.0.0.0">
+			<domains>
+				<domain name="*.chinapay.com/*" />
+				
+			</domains>
+		</site>
+
+
+
+  </category>
+  
+</main>

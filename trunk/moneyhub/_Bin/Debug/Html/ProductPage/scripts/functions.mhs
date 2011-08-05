@@ -1,0 +1,38 @@
+/* 当前窗口大小 */
+var curClientHeight = 0;
+var curClientWidth = 0;
+
+/** 启动时执行
+ */
+$( function() {
+	//调整屏幕尺寸
+	curClientHeight = 0;
+	curClientWidth = 0;
+	$(window).resize();
+});
+
+/** 屏幕大小改变时执行
+ */
+$(window).resize( function() {
+	if (((curClientHeight != document.body.clientHeight) && (curClientHeight != document.body.clientHeight - 30)) || (curClientWidth != $(window).width())) {
+		curClientHeight = document.body.clientHeight;
+		curClientWidth = document.body.clientWidth;
+
+		$("#dLeft").width($(window).width() * 0.22);
+		if ($("#dLeft").width() <= 165) {
+			$("#dLeft").width(165);
+			$("body").width(750);
+			$("#dRight").width(584);
+		} else {
+			$("body").width($(window).width());
+			$("#dRight").width($(window).width() * 0.78 - 10);
+		}
+
+		$("#dRightRecords").width($("#dRight").width() - 10);
+
+		//调整列表表格宽度
+		$(".dRRBCenter").each(function (index) {
+			$(this).width($(this).parent().parent().width() - 18);
+		});
+	}
+});
