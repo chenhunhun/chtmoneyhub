@@ -114,8 +114,11 @@ bool CBankData::InsertGetBillData(BILLRECORD& TRecord)
 
 				bufSQL2.format("select id from tbSubAccount where tbAccount_id=%d and tbCurrency_id=%d", TRecord.accountid, currency);
 				CppSQLite3Query q = m_dbUser.execQuery(bufSQL2);
+				
 				if(!q.eof())
 					subid = q.getIntField("id");
+				bufSQL2.format("update tbSubAccount set balance=0 where id=%d", subid);
+				m_dbUser.execDML(bufSQL2);
 			}
 			if(subid != 0)
 			{
@@ -141,13 +144,13 @@ bool CBankData::InsertGetBillData(BILLRECORD& TRecord)
 					tAmount +=  (*ite)->Amount;
 					string Transdate((*ite)->PostDate);
 					if((*ite)->Amount > 0)
-						bufSQL2.format("insert into tbTransaction (tbCategory2_id, Transdate,amount,comment,tbSubAccount_id,sign) values (10066,'%s',%f,'%s',%d,'%s')", Transdate.c_str(),(*ite)->Amount,(*ite)->Description,subid, sTran);
+						bufSQL2.format("insert into tbTransaction (tbCategory2_id, Transdate,amount,comment,tbSubAccount_id,sign) values (10066,'%s',%.2f,'%s',%d,'%s')", Transdate.c_str(),(*ite)->Amount,(*ite)->Description,subid, sTran);
 					else
-						bufSQL2.format("insert into tbTransaction (tbCategory2_id, Transdate,amount,comment,tbSubAccount_id,sign) values (10065,'%s',%f,'%s',%d,'%s')", Transdate.c_str(),-((*ite)->Amount),(*ite)->Description,subid, sTran);
+						bufSQL2.format("insert into tbTransaction (tbCategory2_id, Transdate,amount,comment,tbSubAccount_id,sign) values (10065,'%s',%.2f,'%s',%d,'%s')", Transdate.c_str(),-((*ite)->Amount),(*ite)->Description,subid, sTran);
 					m_dbUser.execDML(bufSQL2);
 				}
 
-				bufSQL2.format("update tbsubAccount set balance=%f where id=%d", tAmount,subid);
+				bufSQL2.format("update tbsubAccount set balance=balance+%.2f where id=%d", tAmount,subid);
 				m_dbUser.execDML(bufSQL2);
 			}
 		}

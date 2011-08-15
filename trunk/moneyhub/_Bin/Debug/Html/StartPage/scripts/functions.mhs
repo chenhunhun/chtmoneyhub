@@ -13,6 +13,7 @@ function init(){
 	} else if (window.attachEvent)  {
 		window.attachEvent('onselectstart', rfalse);  //IE
 	}
+    
     changePic(0);
     selector = document.getElementById("selector");
     showlist = document.getElementById("app_div");
@@ -28,6 +29,7 @@ function init(){
     if (!window.location.hash) {
         window.location.hash = "#banks";
     }
+    
     shiftTab(window.location.hash);
     selector.onkeyup = function(){
         return findName(selector.value, "banks");
@@ -1021,14 +1023,26 @@ function renderAd(){
 		content+= '<div id="tabs1" class="title_container1">';
 		content+='<span class="finantechad_bg"><div class="title_bg"><div class="title_img"><img src="images/icon2.png" alt="" border="0"/></div></div>';
 		content+= '<ul class="finantechad_ul">';
+		//$("#finatech_ad").ajaxStart(function(){
+		/*
+		$.ajaxStart(function(){
+			content+="数据正在读取中，请耐心等候";
+			alert(content);
+			$("#finatech_ad").empty().append(content);
+			
+		});
+		*/
+		//$("#finatech_ad").ajax({
 		$.ajax({
-			url: 'http://www.moneyhub.cn/banksite/getfinprod.php?debug=1&encode=0',
+			//url: 'http://www.moneyhub.cn/banksite/getfinprod.php?debug=1&encode=0',
+			url: 'http://www.moneyhub.cn/banksite/fincontent.xml',
 			type: 'GET',
 			dataType: 'xml',
 			cache:false,
-			timeout: 3000,
+			timeout: 10000,
 			error: function(xml){
 				//加入事件
+				//alert("1");
 				if ($("#finatech_ad").html().length==0) {
 					content+="数据读取错误，请手动<a href='javascript:renderAd()'>刷新</a>"
 					//alert(errorContent);
@@ -1037,17 +1051,15 @@ function renderAd(){
 				
 			},
 			success: function(xml){
-				
-				
 				$(xml).find("finprod").each(function(i){
 						//if (i < 10) {
 							content += '<li><img src="images/dian.gif" alt="" width="4" height="4" style="padding-right:8px;"/>';
 							var url = xorDecoding($(this).children("url").text());
+							//alert(url);
 							var test = "http://www.icbc.com.cn/icbc/";
-							if(url.replace(/\s*$/, "") == "http://www.icbc.com.cn/icbc/" ){
+							if(url.replace(/\s*$/, "") == test ){
 								content += '<a onclick="javascript:if(confirm(\'查看该理财产品详情需要登录网银\')) window.open(\''+url+'\')">';	
 							} else {
-								
 								content += '<a onclick="javascript:window.open(\''+url+'\')">';	
 							}
 							content += $(this).children("bank").text() + $(this).children("desc").text().substring(0,20) + '，';
@@ -1063,6 +1075,7 @@ function renderAd(){
 						
 				});
 				content+="</ul></span>";
+				//alert(content);
 				$("#finatech_ad").empty().append(content);
 				
 				$("#finatech_ad li").mouseover(function(){
@@ -1075,6 +1088,12 @@ function renderAd(){
 			complete:function() {
 				//renderadSet = setTimeout("renderAd()",10000); //定时器
 			}
+		});
+		$.ajaxStart(function(){
+			content+="数据正在读取中，请耐心等候";
+			//alert(Content);
+			$("#finatech_ad").empty().append(content);
+			
 		});
 	} else {
 	}

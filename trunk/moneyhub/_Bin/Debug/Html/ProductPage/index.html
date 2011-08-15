@@ -25,7 +25,7 @@
 		    			</div>
 		    			<div class="dBlockContent">
 		    				<div class="dBItem">
-		    					<span class="sCheckBox">
+		    					<span class="sCheckBox" onclick="alert('aaa');">
 								</span>
 								<span class="sDBItem">
 									3%以下
@@ -81,12 +81,12 @@
 		<div id="dRTHeader">
 			<table class="dRTTable">
 				<tr>
-					<td>产品名称</td>
-					<td>银行</td>
-					<td>认购起始日期</td>
-					<td>理财期限</td>
-					<td>币种</td>
-					<td>预期收益</td>
+					<td><span class="sOrderBy"></span>产品名称</td>
+					<td><span class="sOrderBy"></span>银行</td>
+					<td><span class="sOrderBy"></span>认购起始日期</td>
+					<td><span class="sOrderBy"></span>理财期限</td>
+					<td><span class="sOrderBy"></span>币种</td>
+					<td><span class="sOrderBy"></span>预期收益</td>
 					<td>&nbsp;</td>
 				</tr>
 			</table>
@@ -99,7 +99,7 @@
 				<div class="container" id="dRightContainer">
 		    		<div id="transContent" class="content" validate="{rangelength:[1,30]}">
 						<table id="dRightTableTrans" class="dRightTable">
-							<tr>
+							<tr class="trDetail tDetail1">
 								<td>产品1</td>
 								<td>中国工商银行</td>
 								<td>2009-01-01</td>
@@ -107,6 +107,42 @@
 								<td>人民币</td>
 								<td>6.4%</td>
 								<td>aaa</td>
+							</tr>
+							<tr style="display:none;">
+								<td class="tdDetail" colspan="7">
+									<span class="sMIContent">aaa</span>
+									<span class="sMoreInfo"></span>
+								</td>
+							</tr>
+							<tr class="trDetail tDetail2">
+								<td>产品2</td>
+								<td>中国工商银行</td>
+								<td>2009-01-01</td>
+								<td>6个月</td>
+								<td>人民币</td>
+								<td>6.4%</td>
+								<td>aaa</td>
+							</tr>
+							<tr style="display:none;">
+								<td class="tdDetail" colspan="7">
+									<span class="sMIContent">aaa</span>
+									<span class="sMoreInfo"></span>
+								</td>
+							</tr>
+							<tr class="trDetail tDetail1">
+								<td>产品3</td>
+								<td>中国工商银行</td>
+								<td>2009-01-01</td>
+								<td>6个月</td>
+								<td>人民币</td>
+								<td>6.4%</td>
+								<td>aaa</td>
+							</tr>
+							<tr style="display:none;">
+								<td class="tdDetail" colspan="7">
+									<span class="sMIContent">aaa</span>
+									<span class="sMoreInfo"></span>
+								</td>
 							</tr>
 						</table>
 					</div>

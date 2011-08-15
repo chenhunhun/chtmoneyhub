@@ -61,28 +61,28 @@ textarea {
 
 /* 卷滚条 */
 .customScrollBox {
-	position:relative;
+	position: relative;
 	margin: 0 0 0 0;
 	height: 100%;
 	width: 100%;
 	overflow: auto;
 }
 .customScrollBox .container {
-	position:relative;
-	top:0;
-	float:left;
+	position: relative;
+	top: 0;
+	float: left;
 }
 .customScrollBox .content {
 	clear:both;
 }
 .dragger_container {
-	position:relative;
-	width:12px;
-	float:left;
-	cursor:pointer;
-	box-shadow:inset 0 0 10px #BFDBE9;
-	-moz-box-shadow:inset 0 0 10px #BFDBE9;
-	-webkit-box-shadow:inset 0 0 10px #BFDBE9;
+	position: relative;
+	width: 12px;
+	float: left;
+	cursor: pointer;
+	box-shadow: inset 0 0 10px #BFDBE9;
+	-moz-box-shadow: inset 0 0 10px #BFDBE9;
+	-webkit-box-shadow: inset 0 0 10px #BFDBE9;
 	display: none; /* 这个版本先暂时不管自定义卷滚条的事情 */
 }
 .dragger{

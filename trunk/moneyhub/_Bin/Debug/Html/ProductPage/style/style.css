@@ -109,6 +109,16 @@ th, td {
 	background: #F7FCFF;
 	padding: 2px 0 0 5px;
 }
+.sCheckBox {
+	background: url(../images/checkbox.gif) no-repeat;
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	vertical-align: middle;
+}
+.sDBItem {
+	vertical-align: middle;
+}
 /* 右侧 */
 #dRight {
 	float: left;
@@ -171,9 +181,20 @@ th, td {
 	text-align: center;
 	padding: 2px 0 0;
 	border-left: 1px solid #BFD6E6;
+	position: relative;
 }
 .dRTTable td:first-child {
 	border-left: 1px solid transparent;
+}
+.sOrderBy {
+	display: inline-block;
+	background: url(../../images/tree1.gif);
+	width: 8px;
+	height: 8px;
+	position: absolute;
+	left: 10px;
+	top: 8px;
+	cursor: pointer;
 }
 #dRRDetail {
 	border-left: 1px solid #BFD6E6;
@@ -193,4 +214,28 @@ th, td {
 	height: 30px;
 	text-align: center;
 	cursor: pointer;
+}
+.tSelected td {
+	border-top: 1px solid #BADBC9 !important;
+	border-right: 1px solid #71C495 !important;
+}
+.dRightTable .tdDetail {
+	border-top: 1px solid #BADBC9 !important;
+	border-bottom: 1px solid #71C495;
+	border-left: 1px solid #71C495;
+	border-right: 1px solid #71C495 !important;
+	text-align: left;
+}
+.sMIContent {
+	display: inline-block;
+	margin: 0 0 0 10px;
+	float: left;
+}
+.sMoreInfo {
+	background: url(../images/moreinfo.gif);
+	width: 61px;
+	height: 21px;
+	display: inline-block;
+	float: right;
+	margin: 0 10px 0 0;
 }
