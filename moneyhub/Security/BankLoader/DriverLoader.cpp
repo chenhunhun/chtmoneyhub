@@ -137,8 +137,16 @@ BOOL CDriverLoader::InstallDriver() const
 		return FALSE;
 	}
 
-	SC_HANDLE schService = CreateServiceA(schSCManager, m_drivername.c_str(), m_drivername.c_str(), SERVICE_ALL_ACCESS, SERVICE_KERNEL_DRIVER, 
+	SC_HANDLE schService = NULL;
+	while(1)
+	{
+		schService = CreateServiceA(schSCManager, m_drivername.c_str(), m_drivername.c_str(), SERVICE_ALL_ACCESS, SERVICE_KERNEL_DRIVER, 
 		/*SERVICE_AUTO_START*/SERVICE_SYSTEM_START, SERVICE_ERROR_NORMAL, m_DriverPath.c_str(), NULL, NULL, NULL, NULL, NULL);
+		if(GetLastError() != 1072)//当驱动被标记为已经删除时，要等待几秒之后重试
+			break;
+		else
+			Sleep(2000);
+	}
 
 	if (schService == NULL)
 	{

@@ -249,7 +249,7 @@ HRESULT CCustomSite::GetOverrideKeyPath(LPOLESTR *pchKey, DWORD dw)
 // IDocHostShowUI
 HRESULT CCustomSite::ShowMessage(HWND hwnd, LPOLESTR lpstrText, LPOLESTR lpstrCaption, DWORD dwType, LPOLESTR lpstrHelpFile, DWORD dwHelpContext, LRESULT *plResult)
 {
-	*plResult = ::MessageBox(hwnd, lpstrText, L"财金汇", dwType);
+	if(m_pAxControl->m_isGetBill)  // 屏蔽info对话框		*plResult = IDOK;	else    	*plResult = ::MessageBox(hwnd, lpstrText, L"财金汇", dwType);
 
 	return S_OK;
 }

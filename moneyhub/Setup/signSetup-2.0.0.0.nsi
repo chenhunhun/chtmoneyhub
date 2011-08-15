@@ -457,6 +457,10 @@ RequestExecutionLevel admin
 
 		;开放权限，允许任何人读写，以保证不提权
 		AccessControl::GrantOnFile "$INSTDIR" "(BU)" "FullAccess"
+		
+		;创建appdata\bankconfig
+		CreateDirectory "$APPDATA\bankconfig"
+		CopyFiles $INSTDIR\BankInfo\banks $APPDATA\bankconfig
 
 		;把优惠券页面需要的几张图片放到APPDATA下
 		;SetShellVarContext all

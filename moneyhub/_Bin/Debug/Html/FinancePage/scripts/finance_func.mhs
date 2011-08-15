@@ -101,6 +101,10 @@ var transFormId=[""];
  */
 var accountHandleType = "add";
 
+
+//全局变量
+currentBankId = "";
+
 /*
  * 启动时执行
  */
@@ -1950,8 +1954,6 @@ function createNewBankListView() {
 }
 
 function clickBank(aid) {
-	//清除所有验证信息
-	$("#addMyBank .dValidation").empty();
 	$("#addMyBankboxBg tr").removeClass("transSelected");
 	$("#bank" + aid).addClass("transSelected");
 	editBank(aid);
@@ -2532,7 +2534,8 @@ function createAccountTree() {
 	//alert("1");
 	try {		
 		//alert(window.external.QuerySQL("SELECT a.id AS aid, a.name AS aname, b.name AS bname, b.id AS bid, tbBank_id, a.tbAccountType_id AS tid FROM tbAccount a, tbSubAccount b WHERE a.id=b.tbAccount_id ORDER BY a.id DESC"));
-		result = JSON.parse(window.external.QuerySQL("SELECT a.id AS aid, a.name AS aname, b.name AS bname, b.id AS bid, tbBank_id, a.tbAccountType_id AS tid FROM tbAccount a, tbSubAccount b WHERE a.id=b.tbAccount_id ORDER BY a.id DESC"));
+		//alert(window.external.QuerySQL("SELECT a.id AS aid, a.name AS aname, b.name AS bname, b.id AS bid, tbBank_id, bankid, a.tbAccountType_id AS tid FROM tbAccount a, tbSubAccount b left join tbbank c on c.id=tbBank_id  WHERE a.id=b.tbAccount_id ORDER BY a.id DESC"));
+		result = JSON.parse(window.external.QuerySQL("SELECT a.id AS aid, a.name AS aname, b.name AS bname, b.id AS bid, tbBank_id, bankid, a.tbAccountType_id AS tid FROM tbAccount a, tbSubAccount b left join tbbank c on c.id=tbBank_id  WHERE a.id=b.tbAccount_id ORDER BY a.id DESC"));
 	} catch (e) {
 		result = [{
 			"aname": "<abc",
@@ -2613,14 +2616,16 @@ function createAccountTree() {
 			if (k == 0) {
 				//新的，第一个
 				content += "<div class='dMainAccount dMainAccountU' id='" + n.aid + "' onmouseout='$(\"#accountSetup_"+n.aid+"\").hide();' onmouseover='$(\"#accountSetup_" + n.aid + "\").show();' onclick='closeTrans();renderTransView(\"" + n.aid + "\",\"\");'>";
-				content += "<span class='sLeftTree' id='action_" + n.aid + "' style='background:url(\"images/tree1.gif\") no-repeat' onclick='myToggle(" + n.aid + ");'></span>";
+				content += "<span class='sLeftTree' id='action_" + n.aid + "' style='background:url(\"../images/tree1.gif\") no-repeat' onclick='myToggle(" + n.aid + ");'></span>";
 				content += "<span id='sMAName' fullname='" + n.aname.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/'/g, "&#39;") + "' class='sMAName'>" + n.aname.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/'/g, "&#39;") + "</span>";
 
-				//如果是招商银行信用卡，则显示导入账单
-				if (n.tbBank_id == 6 && n.tid == 2) {
-					content += " <span id='sImportBill' onclick='getCreditCardList("+n.aid+");'></span>";
+				//如果是招商银行,中信银行信用卡，则显示导入账单
+				
+				if((n.BankID == "a006" || n.BankID == "a007" || n.BankID == "a004") && n.tid == 2) {
+					//alert(" <span id='sImportBill' onclick='getCreditCardList("+n.aid+",\""+n.BankID+"\");'></span>");
+					content += " <span id='sImportBill' onclick='getCreditCardList("+n.aid+",\""+n.BankID+"\");'></span>";
+					//alert(currentBankId);
 				}
-
 				content+="<span id='accountSetup_" + n.aid + "' style='display:none;' class='iAccountSetup' onclick='showAdd(\"main\", " + n.aid + ")'></span>";
 				content+="</div>";
 
@@ -2644,6 +2649,7 @@ function createAccountTree() {
 			//alert(n.aname);
 			content += "<div class='dMainAccount dMainAccountU' id='"+n.aid+"' onmouseout='$(\"#accountSetup_"+n.aid+"\").hide();' onmouseover='$(\"#accountSetup_"+n.aid+"\").show();' onclick='closeTrans();renderTransView(\""+n.aid+"\","+n.bid+")'>";
 			content += "<span id='sMAName' fullname='" + legalName + "' class='sMAName'>" + legalName + "</span>";
+			if(n.BankID == "e001") content += " <span id='sImportBill' onclick='forAlipay(\"" + n.aid + "\",\"" + n.BankID + "\")'></span>";
 			content += "<span id='accountSetup_"+n.aid+"' style='display:none;' class='iAccountSetup' onclick='showAdd(\"main\", "+n.aid+")'></span>";
 			content += "</div>";
 		}
@@ -2672,9 +2678,9 @@ function myToggle(aid) {
 		window.event.cancelBubble = true;
 
 	if ($("#action_" + aid).css('background-image').indexOf("tree2.gif") != -1)
-		$("#action_" + aid).css('background', 'url(images/tree1.gif) no-repeat');
+		$("#action_" + aid).css('background', 'url(../images/tree1.gif) no-repeat');
 	else
-		$("#action_" + aid).css('background', 'url(images/tree2.gif) no-repeat');
+		$("#action_" + aid).css('background', 'url(../images/tree2.gif) no-repeat');
 	$("#sub_"+aid).toggle();
 }
 
@@ -3782,12 +3788,17 @@ function getAllBalance() {
 /**抓取账单响应事件
  * @param id：账户id，以此id为依据，根据账单币种，更新到相应的子账户中。
  */
-function getCreditCardList(id) {
+function getCreditCardList(id,bankId) {
 	//根据当前日期渲染生成的月份
+	//alert("1");
+	currentBankId = bankId;
+	//alert(currentBankId);
 	currentAid = id;
 	getCreditAccount=id;
 	showAdd("getCreditCardBillList");
+	//alert("2");
 }
+
 
 function submitCreditCardBillList() {
 	closeAdd("getCreditCardBillList");
@@ -3799,7 +3810,10 @@ function submitCreditCardBillList() {
 	} 
 	else getCreditAccount = -1;
 	try {
-		window.external.creditCardBillList(temp,2,$("#selectMonth").val(),"a006");
+		//window.external.creditCardBillList(temp,2,$("#selectMonth").val(),"a006");
+		//alert(temp+"::::::::::::"+$("#selectMonth").val()+"::::::::::::::::::::::"+currentBankId);
+		window.external.creditCardBillList(temp,2,$("#selectMonth").val(),currentBankId);
+		currentBankId="";
 	} catch (e) {
 	}
 }
@@ -4378,4 +4392,12 @@ function debug(str) {
 		window.external.WriteLog(str);
 	} catch (e) {
 	}
+}
+
+function getCurrentBankId(id){
+	currentBankId=id;
+}
+
+function forAlipay(aid,BankID){	
+	window.external.creditCardBillList(aid,2,"",BankID);
 }

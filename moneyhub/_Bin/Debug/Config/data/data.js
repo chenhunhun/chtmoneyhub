@@ -372,7 +372,7 @@ appList = {
 		"d001" :{
 		"id":"d001",
 		 "name":"华夏基金",
-		 "url":"http://www.chinaamc.com/",
+		 "url":"http://www.chinaamc.com.cn/",
 		 "imageUrl":"../../Config/logos/E001.gif",
 		 "favUrl":"../../Config/logos/E001_s.gif",
 		 "index":"hxjj,huaxiajijin,华夏基金",
@@ -380,7 +380,7 @@ appList = {
 		 "apptype":"funds",
 		 "position":"0",
 		 "sublink" : {
-		 	 "url" : "http://www.chinaamc.com/",
+		 	 "url" : "http://www.chinaamc.com.cn/",
 			 "txt_ebank":"交易登录",
 			 "ebank":"https://fundtrade.chinaamc.com/etrading/etrading.jsp",
 			 "txt_vip":"查询登录",

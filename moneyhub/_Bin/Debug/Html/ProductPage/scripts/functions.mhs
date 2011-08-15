@@ -5,6 +5,17 @@ var curClientWidth = 0;
 /** 启动时执行
  */
 $( function() {
+	$(".trDetail").click(function () {
+		$(".trDetail").next("tr").hide();
+		if ($(this).hasClass("tSelected")) {
+			$(this).next("tr").hide();
+			$(this).removeClass("tSelected");
+		} else {
+			$(this).next("tr").show();
+			$(".trDetail").removeClass("tSelected");
+			$(this).addClass("tSelected");
+		}
+	});
 	//调整屏幕尺寸
 	curClientHeight = 0;
 	curClientWidth = 0;
@@ -19,6 +30,7 @@ $(window).resize( function() {
 		curClientWidth = document.body.clientWidth;
 
 		$("#dLeft").width($(window).width() * 0.22);
+		$("#dLeftContent").height($(window).height() - $("#dLeftHeader").height() - 1);
 		if ($("#dLeft").width() <= 165) {
 			$("#dLeft").width(165);
 			$("body").width(750);
