@@ -7,6 +7,14 @@
 			</domains>			
 		     <requirements>
 			<system type="All" cpu="32">
+					<require type="classid" classid="6B8935F2-AF81-45e8-850B-2100FE454E31">
+				    </require>
+					<require type="classid" classid="51384C04-8D6A-484A-9829-884FB9EC4DFF">
+				    </require>
+					<require type="classid" classid="5DBAB3C1-8987-41F4-87CC-6777D0DC3BC9">
+				    </require>
+					<require type="classid" classid="32A825B9-8114-4532-9154-AE477AB92491">
+				    </require>
 					<require type="activex" name="feitian" reg="reg">
 						<file name="feitian.dll" />
 					</require>
@@ -50,6 +58,14 @@
 					</require>
 			</system>
 			<system type="All" cpu="64">
+					<require type="classid" classid="6B8935F2-AF81-45e8-850B-2100FE454E31">
+				    </require>
+					<require type="classid" classid="51384C04-8D6A-484A-9829-884FB9EC4DFF">
+				    </require>
+					<require type="classid" classid="5DBAB3C1-8987-41F4-87CC-6777D0DC3BC9">
+				    </require>
+					<require type="classid" classid="32A825B9-8114-4532-9154-AE477AB92491">
+				    </require>
 					<require type="activex" name="HXBPP" reg="reg-64">
 						<file name="HXBPP.dll" />
 					</require>

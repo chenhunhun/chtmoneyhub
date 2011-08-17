@@ -10,6 +10,10 @@
 					<require type="activex" name="capicom" reg="reg">
 						<file name="capicom.dll" />
 					</require>
+					<require type="classid" classid="A996E48C-D3DC-4244-89F7-AFA33EC60679">
+				    </require>
+					<require type="classid" classid="127698e4-e730-4e5c-a2b1-21490a70c8a1">
+				    </require>
 				</system>
 			</requirements>
 			<page url="https://ebank.cbhb.com.cn/per/prelogin.do">

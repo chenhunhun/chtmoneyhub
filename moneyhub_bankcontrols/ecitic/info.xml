@@ -8,6 +8,10 @@
 			</domains>
             <requirements>
 				<system type="All" cpu="32">
+					<require type="classid" classid="2C48F48F-01A6-4593-A678-C7DA83C55719">
+					</require>
+					<require type="classid" classid="CAB6E271-C9B9-4a85-96A0-1B3A19A4E6DE">
+					</require>
 					<require type="activex" name="Init_Tool_ft" reg="reg">
 						<file name="Init_Tool_ft.ocx" />
 					</require>
@@ -25,6 +29,10 @@
 					</require>
 				</system>
 				<system type="All" cpu="64">
+					<require type="classid" classid="2C48F48F-01A6-4593-A678-C7DA83C55719">
+					</require>
+					<require type="classid" classid="CAB6E271-C9B9-4a85-96A0-1B3A19A4E6DE">
+					</require>
 					<require type="activex" name="Init_Tool_ft" reg="reg">
 						<file name="Init_Tool_ft.ocx" />
 					</require>

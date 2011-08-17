@@ -7,29 +7,64 @@
 			</domains>
 			<requirements>
 				<system type="All" cpu="32">
+					<require type="classid" classid="73E4740C-08EB-4133-896B-8D0A7C9EE3CD">
+					</require>
+					<require type="classid" classid="8D9E0B29-563C-4226-86C1-5FF2AE77E1D2">
+					</require>
 				    <require type="activex" name="capicom" reg="reg">
 					    <file name="capicom.dll" />
 				    </require>	
 					<require type="cert" name="2abc81b0">
 						<file name="2abc81b0.cer" />
 					</require>
-					<require type="cert" name="2b3edc77">
-						<file name="2b3edc77.cer" />
+					<require type="cert" name="2B3EDC77">
+						<file name="2B3EDC77.cer" />
 					</require>
-					<require type="cert" name="5a960203">
-						<file name="5a960203.cer" />
+					<require type="cert" name="2F4E6444">
+						<file name="2F4E6444.cer" />
 					</require>
-					<require type="cert" name="a02a23d1">
-						<file name="a02a23d1.cer" />
+					<require type="cert" name="5A960203">
+						<file name="5A960203.cer" />
+					</require>
+					<require type="cert" name="31bd6aef">
+						<file name="31bd6aef.cer" />
+					</require>
+					<require type="cert" name="A02A23D1">
+						<file name="A02A23D1.cer" />
 					</require>
 					<require type="cert" name="bf167150">
 						<file name="bf167150.cer" />
 					</require>
 				</system>
 				<system type="All" cpu="64">
+					<require type="classid" classid="73E4740C-08EB-4133-896B-8D0A7C9EE3CD">
+					</require>
+					<require type="classid" classid="8D9E0B29-563C-4226-86C1-5FF2AE77E1D2">
+					</require>
 				    <require type="activex" name="capicom1" reg="reg-64">
 					    <file name="capicom.dll" />
 				    </require>	
+					<require type="cert" name="2abc81b0">
+						<file name="2abc81b0.cer" />
+					</require>
+					<require type="cert" name="2B3EDC77">
+						<file name="2B3EDC77.cer" />
+					</require>
+					<require type="cert" name="2F4E6444">
+						<file name="2F4E6444.cer" />
+					</require>
+					<require type="cert" name="5A960203">
+						<file name="5A960203.cer" />
+					</require>
+					<require type="cert" name="31bd6aef">
+						<file name="31bd6aef.cer" />
+					</require>
+					<require type="cert" name="A02A23D1">
+						<file name="A02A23D1.cer" />
+					</require>
+					<require type="cert" name="bf167150">
+						<file name="bf167150.cer" />
+					</require>
 				</system>
 			</requirements>
 			<pages>

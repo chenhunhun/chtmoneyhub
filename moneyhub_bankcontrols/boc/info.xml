@@ -10,6 +10,8 @@
 			</domains>
 			<requirements>
 				<system type="WinXP" cpu="0">
+					<require type="classid" classid="776B71E2-B4CC-4C94-BC7C-09103AA690B6">
+					</require>
 					<require type="activex" name="process_protect" reg="reg_processprotect">
 						<file name="ProcessProtection.dll" />
 					</require>
@@ -30,6 +32,8 @@
 					</require>
 				</system>
 				<system type="Win7" cpu="0">
+					<require type="classid" classid="776B71E2-B4CC-4C94-BC7C-09103AA690B6">
+					</require>
 					<require type="activex" name="process_protect" reg="reg_processprotect">
 						<file name="ProcessProtection.dll" />
 					</require>
@@ -46,6 +50,8 @@
 				</system>
 				
 				<system type="WinVista" cpu="0">
+					<require type="classid" classid="776B71E2-B4CC-4C94-BC7C-09103AA690B6">
+					</require>
 					<require type="activex" name="process_protect" reg="reg_processprotect">
 						<file name="ProcessProtection.dll" />
 					</require>
