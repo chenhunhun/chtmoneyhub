@@ -12,67 +12,19 @@
 					<require type="activex" name="a" reg="new">
 						<file name="BjrcbCom.dll" />
 					</require>
-					<require type="activex" name="b" reg="new">
-						<file name="BjrcbEdit.dll" />
+					<require type="classid" classid="74C7AC8A-E5E0-4410-808B-919741E496E6">
 					</require>
-					<require type="activex" name="c" reg="new">
-						<file name="certrustool_bjrcb.dll" />
+					<require type="classid" classid="46172480-20aa-48f8-9908-11fd76d3cd8c">
 					</require>
-					<require type="activex" name="d" reg="new">
-						<file name="CheckVersionControl.ocx" />
+					<require type="classid" classid="A0D97A29-18A2-4cea-A6E8-3DE86CEB0598">
 					</require>
-					<require type="activex" name="e" reg="new">
-						<file name="CSPMakeCert.ocx" />
-					</require>
-					<require type="activex" name="f" reg="new">
-						<file name="ctor.dll" />
-					</require>
-					<require type="activex" name="g" reg="new">
-						<file name="HXEdit.ocx" />
-					</require>
-					<require type="activex" name="h" reg="new">
-						<file name="iesign.ocx" />
-					</require>
-					<require type="activex" name="i" reg="new">
-						<file name="InstallCertListAx.ocx" />
-					</require>
-					<require type="activex" name="j" reg="new">
-						<file name="iscript.dll" />
-					</require>
-					<require type="activex" name="k" reg="new">
-						<file name="iuser.dll" />
-					</require>
-					<require type="activex" name="l" reg="new">
-						<file name="jitenc.dll" />
-					</require>
-					<require type="activex" name="m" reg="new">
-						<file name="objectps.dll" />
-					</require>
-					<require type="activex" name="n" reg="new">
-						<file name="PECIN.dll" />
-					</require>
-					<require type="activex" name="o" reg="new">
-						<file name="PowerEnter.ocx" />
+					<require type="classid" classid="F3E92562-1B4D-4BFA-B2D4-E9BCABE3B6AA">
 					</require>
 				</system>
 			</requirements>
 			<pages>
 				<page url="https://ebank.bjrcb.com/ent/prelogin.do">
 					<require name="a" />
-					<require name="b" />
-					<require name="c" />
-					<require name="d" />
-					<require name="e" />
-					<require name="f" />
-					<require name="g" />
-					<require name="h" />
-					<require name="i" />
-					<require name="j" />
-					<require name="k" />
-					<require name="l" />
-					<require name="m" />
-					<require name="n" />
-					<require name="o" />
 				</page>
 				</pages>	
 	</site>

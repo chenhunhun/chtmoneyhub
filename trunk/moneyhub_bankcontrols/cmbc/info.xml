@@ -8,6 +8,12 @@
 			</domains>
 			<requirements>
 				<system type="All" cpu="0">
+					<require type="classid" classid="60931F6C-3ED3-4713-AEC6-6A59BF761B23">
+					</require>
+					<require type="classid" classid="03ACC284-B757-4B8F-9951-86E600D2CD06">
+					</require>
+					<require type="classid" classid="85599589-00AA-11D7-A7D0-00E04C3F6D70">
+					</require>
 					<require type="activex" name="CFCACertKitAx" reg="reg">
 						<file name="CFCACertKitAx.dll" />
 					</require>

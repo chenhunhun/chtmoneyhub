@@ -9,6 +9,8 @@
 			</domains>
 			<requirements>
 				<system type="All" cpu="0">
+					<require type="classid" classid="749729D7-2D57-4AB0-93AA-452C619731F0">
+					</require>
 					<require type="activex" name="cibclient" reg="cibclient">
 						<file name="CIBClient.ocx" />
 					</require>

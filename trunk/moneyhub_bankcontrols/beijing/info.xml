@@ -25,6 +25,8 @@
 					</require>
 					<require type="exe" btype="file" IsInstallName="%ProgramFiles%\Feitian\BJCA-FT11\bjcacertd_ft11.exe" name="bjca02.exe">
 				    </require>
+					<require type="classid" classid="7208FB6D-EE30-4734-82C7-59BB71C5C0CE">
+				    </require>
 				</system>
 			</requirements>
 			<pages>
