@@ -1,0 +1,47 @@
+import "oaidl.idl";
+import "ocidl.idl";
+
+
+[
+	object,
+	uuid(02B40C37-EEF0-4b9b-A197-0A8F7C5AA6C8),
+	dual,
+	helpstring("IBankCube Interface"),
+	pointer_default(unique)
+]
+interface IBankCube : IDispatch
+{
+	HRESULT SendData([in] BSTR strURL, [in] BSTR strPostInfo);
+};
+
+
+[
+	uuid(F7FADB2E-53C8-47d2-ABD6-7B9A2FFED746),
+	version(1.0),
+	helpstring("Bank Cube ActiveX Type Library")
+]
+library BankCubeActiveXLib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	[
+		uuid(76FFF751-E2FB-4cbc-B7B0-B42C370F97A4),
+		helpstring("_IBankCubeEvents Interface")
+	]
+	dispinterface _IBankCubeEvents
+	{
+		properties:
+		methods:
+	};
+
+	[
+		uuid(3A62635B-689F-40d6-81AA-47832F843A81),
+		helpstring("Bank Cube Class")
+	]
+	coclass BankCube
+	{
+		[default] interface IBankCube;
+		[default, source] dispinterface _IBankCubeEvents;
+	};
+};

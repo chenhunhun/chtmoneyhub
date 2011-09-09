@@ -1,0 +1,110 @@
+@charset "utf-8";
+html{overflow:hidden; height:100%;}
+body {font:12px/18px "宋体"; overflow:hidden;}
+.scover{ position:absolute; top:0; left:0; background:#000; opacity:0.4; filter:alpha(opacity=40); width:100%; height:100%; z-index:10;}
+body, ul, li ,table,td,tr,tbody,button,dl,dd,dt{padding:0;margin:0;}
+ul{list-style:none;}
+td,tr,table{border:none; border-collapse:collapse;}
+.clear{overflow:hidden; zoom:1; clear:both;}
+
+.wraper{overflow:hidden;zoom:1; width:100%; height:100%;}
+.mainl{float:left;width:310px;height:100%;}
+.mainr{margin-left:310px;}
+
+.ltop{height:40px; background:#caebff;}
+.ltop span{ float:left; color:#3579a7; font-weight:bold; line-height:40px; text-indent:4px;}
+.ltop button{ float:right; height:25px; width:65px; margin:7px 8px 0 0; background:url(../images/add_e.gif) no-repeat; border:none; cursor:pointer;}
+
+.alarmlist{ margin:8px 0 0 0; padding:0 12px 0 10px;overflow-x:hidden; overflow-y:auto; border-bottom:1px solid #CFE1EF;}
+.alarmlist li{overflow:hidden; zoom:1; clear:both; margin-bottom:8px; height:28px}
+.ifdiv{ text-align:center; padding:1px 5px 0; overflow:hidden;}
+
+.today .event_c{ float:left; height:28px;width:216px; line-height:28px; background:url(../images/red_m.gif) no-repeat; color:#dd3636;}
+.not_yet .event_c{ float:left; height:28px;width:216px; line-height:28px; background:url(../images/yellow_m.gif) no-repeat;color:#b67f08;}
+.notice .event_c{ float:left; height:28px;width:216px; line-height:28px; background:url(../images/gray_m.gif) no-repeat;color:#999999;}
+.notice .event_op .btn1,.notice .event_op .btn2,
+.today .event_op .btn3,.not_yet .event_op .btn3{ display:none;}
+
+.event_c span{float:left;}
+.date{width:76px; text-indent:28px;padding-right:4px;}
+.ctt{overflow:hidden; width:78px;padding-right:4px;}
+.rmd{text-align:right;width:50px;}
+.event_op{float:right; height:28px;width:55px;}
+.event_op .btn1,.event_op .btn2,.event_op .btn3{display:block; float:left; cursor:pointer}
+/*.event_op .btn1{width:28px;height:28px; background:url(../images/block.gif) no-repeat;}*/
+.event_op .btn2{width:57px;height:28px; background:url(../images/stopalert.gif) no-repeat;}
+.event_op .btn3{width:57px;height:30px; background:url(../images/realert.gif) no-repeat;}
+
+.gtoday{ float:right; width:42px; height:25px; margin:6px 10px 0 0; display:inline;background:url(../images/today.png) no-repeat; cursor:pointer;}
+.calendar_wrap{text-align:left; float:right;width:100%;}
+.calt{width:100%; height:37px; background:url(../images/calbg.gif) repeat-x;}
+.calcont{width:180px; margin:0 auto; height:37px;}
+.calcont .thism{float:left; line-height:30px; margin-top:5px; width:124px; font-weight:bold; text-align:center; color:#3e637c;}
+.calcont .prem,.calcont .nextm{height:37px; width:28px; background:url(../images/prem.gif) no-repeat; float:left;display:block;cursor:pointer;}
+.calcont .nextm{background:url(../images/nextm.gif) no-repeat; float:right;}
+.c_head {height:20px;background:#e6f6ff;text-align:center; width: 100%; height:100%; border-collapse:collapse;table-layout:fixed;}
+.c_head td {height:20px; text-align:center; line-height:20px;border:1px solid #8fcaeb; border-bottom:0;}
+.c_head .weekend,.c_head .weekday {color:#024479;}
+.c_body {width:100%;overflow:hidden; position:relative;border-bottom:1px solid #cfe1ef;}
+.c_body td{border:1px solid #cfe1ef; border-bottom:0;vertical-align:top; height:100%;color:#3e637c;}
+.c_body .row_table{width: 100%; height:100%; table-layout:fixed; position:relative;border-collapse:collapse;}
+.mspan{margin-left:6px;}
+.dspan{font-size:12px;padding:0 2px 0 4px; float:left; line-height:18px;}
+.lunar{float:left; color:#999;line-height:18px;}
+
+#layday{ position:absolute!important; height:auto; z-index:9; border:1px solid #FFB2B2; background:#fff; padding-bottom:1px;}
+.day,.currentDay {position:relative; height:100%; margin:0 1px 0 0; overflow:hidden; cursor:default;}
+.currentDay {background:#fff1f1;}    /*当天的框的背景色*/
+.fday {color:#81aacb;}   /*非本月图框、文字颜色*/
+.fday .dspan,.fday .lunar {color:#999999;}
+.fday { height:100%;overflow:hidden; cursor:default;background: #F8F8F8;}
+
+a.more{float:right; text-decoration:none; color:#999; margin-right:2px; display:inline;}
+a.more:hover{text-decoration:underline}
+.evt_c1{ margin:1px 2px 0; border-width:1px 0; border-color:#fad999;border-style:solid; clear:both;}
+.evt_c2{ border-width:0 1px 0 1px; border-color:#fad999;border-style:solid;zoom:1\9;+zoom:0;margin:0 -1px;}
+.evt_cc{ cursor:pointer; background:#fad999;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; width:100%;text-indent:3px; color:#b67f08;}
+
+.currentDay .evt_c1{border-color:#ffb2b2;}
+.currentDay .evt_c2{border-color:#ffb2b2;}
+.currentDay .evt_cc{background:#ffb2b2; color:#dd3636;}
+
+.evt_ly{height:259px; width:398px; overflow:hidden; position:absolute; top:30%; left:50%; margin-left:-200px; z-index:200;}
+.evtlybg{height:259px; width:398px; position:absolute; top:0; left:0; z-index:100;background:url(../images/eventbg.png) no-repeat;_background:none;_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/eventbg.png',sizingMethod='crop');}
+.evtct{ height:240px; width:378px; position:absolute; top:2px; left:10px;z-index:200;}
+
+.evt_edit{margin:16px 0 0 18px; height:184px;}
+.evt_edit dt{ float:left; clear:both; height:24px; width:54px; line-height:24px; margin-bottom:10px;color:#3e637c; font-weight:bold;white-space:nowrap ;}
+.evt_edit .spel{width:auto;}
+.evt_edit dd{ float:left; height:24px;line-height:24px;padding-left:10px; margin-bottom:12px; color:#3e637c; +float:none;}
+.dateselect{ line-height:24px; color:#3e637c; text-indent:8px; background:url(../images/minic.gif) right center no-repeat; width:198px; padding-right:20px; cursor:pointer;}
+.evt_text{ background:url(../images/inputbg.gif) right 0 no-repeat; width:277px;}
+.evt_text input{border:none; padding-left:6px; color:#3e637c;padding-top:2px; background:none; height:20px; line-height:20px;width:270px;}
+.radio li{ float:left; background:url(../images/radio.gif) 0 center no-repeat; padding-left:18px; margin-right:6px; cursor:pointer;}
+.radio li.cur{background:url(../images/radioed.gif) 0 center no-repeat;}
+.remindday{ background:url(../images/area.gif) no-repeat; float:left;cursor:pointer;height:24px; width:44px; margin-right:4px; text-align:center; position:relative;}
+.remindday .uparrow,.remindday .downarrow{ float:right;height:12px; width:24px;background:url(../images/up.gif) no-repeat right 0; border:none; cursor:pointer; position:absolute; right:0;top:0;}
+.remindday .downarrow{background:url(../images/down.gif) no-repeat right 0; position:absolute; right:0;top:12px;}
+.remindday  .rd{ float:left; text-indent:4px; width:20px; text-align:center}
+
+/*.scover{ position:absolute; top:0; left:0; background:#000; opacity:0.4; filter:alpha(opacity = 40); width:378px; height:240px; z-index:100;} */
+.mention{ background:url(../images/sure_layer.gif) no-repeat; width:268px; height:118px; position:absolute; z-index:101; top:56px; left:56px;}
+.mtctt{ background:url(../images/mention.gif) 42px 24px no-repeat;padding:30px 0 0 84px; height:50px; color:#3E637C; font-weight:bold; line-height:22px;}
+
+#minicalendar{ top:39px; left:88px;  _left:91px; position:absolute; z-index:100;}
+.mini_head{height:30px;width:178px; padding:0 20px;background:url(../images/minihead.gif) no-repeat; overflow:hidden;zoom:1;}
+.mini_head .prem,.mini_head .nextm{float:left; height:30px; width:26px; cursor:pointer;}
+.mini_head #select_date{ float:left; width:126px; height:30px; line-height:30px; text-align:center; color:#3E637C; font-weight:bold;}
+.minibody {width:218px;overflow:hidden; position:relative; z-index:100; margin-top:-1px; border-bottom:1px solid #8fcaeb;}
+.minibody li{float:left;display:inline;width:30px;height:20px;line-height:20px;border:1px solid #8fcaeb; text-align:center;}
+.minibody li {position:relative; margin:0 -1px -1px 0;color:#3e637c; background:#fff;}
+.minibody li.day,.minibody li.currentDay {cursor:pointer;}
+.minibody li.currentDay { border:1px solid #ff9f9f; z-index:100; background:#fff1f1;}
+.minibody li.fday {color:#acc8de;}
+.minibody li.pass{color:#999; cursor:default;}
+.minibody .cur{ background:#3E9;}
+
+.rmlay{ border:1px solid #68abd8; position:absolute; top:147px; left:87px; _left:90px; background:#FFF; width:42px;}
+.rmlay li a{ height:22px; line-height:22px; color:#3e637c; display:block; text-decoration:none; text-align:center;}
+.rmlay li a:hover{ color:#3e637c; text-decoration:none; background:#d5eaf9; font-weight:bold;}
+.rmlay li a.cur{background:#eaf4fa;}

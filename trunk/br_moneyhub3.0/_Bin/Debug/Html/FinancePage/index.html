@@ -1,0 +1,626 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>我的账本</title>
+<link type="text/css" rel="stylesheet" href="./style/redmond/jquery-ui-1.8.12.custom.css" />
+<link type="text/css" rel="stylesheet" href="./style/jquery.ui.tabs.css" />
+<link type="text/css" rel="stylesheet" href="../style/style.css" />
+<link type="text/css" rel="stylesheet" href="./style/style.css" />
+
+<script type="text/javascript" src="./scripts/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="./scripts/jquery/jquery-ui.min.js"></script>
+<script type="text/javascript" src="./scripts/jquery/ui/jquery.ui.datepicker.js"></script>
+<script type="text/javascript" src="./scripts/jquery/ui/jquery.ui.datepicker-zh-CN.js"></script>
+<script type="text/javascript" src="./scripts/jquery/jquery.easing.1.3.js"></script>
+<script type="text/javascript" src="./scripts/jquery/jquery.mousewheel.min.js"></script>
+<script type="text/javascript" src="./scripts/jquery/jquery.mCustomScrollbar.js"></script>
+<script type="text/javascript" src="./scripts/jquery/jquery.bgiframe.js"></script>
+<script type="text/javascript" src="./scripts/jquery/jquery.focus.js"></script>
+<!--数据校验-->
+<script type="text/javascript" src="./scripts/jquery/jquery.metadata.js"></script>
+<script type="text/javascript" src="./scripts/jquery/jquery.validate.js"></script>
+<script type="text/javascript" src="./scripts/jquery/jquery.validate.additional.methods.js"></script>
+<script type="text/javascript" src="./scripts/jquery/messages_cn.js"></script>
+
+<script type="text/javascript" src="./scripts/json2.js"></script>
+<!--
+<script type="text/javascript" src="./scripts/interface.js"></script>
+<script type="text/javascript" src="./scripts/finance_func.js"></script>
+-->
+<script type="text/javascript" src="./scripts/interface.mhs"></script>
+<script type="text/javascript" src="./scripts/finance_func.mhs"></script>
+
+</head>
+<body>
+<div id="dLeft">
+	<div id="dLeftHeader">
+		<div id="dAllAccounts" onclick="closeTrans();renderTransView('', '');">所有账户</div>
+	</div>
+	<div id="dLeftAccount">
+		<div class="customScrollBox">
+			<div class="container">
+				<div class="content">
+		    		<div id="accountList">
+					</div>
+					<div id="dLeftAdd">
+						<a href="javascript:showAdd('main');"><img src="images/new.png" alt="新建账户" /></a>
+					</div>
+				</div>
+			</div>
+			<div class="dragger_container" id="dLeftDragger">
+	    		<div class="dragger">=</div>
+			</div>
+		</div>
+	</div>
+	<div id="dLeftSum">
+	</div>
+</div>
+
+<div id="dRight">
+	<div id="dRightButtons">
+		<ul id="bank_tabs_title" class="nav_ul">
+			<li class="f_l">收入</li>
+			<li>支出</li>
+			<li class="f_e">转账</li>
+		</ul>
+	</div>
+	<div id="dRightDetail" style="display:none;">
+		<div id="dRDBack">
+			<div id="dRDBack1"></div>
+			<div id="dRDBack2"></div>
+			<div id="dRDBack3"></div>
+			<div id="dRDBack4"></div>
+			<div id="dRDBack5"></div>
+		</div>
+		<form name="addTrans" id="addTrans" class="transEditFromSign">
+			<div id ="dRDContent">
+				<div id="dRDetailTop">新建收入</div>
+				<div id="dRDetailBottom">
+					<div id="dRDetailLeft"></div>
+					<div id="dRDetailRight"></div>
+					<div id="dRDetailSave" class="dRDetailSave">
+						<div class="dRDRItem dTextarea">
+							<div class="dRDRLabel">
+								备注：
+							</div>
+							<div class="dRDRField">
+								<div>
+									<div class="dRDRInput">
+										<textarea id="comment" class="iLimitLength" name="comment" /></textarea>
+									</div>
+								</div>
+								<div class="dValidation">&nbsp;</div>
+							</div>
+						</div>
+						<div id="dRDRButtons">
+							<img id="iDelete" src="../images/del_btn.gif" alt="删除" />
+							<img id="iCancel" src="../images/cancel_btn.gif" onclick="closeTrans();" alt="取消" />
+							<img id="iSave" src="../images/save_btn.gif" alt="保存" />
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div id="accountDiv">
+		<div id="accountBack">
+			<div id="accountBack1"></div>
+			<div id="accountBack2"></div>
+			<div id="accountBack3"></div>
+		</div>
+		<div id="accountInfo">
+			<div id="dAIName">
+			</div>
+			<div id="dAISum">
+				余额折合人民币：<span id="dAIValue">123</span>元
+			</div>
+		</div>
+	</div>
+	
+	<!--<div id="accountInfo"><a href="report.html">report页面</a></div>-->
+	<div id="dRightRecords">
+		<div class="dRRBackground">
+			<div class="dRRBLeft"></div>
+			<div class="dRRBCenter"></div>
+			<div class="dRRBRight"></div>
+		</div>
+		<div id="dRTHeader">
+			<table class="dRTTable">
+				<tr>
+					<td>时间</td>
+					<td>分类</td>
+					<td>收入金额</td>
+					<td>支出金额</td>
+					<td>账户</td>
+					<td>收款/付款方</td>
+					<td>备注</td>
+				</tr>
+			</table>
+		</div>
+		<div id="dRRDetail">
+			<div id="dLoading" style="display:none;">
+				<img src="images/loading.png" />
+			</div>
+			<div class="customScrollBox">
+				<div class="container" id="dRightContainer">
+		    		<div id="transContent" class="content" validate="{rangelength:[1,30]}">
+						<table id="dRightTableTrans" class="dRightTable">
+							<tr>
+								<td>&nbsp;</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div class="dragger_container" id="dRightDragger">
+		    		<div class="dragger">=</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="topw">
+	</div>
+</div>
+
+<!--<div><a href="javascript:closeBillList();">测试回调</a></div>-->
+
+<!--一级遮盖层-->
+<div class="scover" id="scover" style="display:none"></div>
+<!--二级遮盖层-->
+<div class="scover1" id="scover1" style="display:none"></div>
+
+
+<!--添加新账户-->
+<div id="main" class="addBox">
+	<h1>新建账户</h1>
+	<div id="addAccount_step1" class="dStep1">
+		<form id="accountForm1">
+			<div class="dEAItem">
+				 <div class="dRDRLabel">账户类型：</div>
+				 <div class="dRDRField">
+				 	<div>
+						<span id="aType">
+							<select id="combo" name="accounttype" validate="{required:['账户类型']}" class="select">
+							</select>
+						</span>
+						<span class="sRDRStar">*</span>
+					</div>
+					<div class="dValidation">&nbsp;</div>
+				</div>
+			</div>
+			<div class="dEAItem">
+				 <div class="dRDRLabel">账户名称：</div>
+				 <div class="dRDRField">
+				 	<div>
+						<span class="sRDRInput">
+							<div class="dRDRInput">
+								<input id="name" type="text" name="name" class="iLimitLength" validate="{required:['账户名称'], unique:['账户名']}" />
+							</div>
+						</span>
+						<span class="sRDRStar">*</span>
+					</div>
+					<div class="dValidation">&nbsp;</div>
+				</div>
+			</div>
+			<div id="changeContent"></div>
+			<div class="dEAItem dTextarea">
+				<div class="dRDRLabel">备注：</div>
+				<div class="dRDRField">
+					<div>
+						<div class="dRDRInput">
+							<textarea id="content" name="description" class="iLimitLength" / ></textarea>
+						</div>
+					</div>
+					<div class="dValidation">&nbsp;</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div id="addAccount_step2" style="display:none" >
+		<div class="dEABack">
+			<div class="dEABack1"></div>
+			<div class="dEABack2">新建子账户</div>
+			<div class="dEABack3"></div>
+			<div class="editArea">
+				<div id="dEAType2" style="display:none;">
+					<form id="accountForm2">
+						<div id="dEALeft" class="dEALeft">
+							<div class="dEAItem">
+								 <div class="dRDRLabel">币种：</div>
+								 <div class="dRDRField">
+								 	<div>
+									 	<span class="sRDRInput">
+								 			<select id="currency" name="currency" class="currency"></select>
+								 		</span>
+										<span class="sRDRStar">*</span>
+									</div>
+									<div class="dValidation">&nbsp;</div>
+								</div>
+							</div>
+						</div>
+						<div id="dEARight" class="dEARight">
+							<div class="dEAItem">
+								 <div class="dRDRLabel">初始欠款：</div>
+								 <div class="dRDRField">
+								 	<div>
+									 	<span class="sRDRInput">
+											<div class="dRDRInput">
+								 				<input type="text" name="balance2" id="balance2" value="0.00" validate="{required:['初始欠款'], number:['初始欠款'], range:[-99999999999.99, 99999999999.99, '初始欠款']}" class="iMoney" >
+								 			</div>
+								 		</span>
+										<span class="sRDRStar">*</span>
+									</div>
+									<div class="dValidation"><span>指您开始记账的日期之前未还的消费额</span></div>
+								</div>
+							</div>
+						</div>
+						<div id="dEAButtons" class="dEAButtons">
+							<div class="bDelete" style="display:none;"></div>
+							<div class="bCancel"></div>
+							<div class="bAdd"></div>
+						</div>
+					</form>
+				</div>
+				<div id="dEAType3" style="display:none;">
+					<form id="accountForm3">
+						<div id="dEALeft" class="dEALeft">
+							<div class="dEAItem">
+								<div class="dRDRLabel">子账户类型：</div>
+								<div class="dRDRField">
+								 	<div>
+									 	<span class="sRDRInput">
+								 			<select id="myType" name="myType"></select>
+								 		</span>
+										<span class="sRDRStar">*</span>
+									</div>
+									<div class="dValidation">&nbsp;</div>
+								</div>
+							</div>
+							<div class="dEAItem">
+								<div class="dRDRLabel">币种：</div>
+								<div class="dRDRField">
+								 	<div>
+									 	<span class="sRDRInput">
+								 			<select id="currency" name="currency" class="currency"></select>
+								 		</span>
+										<span class="sRDRStar">*</span>
+									</div>
+									<div class="dValidation">&nbsp;</div>
+								</div>
+							</div>
+							<div class="dEAItem">
+								<div class="dRDRLabel" id="duringTxt">存期：</div>
+								<div class="dRDRField">
+								 	<div>
+									 	<span class="sRDRInput">
+											<div class="dRDRInput">
+								 				<select id="during" name="during"></select>
+								 			</div>
+								 		</span>
+									</div>
+									<div class="dValidation">&nbsp;</div>
+								</div>
+							</div>
+						</div>
+						<div id="dEARight" class="dEARight">
+							<div class="dEAItem">
+								<div class="dRDRLabel">子账户名：</div>
+								<div class="dRDRField">
+								 	<div>
+									 	<span class="sRDRInput">
+											<div class="dRDRInput">
+								 				<input type="text" name="subName" class="iLimitLength" id="subName" validate="{required:['子账户名'], unique:['子账户名']}" />
+							 					<input type="hidden" id="subNameId" value="">
+								 			</div>
+								 			<input type="hidden" id="accountIdForCheck" value="" />
+								 		</span>
+										<span class="sRDRStar">*</span>
+									</div>
+									<div class="dValidation">&nbsp;</div>
+								</div>
+							</div>
+							<div class="dEAItem">
+								<div class="dRDRLabel">初始余额：</div>
+								<div class="dRDRField">
+								 	<div>
+									 	<span class="sRDRInput">
+											<div class="dRDRInput">
+								 				<input type="text" name="balance3" id="balance3" value="0.00" class="iMoney" validate="{required:['初始余额'], number:['初始余额'], range:[-99999999999.99, 99999999999.99, '初始余额']}" />
+								 			</div>
+								 		</span>
+										<span class="sRDRStar">*</span>
+									</div>
+									<div class="dValidation">&nbsp;</div>
+								</div>
+							</div>
+							<div class="dEAItem">
+								<div class="dRDRLabel" id="endDateTxt">到期日：</div>
+								<div class="dRDRField">
+								 	<div>
+									 	<span class="sRDRInput">
+											<div class="dRDRInput">
+								 				<input type="text" id="endDate" readonly="true" name="endDate">
+								 			</div>
+								 		</span>
+										<span class="sRDRStar"></span>
+									</div>
+									<div class="dValidation">&nbsp;</div>
+								</div>
+							</div>
+						</div>
+						<div id="dEAButtons" class="dEAButtons">
+							<div class="bDelete" style="display:none;"></div>
+							<div class="bCancel"></div>
+							<div class="bAdd"></div>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="dEABack7"></div>
+			<div class="dEABack8"></div>
+			<div class="dEABack9"></div>
+		</div>
+		<div class="dSATitle">已建立的子账户</div>
+		<div id="dUpperTable">
+			<div class="dRRBackground">
+				<div class="dRRBLeft"></div>
+				<div class="dRRBCenter"></div>
+				<div class="dRRBRight"></div>
+			</div>
+			<div id="dRTHeader">
+				<table class="dRTTable">
+					<tr>
+					</tr>
+				</table>
+			</div>
+			<div id="dRRDetail">
+				<div class="customScrollBox">
+					<div class="container" id="dRightContainer">
+			    		<div id="transContent" class="content">
+							<table id="dRightTable" class="dRightTable">
+								<tr>
+									<td>&nbsp;</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+					<div class="dragger_container" id="dRightDragger">
+			    		<div class="dragger">=</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--添加新银行-->
+<form id="bankForm">
+<div id="addMyBank" class="addBox">
+	<h1>新建金融机构</h1>
+	<div id="addBank_step1" class="dStep1" validate="{require:true;}">
+		<div class="dEABack">
+			<div class="dEABack1"></div>
+			<div class="dEABack2">编辑金融机构</div>
+			<div class="dEABack3"></div>
+			<div class="editArea">
+				<div id="dEAType2">
+					<div id="dEALeft">
+						<div class="dEAItem">
+							<div class="dRDRLabel">名称：</div>
+							<div class="dRDRField">
+								<div class="sRDRInput">
+									<div class="dRDRInput">
+										<input type="text" id="newBank" class="iLimitLength" name="newBank" validate="{required:['名称'], unique:['机构名称']}" />
+							 			<input type="hidden" id="bankId" value="">
+									</div>
+								</div>
+								<div class="dValidation">&nbsp;</div>
+							</div>
+						</div>
+					</div>
+					<div id="dEAButtons">
+						<div class="bDelete" id="bDelete" style="display:none;"></div>
+						<div class="bCancel" style="display:none;"></div>
+						<div class="bAdd"></div>
+					</div>
+				</div>
+			</div>
+			<div class="dEABack7"></div>
+			<div class="dEABack8"></div>
+			<div class="dEABack9"></div>
+		</div>
+		<div class="dSATitle">已添加的金融机构</div>
+		<div id="dUpperTable">
+			<div class="dRRBackground">
+				<div class="dRRBLeft"></div>
+				<div class="dRRBCenter"></div>
+				<div class="dRRBRight"></div>
+			</div>
+			<div id="dRTHeader">
+				<table class="dRTTable">
+					<tr>
+						<td width="100">名称</td>
+					</tr>
+				</table>
+			</div>
+			<div id="dRRDetail">
+				<div class="customScrollBox">
+					<div class="container" id="dRightContainer">
+			    		<div id="transContent" class="content">
+							<table id="bankTable" class="dRightTable">
+								<tr>
+									<td>&nbsp;</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+					<div class="dragger_container" id="dRightDragger">
+			    		<div class="dragger">=</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</form>
+<!--添加新分类-->
+<form id="categoryForm">
+<div id="addMyCategory" class="addBox">
+	<a class="closex" href="javascript:closeAddCategory();">x</a>
+	<h1>新建分类</h1>
+	<div id="categoryStep1" class="dStep1">
+		分类名称：<br />
+		<input type="text" id="newCategory" />
+		<br />这个分类属于：<br />
+		<select id="category1" onchange="changeAddCateGoryView(this.options[this.options.selectedIndex].value)">
+			<option>a</option>
+		</select>
+		<br />
+		<div id="childCategory" style="display:none">
+			添加下属二级分类：<br /><input type="text" id="category2" /><br />
+			<a href="javascript:addCategory2View()">添加更多</a>
+			<div id="already" style="display:">
+				已添加的二级分类：
+				<ul>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<button id="bOK" onclick="handleAddMyCategory();">确定</button>
+</div>
+</form>
+<!--添加新支付对象-->
+<form id="payeeForm">
+<div id="addMyPayee" class="addBox">
+	<h1>新建收支对象</h1>
+	<div id="payeeStep1" class="dStep1">
+		<div class="dEABack">
+			<div class="dEABack1"></div>
+			<div class="dEABack2">编辑收付对象</div>
+			<div class="dEABack3"></div>
+			<div class="editArea">
+				<div id="dEAType2">
+					<div id="dEALeft">
+						<div class="dEAItem">
+							<div class="dRDRLabel">名称：</div>
+							<div class="dRDRField">
+								<div>
+									<span class="sRDRInput">
+										<div class="dRDRInput">
+											<input type="text" id="newPayee" class="iLimitLength" name="newPayee" validate="{required:['名称'], unique:['收付款方名称']}" />
+								 			<input type="hidden" id="payeeId" value="">
+										</div>
+									</span>
+									<span class="sRDRStar">*</span>
+								</div>
+								<div class="dValidation">&nbsp;</div>
+							</div>
+						</div>
+						<div class="dEAItem">
+							<div class="dRDRLabel">电话：</div>
+							<div class="dRDRField">
+								<div class="sRDRInput">
+									<div class="dRDRInput">
+										<input type="text" id="payeeTel" class="iLimitLength" name="payeeTel" />
+									</div>
+								</div>
+								<div class="dValidation">&nbsp;</div>
+							</div>
+						</div>
+					</div>
+					<div id="dEARight">
+						<div class="dEAItem">
+						</div>
+						<div class="dEAItem">
+							<div class="dRDRLabel">电子邮件：</div>
+							<div class="dRDRField">
+								<div class="sRDRInput">
+									<div class="dRDRInput">
+										<input type="text" id="payeeMail" class="iLimitLength" name="payeeMail" />
+									</div>                                                                        
+								</div>
+								<div class="dValidation">&nbsp;</div>
+							</div>
+						</div>
+					</div>
+					<div id="dEAButtons">
+						<div class="bDelete" id="bDelete" style="display:none;"></div>
+						<div class="bCancel"></div>
+						<div class="bAdd"></div>
+					</div>
+				</div>
+			</div>
+			<div class="dEABack7"></div>
+			<div class="dEABack8"></div>
+			<div class="dEABack9"></div>
+		</div>
+		<div id="dSATitle" class="dSATitle">已添加的付款人</div>
+		<div id="dUpperTable">
+			<div class="dRRBackground">
+				<div class="dRRBLeft"></div>
+				<div class="dRRBCenter"></div>
+				<div class="dRRBRight"></div>
+			</div>
+			<div id="dRTHeader">
+				<table class="dRTTable">
+					<tr>
+						<td width="200">名称</td><td width="200">电话</td><td>电子邮件</td>
+					</tr>
+				</table>
+			</div>
+			<div id="dRRDetail">
+				<div class="customScrollBox">
+					<div class="container" id="dRightContainer">
+			    		<div id="transContent" class="content">
+							<table id="payeeTable" class="dRightTable">
+								<tr>
+									<td>&nbsp;</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+					<div class="dragger_container" id="dRightDragger">
+			    		<div class="dragger">=</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</form>
+
+<!--删除子账户-->
+<div id="deleteSub" style="display:none" class="deleteSub">
+	<span>
+		您是否要删除这笔记录？<br />
+		<a href="javascript:submitDelete()">确定</a><a href="javascript:cancelSubmit()">取消</a>
+	</span>
+</div>
+
+
+<!--账单抓取-->
+<form id="billForm">
+<div id="getCreditCardBillList" class="addBox">
+	<h1>在线导入电子账单</h1>
+	<div id="addAccount_step1" class="dStep1">
+		<div class="dEAItem">
+			 <div>导入账单日期：</div>
+			 <div class="dRDRField">
+			 	<div>
+					<span>
+						<select id="selectMonth" name="selectMonth" validate="{required:['日期']}">
+						</select>
+					</span>
+					<span class="sRDRStar">*</span>
+				</div>
+				<div class="dValidation">&nbsp;</div>
+			</div>
+		</div>
+	</div>
+	<input id="creditCardAccountId" type="hidden" />
+</div>
+</form>
+
+<!--debugInfoView-->
+<div id="debug"></div>
+</body>
+</html>

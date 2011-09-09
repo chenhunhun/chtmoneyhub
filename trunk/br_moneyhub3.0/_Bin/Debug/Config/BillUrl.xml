@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<main>
+  <category name="config" version="2.0.0.0">
+  </category>
+  <urllist>
+	<site id="a006" name="招商银行" dll="cmbchina.dll">
+		<type type="2">
+		<step seq="1">https://pbsz.ebank.cmbchina.com/CmbBank_GenShell/UI/GenShellPC/Login/Login.aspx</step>
+		<step seq="2">https://pbsz.ebank.cmbchina.com/CmbBank_GenShell/UI/GenShellPC/Login/GenIndex.aspx</step>
+		<step seq="3">https://pbsz.ebank.cmbchina.com/CmbBank_CreditCard/UI/Base/Blank.htm</step>
+		<step seq="99">https://pbsz.ebank.cmbchina.com/CmbBank_CreditCard/UI/CreditCardPC/CreditCard/am_QueryReckoningList.aspx</step>
+		</type>
+	</site>	
+	<site id="a007" name="中信银行" dll="ecitic.dll">
+		<type type="2">
+		<step seq="1">https://e.bank.ecitic.com/perbank5/signInCredit.do</step>
+		<step seq="3">https://e.bank.ecitic.com/perbank5/gotoCreditMain.do</step>
+		<step seq="4">https://e.bank.ecitic.com/perbank5/pb5130_historyBillQry.do</step>
+		<step seq="5">https://e.bank.ecitic.com/perbank5/pb5130_returnOtherMonth.do</step>
+		<step seq="6">https://e.bank.ecitic.com/perbank5/pb5130_invokeHisDetailBiz.do</step>
+		</type>
+	</site>	
+  </urllist>
+</main>
