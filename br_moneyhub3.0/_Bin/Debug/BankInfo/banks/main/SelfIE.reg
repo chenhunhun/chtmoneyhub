@@ -1,0 +1,40 @@
+Windows Registry Editor Version 5.00
+
+
+[HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\International\Scripts]
+!
+"Default_Script"=hex:1a
+
+[HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\International\Scripts\26]
+!
+"IEFontSize"=hex:02,00,00,00
+"IEFixedFontName"="宋体-18030"
+"IEPropFontName"="宋体"
+
+[HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\Main]
+!
+"Use_DlgBox_Colors"="yes"
+
+[HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\New Windows]
+!
+"PopupMgr"=dword:00000000
+"PlaySound"=dword:00000001
+"UseSecBand"=dword:00000001
+"BlockUserInit"=dword:00000000
+"UseTimerMethod"=dword:00000000
+"UseHooks"=dword:00000001
+"AllowHTTPS"=dword:00000000
+"BlockControls"=dword:00000000
+
+[HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\Settings]
+!
+"Anchor Color Visited"="128,0,255"
+"Anchor Color"="0,0,255"
+"Background Color"="255,255,128"
+"Text Color"="255,0,255"
+"Use Anchor Hover Color"="no"
+"Anchor Color Hover"="255,0,0"
+"Custom Colors"=hex:00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,\
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,\
+  00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00
+
