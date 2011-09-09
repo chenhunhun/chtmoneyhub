@@ -1,0 +1,174 @@
+F:\moneyhub\_Bin\Encryption
+MakeCHK_debug.bat
+
+
+F:\moneyhub\_Bin\Debug
+moneyhub.exe -i
+
+%appdata% 
+del  BankUpdate
+
+sc query moneyhubprt
+
+
+5201088010856897
+
+
+建行账号:
+5324585010983912
+010701
+5324585010082764
+
+
+https://e.bank.ecitic.com/perbank5/pb5640_mainCardSetting.do?EMP_SID=DZENFSIBGMJFIDBVDHHKBGJMBAFQGVGHHSBRHCEW 
+https://e.bank.ecitic.com/perbank5/pb5640_maincardSettingreq.do?EMP_SID=DZENFSIBGMJFIDBVDHHKBGJMBAFQGVGHHSBRHCEW HTTP/1.1
+
+http://192.168.0.99:8010/ccnet/ViewFarmReport.aspx
+
+zhangjing@finantech.cn
+
+
+F:\news\Chromium\mozilla-release\modules\plugin\base\public
+F:\news\Chromium\mozilla-release\nsprpub\pr\include
+F:\news\Chromium\mozilla-release\ipc\chromium\src\base\third_party\nspr
+F:\news\Chromium\mozilla-release\ipc\chromium\src
+F:\news\Chromium\mozilla-release\xpcom\base
+F:\news\Chromium\mozilla-release\xpcom
+F:\news\Chromium\mozilla-release\xpcom\glue
+
+
+
+Quickoffice     Documents to go       Office2HD   office for mac    Keynote    Google Docs
+Pages相当于Word，Numbers相当于Excel，Keynote相当于 PowerPoint
+iWork
+http://andyfurong.googlecode.com/svn/trunk
+
+
+
+f:\moneyhub\BankCore\Main.cpp
+void RunIECore(LPCTSTR lpszCmdline)
+{
+	
+	CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_THREAD_ID_INIT, L"进入RunIECore线程");
+
+	::DebugBreak();
+
+
+f:\moneyhub\Security\BankDrv\MapViewOfSection.cpp
+VOID HookSSDT()
+{
+	NtMapViewOfSection = (NTMAPVIEWOFSECTION)UpdateService(g_NtMapViewOfSectionID, (PVOID)MyMapViewOfSection);
+	//sstHook_OpenProcess();
+}
+
+VOID UnHookSSDT()
+{
+	UpdateService(g_NtMapViewOfSectionID, (PVOID)NtMapViewOfSection);
+	//sstUnhook_OpenProcess();
+}
+
+/**
+*  检查钩子状态函数
+*/
+bool checkHookSafe()
+{
+	return true;
+
+
+新加工程 去掉mix platfom
+64driver   去掉编译新工程
+64test    去掉编译新工程
+
+去掉chk  e:\moneyhub\BankUI\Main.cpp
+#ifndef SINGLE_PROCESS
+		// 安全检测
+		//if(!g_AppBranch.SecurityCheck())
+		//{
+		//	g_AppBranch.CloseHandle();
+		//	return 0;
+		//}
+
+e:\moneyhub\BankUI\UIControl\MainFrame.cpp
+			mhMessageBox(NULL, L"软件运行错误，为保护您的帐户安全，财金汇将重启", L"财金汇检测",MB_OK);
+			//带参数打开	
+			//if(CreateProcessW(NULL, (LPWSTR)path.c_str(), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi))
+			//{		
+			//	CloseHandle( pi.hProcess );		
+			//	CloseHandle( pi.hThread );		
+			//}
+
+
+del  Moneyhub_Updater.exe
+
+<A onclick=m1(11) target=mainframe>我的账户</A>
+<A id=m2_31 class=menu2_off href="javascript:submitInner( temp_menu2_url30);setCurrentMenuCode('PB110500');m2(31);">历史账单查询</A>
+<INPUT class=button_bg onclick=javascript:submitFun(); name=qryName value=查询 type=button>
+<a href = javascript:setValue('201106','156','840','1') >-16.91</a>
+<a href = javascript:setValue('201106','840','156','1') >0.00</a>
+
+
+
+
+http://topic.csdn.net/t/20011101/19/351580.html
+http://www.cppblog.com/FateNo13/archive/2009/08/10/92825.html
+http://www.phpzy.com/php/1058984.html
+http://www.codeproject.com/KB/IP/parse_html.aspx
+http://www.codeproject.com/KB/shell/dlgdhtmlevents.aspx
+http://www.codeproject.com/KB/miscctrl/luo31.aspx
+http://topic.okbase.net/200701/2007013109/2876124.html
+http://www.codeproject.com/KB/cs/Html_Inspector.aspx
+
+
+Hello, dear Git developer.
+This is a minimal MSYS environment to work on Git.
+You are in the git working tree, and all is ready for you to hack.
+Welcome to msysGit
+
+Run 'git help git' to display the help index.
+Run 'git help <command>' to display help for specific commands.
+Run '/share/msysGit/add-shortcut.tcl' to add a shortcut to msysGit.
+
+It appears that you installed msysGit using the full installer.
+To set up the Git repositories, please run /share/msysGit/initialize.sh
+
+
+
+
+
+gclient runhooks –force
+
+http://chromium-browser-source.commondatastorage.googleapis.com/chromium.r85375.tgz
+http://chromium-browser-source.commondatastorage.googleapis.com/
+
+gclient sync --revision src@85305 --force
+
+
+
+hg clone --insecure https://blog-sample-code.jtianling.googlecode.com/hg/ jtianling-blog-sample-code
+
+
+
+
+abcd1234
+
+
+
+	//wstring::size_type ddd = url.find(_T("cmbchina"),0);
+
+
+
+PassRefPtr<DOMWindow> DOMWindow::open(const String& urlString, const AtomicString& frameName, const String& windowFeaturesString,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
