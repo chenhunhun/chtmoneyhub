@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <main>
 	<category name="banks">
-		<site id="icbc" name="中国工商银行" version="2.0.0.7">
+		<site id="icbc" name="中国工商银行" version="2.0.0.8">
 			<domains>
 				<domain name="*.icbc.com.cn/*" />
 			</domains>

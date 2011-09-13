@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <main>
   <category name="banks">
-     <site id="hxb" name="华夏银行"  version="2.0.0.4">
+     <site id="hxb" name="华夏银行"  version="2.0.0.5">
 			<domains>
 				<domain name="*.hxb.com.cn/*" />
 			</domains>			

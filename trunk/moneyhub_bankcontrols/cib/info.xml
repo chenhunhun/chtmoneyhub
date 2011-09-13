@@ -2,7 +2,7 @@
 <main>
   <category name="banks">
 
-<site id="cib" name="兴业银行"  version="2.0.0.2">
+<site id="cib" name="兴业银行"  version="2.0.0.3">
 			<domains>
 				<domain name="*.cib.com/*" />
 				<domain name="*.cib.com.cn/*" />
