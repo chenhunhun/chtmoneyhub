@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<main>
+  <category name="banks">
+
+<site id="boc" name="中国银行" version="2.0.0.2">
+			<domains>
+				<domain name="*.boc.cn/*" />
+				<domain name="*.bank-of-china.com/*" />
+				<domain name="*.bankofchina.com/*" />
+			</domains>
+			<requirements>
+				<system type="WinXP" cpu="0">
+					<require type="activex" name="process_protect" reg="reg_processprotect">
+						<file name="ProcessProtection.dll" />
+					</require>
+					<require type="activex" name="keyboard_protect" reg="reg_keyboardprotect">
+						<file name="KeyboardProtection.dll" />
+					</require>
+					<require type="driver" name="keyboard_protect_driver" service="protectorboc">
+						<file name="protector.sys" />
+					</require>
+					<require type="driver" name="keyboard_protect_driver_a" service="protectorboc1">
+						<file name="protectora.sys" />
+					</require>
+					<require type="cert" name="boc_cert">
+						<file name="boc.cer" />
+					</require>
+					<require type="cert" name="boc_cert_net">
+						<file name="bocnet.cer" />
+					</require>
+				</system>
+				<system type="Win7" cpu="0">
+					<require type="activex" name="process_protect" reg="reg_processprotect">
+						<file name="ProcessProtection.dll" />
+					</require>
+					<require type="activex" name="keyboard_protect" reg="reg_keyboardprotect">
+						<file name="KeyboardProtection.dll" />
+					</require>
+
+					<require type="cert" name="boc_cert">
+						<file name="boc.cer" />
+					</require>
+					<require type="cert" name="boc_cert_net">
+						<file name="bocnet.cer" />
+					</require>
+				</system>
+				
+				<system type="WinVista" cpu="0">
+					<require type="activex" name="process_protect" reg="reg_processprotect">
+						<file name="ProcessProtection.dll" />
+					</require>
+					<require type="activex" name="keyboard_protect" reg="reg_keyboardprotect">
+						<file name="KeyboardProtection.dll" />
+					</require>
+
+					<require type="cert" name="boc_cert">
+						<file name="boc.cer" />
+					</require>
+					<require type="cert" name="boc_cert_net">
+						<file name="bocnet.cer" />
+					</require>
+				</system>
+			</requirements>
+
+			<pages>
+				<page url="https://ebs.boc.cn/BocnetClient/LoginFrame.do">
+					<require name="process_protect" />
+					<require name="keyboard_protect" />
+					<require name="keyboard_protect_driver" />
+					<require name="keyboard_protect_driver_a" />
+					<require name="boc_cert" />
+				</page>
+
+			</pages>
+		</site>
+
+
+
+  </category>
+  
+</main>

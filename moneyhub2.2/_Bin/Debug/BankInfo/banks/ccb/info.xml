@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<main>
+  <category name="banks">
+
+<site id="ccb" name="中国建设银行"  version="2.0.0.0">
+			<domains>
+				<domain name="*.ccb.com/*" />
+				<domain name="*.ccb.com.cn/*" />
+			</domains>
+		</site>
+
+
+
+  </category>
+  
+</main>

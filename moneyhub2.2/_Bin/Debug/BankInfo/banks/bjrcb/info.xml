@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<main>
+  <category name="banks">
+
+    <site id="bjrcb" name="北京农村商业银行"  version="2.0.0.1">
+			<domains>
+				<domain name="*.bjrcb.com/*" />
+				<domain name="*.bjrcb.com.cn/*" />
+			</domains>
+			<requirements>
+				<system type="All" cpu="0">
+					<require type="activex" name="a" reg="new">
+						<file name="BjrcbCom.dll" />
+					</require>
+					<require type="activex" name="b" reg="new">
+						<file name="BjrcbEdit.dll" />
+					</require>
+					<require type="activex" name="c" reg="new">
+						<file name="certrustool_bjrcb.dll" />
+					</require>
+					<require type="activex" name="d" reg="new">
+						<file name="CheckVersionControl.ocx" />
+					</require>
+					<require type="activex" name="e" reg="new">
+						<file name="CSPMakeCert.ocx" />
+					</require>
+					<require type="activex" name="f" reg="new">
+						<file name="ctor.dll" />
+					</require>
+					<require type="activex" name="g" reg="new">
+						<file name="HXEdit.ocx" />
+					</require>
+					<require type="activex" name="h" reg="new">
+						<file name="iesign.ocx" />
+					</require>
+					<require type="activex" name="i" reg="new">
+						<file name="InstallCertListAx.ocx" />
+					</require>
+					<require type="activex" name="j" reg="new">
+						<file name="iscript.dll" />
+					</require>
+					<require type="activex" name="k" reg="new">
+						<file name="iuser.dll" />
+					</require>
+					<require type="activex" name="l" reg="new">
+						<file name="jitenc.dll" />
+					</require>
+					<require type="activex" name="m" reg="new">
+						<file name="objectps.dll" />
+					</require>
+					<require type="activex" name="n" reg="new">
+						<file name="PECIN.dll" />
+					</require>
+					<require type="activex" name="o" reg="new">
+						<file name="PowerEnter.ocx" />
+					</require>
+				</system>
+			</requirements>
+			<pages>
+				<page url="https://ebank.bjrcb.com/ent/prelogin.do">
+					<require name="a" />
+					<require name="b" />
+					<require name="c" />
+					<require name="d" />
+					<require name="e" />
+					<require name="f" />
+					<require name="g" />
+					<require name="h" />
+					<require name="i" />
+					<require name="j" />
+					<require name="k" />
+					<require name="l" />
+					<require name="m" />
+					<require name="n" />
+					<require name="o" />
+				</page>
+				</pages>	
+	</site>
+</category>
+</main>

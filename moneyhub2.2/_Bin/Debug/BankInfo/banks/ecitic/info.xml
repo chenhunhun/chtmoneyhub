@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<main>
+  <category name="banks">
+
+<site id="ecitic" name="中信银行"  version="2.0.0.1">
+			<domains>
+				<domain name="*.ecitic.com/*" />
+			</domains>
+            <requirements>
+				<system type="All" cpu="0">
+					<require type="activex" name="citic" reg="citic">
+						<file name="CiticPerHelpMate.ocx" />
+					</require>
+					<require type="activex" name="checkusb" reg="checkusb">
+						<file name="CheckUsbKey.dll" />
+					</require>
+					<require type="activex" name="ft" reg="ft">
+						<file name="Init_Tool_ft.ocx" />
+					</require>
+					<require type="activex" name="gd" reg="gd">
+						<file name="Init_Tool_gd.ocx" />
+					</require>
+					<require type="activex" name="sec" reg="sec">
+						<file name="SecCtl.dll" />
+					</require>
+					
+					<require type="activex" name="cskp" reg="cskp">
+						<file name="CITICSKP.dll" />
+					</require>
+					<require type="activex" name="cspp" reg="cspp">
+						<file name="CITICSPP.dll" />
+					</require>
+					<require type="activex" name="cap" reg="cap">
+						<file name="CITICAP.dll" />
+					</require>
+					
+					<require type="activex" name="cncbguard" reg="cncbguard">
+						<file name="CNCBGuard.dll" />
+					</require>
+					<require type="driver" name="ecitic_keyboard_driver" service="protectorecitic" Start="3" Type="1">
+						<file name="Protector.sys" />
+					</require>
+					<require type="driver" name="ecitic_protect_driver" service="protectoreciticA" Start="3" Type="1">
+						<file name="ProtectorA.sys" />
+					</require>
+					<require type="file" name="LocalInfo.dat" path="%SystemRoot%\system32" replace="false">
+					</require>
+				</system>
+			</requirements>
+			<pages>
+				<page url="https://e.bank.ecitic.com/perbank5/signIn.do">
+					<require name="citic" />
+					<require name="checkusb" />
+					<require name="ft" />
+					<require name="gd" />
+					<require name="sec" />
+					
+					<require name="cskp" />
+					<require name="cspp" />
+					<require name="cap" />
+					
+					<require name="cncbguard" />
+				</page>
+			</pages>				
+		</site>
+  </category>
+</main>

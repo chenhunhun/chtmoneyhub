@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<main>
+  <category name="banks">
+
+<site id="chinalife" name="中国人寿"  version="2.0.0.0">
+			<domains>
+				<domain name="*.chinalife.com/*" />
+				<domain name="*.chinalife.com.cn/*" />
+			</domains>
+		</site>
+
+
+
+  </category>
+  
+</main>
