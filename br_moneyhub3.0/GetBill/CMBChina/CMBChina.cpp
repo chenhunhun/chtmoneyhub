@@ -121,7 +121,7 @@ int WINAPI FetchBillFunc(IWebBrowser2* pWebBrowser, BillData* pData, int step, s
 					break;
 				case 2:
 					{
-						const int arraySize = 7;
+						const int arraySize = 5;
 						//Putting parameters
 						DISPPARAMS dispparams;
 						memset(&dispparams, 0, sizeof dispparams);
@@ -129,28 +129,22 @@ int WINAPI FetchBillFunc(IWebBrowser2* pWebBrowser, BillData* pData, int step, s
 						dispparams.rgvarg     = new VARIANT[dispparams.cArgs];
 						dispparams.cNamedArgs = 0;
 
-						//A2COLE是在栈中分配的空间，如果循环调用，有栈溢出，所以要限制适用调用的次数
-						dispparams.rgvarg[0].bstrVal = ::SysAllocString((LPOLESTR)A2COLE("SIDType=A"));
+						dispparams.rgvarg[0].bstrVal = ::SysAllocString((LPOLESTR)A2COLE(""));//NULL;
 						dispparams.rgvarg[0].vt = VT_BSTR;
-						dispparams.rgvarg[1].bstrVal = ::SysAllocString((LPOLESTR)A2COLE("MainPanel=none"));
+						dispparams.rgvarg[1].bstrVal = ::SysAllocString((LPOLESTR)A2COLE("FORM"));//FORMMODAL_DIALOG
 						dispparams.rgvarg[1].vt = VT_BSTR;
-						dispparams.rgvarg[2].bstrVal = ::SysAllocString((LPOLESTR)A2COLE(""));//NULL;
+						dispparams.rgvarg[2].bstrVal = ::SysAllocString((LPOLESTR)A2COLE("CreditCardV2/am_QueryReckoningSurvey.aspx"));
 						dispparams.rgvarg[2].vt = VT_BSTR;
-						dispparams.rgvarg[3].bstrVal = ::SysAllocString((LPOLESTR)A2COLE("FORM"));//FORMMODAL_DIALOG
+						dispparams.rgvarg[3].bstrVal = ::SysAllocString((LPOLESTR)A2COLE("CBANK_CREDITCARDV2"));
 						dispparams.rgvarg[3].vt = VT_BSTR;
-						dispparams.rgvarg[4].bstrVal = ::SysAllocString((LPOLESTR)A2COLE("CreditCard/am_QueryReckoningSurvey.aspx"));
+						dispparams.rgvarg[4].bstrVal = ::SysAllocString((LPOLESTR)A2COLE("C"));
 						dispparams.rgvarg[4].vt = VT_BSTR;
-
-						dispparams.rgvarg[5].bstrVal = ::SysAllocString((LPOLESTR)A2COLE("CBANK_CREDITCARD"));
-						dispparams.rgvarg[5].vt = VT_BSTR;
-						dispparams.rgvarg[6].bstrVal = ::SysAllocString((LPOLESTR)A2COLE("C_A"));
-						dispparams.rgvarg[6].vt = VT_BSTR;
 						RecordInfo(L"CMBChinaDll", 1800, L"执行CallFuncEx2");
 						CallJScript2(doc, "CallFuncEx2", dispparams);
 
 						RecordInfo(L"CMBChinaDll", 1800, L"执行完CallFuncEx2");
 						// 释放所有申请的空间
-						for(int i = 0; i< 7;i ++)
+						for(int i = 0; i< 5;i ++)
 						{
 							if(dispparams.rgvarg[i].vt == VT_BSTR)
 								::SysFreeString(dispparams.rgvarg[i].bstrVal);
@@ -164,26 +158,38 @@ int WINAPI FetchBillFunc(IWebBrowser2* pWebBrowser, BillData* pData, int step, s
 					break;
 				case 3:
 				case 4:
-				case 5:
 					{
+						wstring info;
 						hr=doc->get_body( &elem);  
 						if(elem!=NULL)   
 						{      
 							BSTR pbBody = NULL;//::SysAllocString(OLESTR("Written by IHTMLDocument2:招商银行首页需要进行显示."));
 							hr=elem->get_innerHTML(&pbBody);   //类似的还有put_innerTEXT
+							if(pbBody != NULL)
+								info = pbBody;
 							elem->Release();   
 							elem = NULL;
 						} 
-						//CallFuncEx2('C_A','CBANK_CREDITCARD','CreditCard/am_QueryReckoningSurvey.aspx','FORM',null,'MainPanel=none','SIDType=A');
+						wstring waccount;
+						size_t nPos = info.find(L"CreditAccNo=");
+						if(nPos != wstring::npos)
+						{
+							wstring accounttemp = info.substr(nPos, nPos + 60);
+							int pos = accounttemp.find(L"'");
+
+							waccount = accounttemp.substr(0, pos);
+						}
+						//triggerFunc('../CreditCardV2/am_QueryReckoningList.aspx','FORM','201109','CreditAccNo=0114700657001001','IN_YYYYMM=201109');
 						std::vector<std::string> paramVec;
-						paramVec.push_back("SIDType=A");
-						paramVec.push_back("MainPanel=none");
+						USES_CONVERSION;
+						string acc = W2A(waccount.c_str());
 						string  paramMonth = "IN_YYYYMM=" + pData->month;
 						paramVec.push_back(paramMonth);
+						paramVec.push_back(acc);
 						paramVec.push_back(pData->month);
 						paramVec.push_back("FORM");
 						//https://pbsz.ebank.cmbchina.com/CmbBank_CreditCard/UI/CreditCardPC/CreditCard/am_QueryReckoningSurvey.aspx
-						paramVec.push_back("../CreditCard/am_QueryReckoningList.aspx");
+						paramVec.push_back("../CreditCardV2/am_QueryReckoningList.aspx");
 						RecordInfo(L"CMBChinaDll", 1800, L"执行triggerFunc");
 						
 						CallJScript(doc, "triggerFunc", paramVec);
