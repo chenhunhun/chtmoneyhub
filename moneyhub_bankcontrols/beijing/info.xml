@@ -2,7 +2,7 @@
 <main>
   <category name="banks">
 
-<site id="beijing" name="北京银行"  version="2.0.0.2">
+<site id="beijing" name="北京银行"  version="2.0.0.3">
 			<domains>
 				<domain name="*.bankofbeijing.com.cn/*" />
 			</domains>	
@@ -26,6 +26,12 @@
 					<require type="exe" btype="file" IsInstallName="%ProgramFiles%\Feitian\BJCA-FT11\bjcacertd_ft11.exe" name="bjca02.exe">
 				    </require>
 					<require type="classid" classid="7208FB6D-EE30-4734-82C7-59BB71C5C0CE">
+				    </require>
+					<require type="classid" classid="561AA3F5-C80D-4016-BB11-174437EA4E9E">
+				    </require>
+					<require type="classid" classid="F460ADF7-2BCD-4E82-B092-E570F8644638">
+				    </require>
+					<require type="classid" classid="0CF5259B-A812-4B6E-9746-ACF7279FEF74">
 				    </require>
 				</system>
 			</requirements>

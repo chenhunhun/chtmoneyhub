@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <main>
 	<category name="banks">
-		<site id="alipay" name="支付宝" version="2.0.0.5">
+		<site id="alipay" name="支付宝" version="2.0.0.7">
 			<domains>
 				<domain name="*.alipay.com/*" />
 			</domains>

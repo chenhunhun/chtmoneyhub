@@ -2,7 +2,7 @@
 <main>
   <category name="banks">
 
-<site id="ecitic" name="中信银行"  version="2.0.0.2">
+<site id="ecitic" name="中信银行"  version="2.0.0.3">
 			<domains>
 				<domain name="*.ecitic.com/*" />
 			</domains>
