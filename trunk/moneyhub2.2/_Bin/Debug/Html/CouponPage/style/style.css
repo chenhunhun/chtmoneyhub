@@ -1,0 +1,33 @@
+@charset "utf-8";
+html{overflow:hidden;height:100%;}
+body {font:12px/18px "宋体"; overflow:hidden;height:100%;}
+body, ul, li ,table,td,tr,tbody,button,dl,dd,dt{padding:0;margin:0;}
+ul{list-style:none;}
+td,tr,table{border:none; border-collapse:collapse;}
+img{border:0;}
+.clear{over:hidden; zoom:1; clear:both;}
+
+.myfav{ position:absolute; height:100%;top:0; left:0; width:270px; background:#fff; border-right:1px solid #CCCCCC;}
+.head{color:#407da7; font-weight:bold; margin:6px 0 0 4px; float:left;}
+
+.favlist{ clear:both; padding-top:10px; text-align:center;overflow-x:hidden; overflow-y:auto; position:relative;}
+.couponitem{ background:url(../images/couponbg.gif) no-repeat; width:246px; height:74px; margin:0 auto 12px;display:inline-block; position:relative;}
+
+.coverbg{ background:#000;opacity:0.4;filter:alpha(opacity=40); position:absolute; z-index:100; height:74px; width:246px;}
+.layctt{ position:absolute; z-index:110; display:none;left:0; top:0;}
+.layctt .del,.layctt .cancel{position:absolute; height:25px; width:42px; background:url(../images/del_btn.gif) no-repeat; top:25px; left:65px; z-index:109; cursor:pointer;}
+.layctt .cancel{background:url(../images/cancel_btn.gif) no-repeat; left:134px; top:25px;}
+
+.imgctt{ clear:both;}
+.imgctt a{position:absolute; width:232px; height:54px; top:6px; left:5px;}
+.imgctt img{border:1px solid #d3e9f9; float:left; height:60px; width:234px;}
+.expire_bg{position:absolute; left:-1px; top:-1px; width:234px; height:71px; z-index:9; background:url(../images/expire.png) no-repeat; _background:none; _filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/expire.png',sizingMethod='crop');}
+
+.del_btn{ position:absolute; right:-10px; top:-10px; width:26px;height:26px; display:none; z-index:100;}
+.del_bg{position:absolute; right:0; top:0; width:26px;height:26px; z-index:10;background:url(../images/close.png) no-repeat;_background:none;_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/close.png',sizingMethod='crop');}
+.del_ac{position:absolute; right:0; top:0; width:26px;height:26px; z-index:11; cursor:pointer;}
+
+.hover .del_btn{ display:block;}
+
+.main{margin-left:270px;height:100%;}
+.mainw{width:100%; height:100%;border:none; border:0; overflow:hidden; margin:0; padding:0;}

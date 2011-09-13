@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<main>
+  <category name="banks">
+
+<site id="cmbc" name="民生银行"  version="2.0.0.1">
+			<domains>
+				<domain name="*.cmbc.com.cn/*" />
+			</domains>
+			<requirements>
+				<system type="All" cpu="0">
+					<require type="activex" name="cfcacert" reg="cfcacert">
+						<file name="CFCACertKitAx.dll" />
+					</require>
+					<require type="activex" name="capicom" reg="capicom">
+						<file name="capicom.dll" />
+					</require>
+				</system>
+			</requirements>
+			<pages>
+				<page url="https://business.cmbc.com.cn/index_Private.html">
+					<require name="cfcacert" />
+					<require name="capicom" />
+				</page>
+			</pages>
+		</site>
+  </category>  
+</main>

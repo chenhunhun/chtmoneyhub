@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<main>
+	<category name="banks">
+		<site id="icbc" name="中国工商银行" version="2.0.0.6">
+			<domains>
+				<domain name="*.icbc.com.cn/*" />
+			</domains>
+			<requirements>
+				<system type="All" cpu="0">
+				    <require type="activex" name="capicom" reg="reg">
+					    <file name="capicom.dll" />
+				    </require>	
+					<require type="cert" name="2abc81b0">
+						<file name="2abc81b0.cer" />
+					</require>
+					<require type="cert" name="2b3edc77">
+						<file name="2b3edc77.cer" />
+					</require>
+					<require type="cert" name="5a960203">
+						<file name="5a960203.cer" />
+					</require>
+					<require type="cert" name="a02a23d1">
+						<file name="a02a23d1.cer" />
+					</require>
+					<require type="cert" name="bf167150">
+						<file name="bf167150.cer" />
+					</require>
+				</system>
+			</requirements>
+			<pages>
+				<page url="https://mybank.icbc.com.cn/icbc/perbank/index.jsp">
+					<require name="capicom"/>
+			    </page>
+			</pages>
+		</site>
+	</category>
+</main>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<main>
+  <category name="banks">
+
+<site id="cfca" name="CFCA"  version="2.0.0.0">
+			<domains>
+				<domain name="*.cfca.com.cn/*" />
+				<domain name="*.cfca.com/*" />
+				<domain name="*.210.74.41.87/*" />
+			</domains>
+			<requirements>
+			<system type="All" cpu="0">
+				<require type="activex" name="JIT_MakeCert_reg" reg="JIT_MakeCert_reg">
+					<file name="JIT_MakeCert.ocx" />
+				</require>
+				<require type="cert" name="Root_CA">
+						<file name="Root_CA.cer" />
+				</require>
+				<require type="cert" name="Policy_CA">
+						<file name="Policy_CA.cer" />
+				</require>
+				<require type="cert" name="Operation_CA2">
+						<file name="Operation_CA2.cer" />
+				</require>
+				<require type="cert" name="Operation_CA1">
+						<file name="Operation_CA1.cer" />
+				</require>
+				<require type="cert" name="Operation_CA">
+						<file name="Operation_CA.cer" />
+				</require>
+				<require type="cert" name="ca2">
+						<file name="ca2.cer" />
+				</require>
+				
+			</system>
+		</requirements>
+			<pages>
+			    <page url="http://www.cfca.com.cn/">
+				   <require name="Root_CA" />
+				   <require name="Policy_CA" />
+				   <require name="Operation_CA2" />
+				   <require name="Operation_CA1" />
+				   <require name="Operation_CA" />
+				   <require name="ca2" />
+				   
+				</page>
+				<page url="http://210.74.41.87/">
+					<require name="JIT_MakeCert_reg" />
+				</page>
+				<page url="http://www.cfca.com.cn/tongyi/">
+					<require name="JIT_MakeCert_reg" />
+				</page>
+			</pages>
+		</site>
+  </category>
+  
+</main>

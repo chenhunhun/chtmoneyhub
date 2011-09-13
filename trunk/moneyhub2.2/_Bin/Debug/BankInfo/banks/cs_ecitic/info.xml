@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<main>
+  <category name="banks">
+
+<site id="cs_ecitic" name="中信证券"  version="2.0.0.0">
+			<domains>
+				<domain name="*.cs.ecitic.com/*" />
+			</domains>
+		</site>
+
+
+
+  </category>
+  
+</main>

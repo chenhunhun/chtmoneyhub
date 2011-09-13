@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<main>
+  <category name="banks">
+    <site id="psbc" name="中国邮政储蓄银行"  version="2.0.0.1">
+			<domains>
+				<domain name="*.psbc.com/*" />
+				<domain name="*.psbc.com.cn/*" />
+			</domains>
+			<requirements>
+				<system type="WinXP" cpu="0">
+				    <require type="activex" name="PowerEnterPSBC" reg="PowerEnterPSBC">
+						<file name="PowerEnterPSBC.ocx" />
+					</require>
+				    <require type="driver" name="PECKP_winxp" service="protectorpsbc">
+						<file name="PECKP_winxp.sys" />
+					</require>
+				</system>
+				<system type="WinVista" cpu="0">
+				    <require type="activex" name="PowerEnterPSBC" reg="PowerEnterPSBCWin7">
+						<file name="PowerEnterPSBC.ocx" />
+					</require>
+				    <require type="driver" name="PECKP_win7" service="protectorpsbc1">
+						<file name="PECKP.sys" />
+					</require>
+				</system>
+				<system type="Win7" cpu="0">
+				    <require type="activex" name="PowerEnterPSBC" reg="PowerEnterPSBCWin7">
+						<file name="PowerEnterPSBC.ocx" />
+					</require>
+				    <require type="driver" name="PECKP_win7" service="protectorpsbc1">
+						<file name="PECKP.sys" />
+					</require>
+				</system>
+			</requirements>
+			<pages>
+				<page url="https://pbank.psbc.com/pweb/prelogin.do">
+					<require name="PowerEnterPSBC" />
+					<require name="PECKP_win7" />
+					<require name="PECKP_winxp" />
+				</page>
+		 </pages>			
+	</site>
+  </category> 
+</main>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<main>
+  <category name="banks">
+
+<site id="beijing" name="北京银行"  version="2.0.0.1">
+			<domains>
+				<domain name="*.bankofbeijing.com.cn/*" />
+			</domains>	
+			<requirements>
+				<system type="All" cpu="0">
+					<require type="activex" name="beijingInput" reg="beijingInput">
+						<file name="InPutCtrl.ocx" />
+					</require>
+					<require type="cert" name="beijingGCA1">
+						<file name="beijingGCA1.cer" />
+					</require>
+					<require type="cert" name="beijingROOT">
+						<file name="beijingROOT.cer" />
+					</require>
+                    <require type="cert" name="BJCA1">
+						<file name="BJCA1.cer" />
+					</require>
+					<require type="cert" name="BJCA2">
+						<file name="BJCA2.cer" />
+					</require>
+				</system>
+			</requirements>
+			<pages>
+				<page url="https://ebank.bankofbeijing.com.cn/bccbpb/accountLogon.jsp">
+					<require name="beijingInput" />
+					<require name="beijingGCA1" />
+					<require name="beijingROOT" />
+					<require name="BJCA1" />
+					<require name="BJCA2" />
+				</page>
+				<page url="https://ebank.bankofbeijing.com.cn/bccbpb/fortuneLogon.jsp">
+					<require name="beijingInput" />
+					<require name="beijingGCA1" />
+					<require name="beijingROOT" />
+					<require name="BJCA1" />
+					<require name="BJCA2" />
+				</page>
+				<page url="https://ebank.bankofbeijing.com.cn/bccb/corporbank/safelogon.jsp">
+					<require name="beijingInput" />
+					<require name="beijingGCA1" />
+					<require name="beijingROOT" />
+					<require name="BJCA1" />
+					<require name="BJCA2" />
+				</page>
+			</pages>			
+		</site>
+  </category>
+</main>

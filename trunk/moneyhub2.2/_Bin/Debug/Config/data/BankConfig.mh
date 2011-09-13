@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<moneyhub>
+  <category name="config">
+  </category>
+    <node><ID>a001</ID><name>boc</name></node>
+    <node><ID>a002</ID><name>abchina</name></node>
+    <node><ID>a003</ID><name>icbc</name></node>
+    <node><ID>a004</ID><name>ccb</name></node>
+    <node><ID>a005</ID><name>bankcomm</name></node>
+    <node><ID>a006</ID><name>cmbchina</name></node>
+    <node><ID>a007</ID><name>ecitic</name></node>
+    <node><ID>a008</ID><name>cebbank</name></node>
+    <node><ID>a009</ID><name>spdb</name></node>
+    <node><ID>a010</ID><name>sdb</name></node>
+    <node><ID>a011</ID><name>gdb</name></node>
+    <node><ID>a012</ID><name>hxb</name></node>
+    <node><ID>a013</ID><name>cmbc</name></node>
+    <node><ID>a014</ID><name>cib</name></node>
+    <node><ID>a015</ID><name>beijing</name></node>
+    <node><ID>a016</ID><name>bjrcb</name></node>
+    <node><ID>a017</ID><name>psbc</name></node>
+    <node><ID>a018</ID><name>pinganbank</name></node>
+    <node><ID>b001</ID><name>cs_ecitic</name></node>
+    <node><ID>c001</ID><name>chinalife</name></node>
+    <node><ID>d001</ID><name>chinaamc</name></node> 
+    <node><ID>d002</ID><name>cmfchina</name></node>   
+    <node><ID>e001</ID><name>alipay</name></node>
+    <node><ID>e002</ID><name>payease</name></node>
+    <node><ID>e003</ID><name>lianxin</name></node>
+    <node><ID>e004</ID><name>yeepay</name></node>
+    <node><ID>f001</ID><name>letao</name></node>
+    <node><ID>f002</ID><name>taobao</name></node>
+</moneyhub>

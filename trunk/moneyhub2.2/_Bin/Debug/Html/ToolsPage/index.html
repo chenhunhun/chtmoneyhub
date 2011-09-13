@@ -1,0 +1,86 @@
+<!doctype html>
+<html style="height:100%">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>日历提醒</title>
+<link type="text/css" rel="stylesheet" href="style/style.css" />
+
+</head>
+<body style="height:100%;" onLoad="Tesy.init()">
+<div class="wraper" style="height:100%">
+	<div class="mainl">
+		<div class="ltop">
+			<span>今日提醒</span>
+			<button id="eventButton"></button>
+		</div>
+		<ul class="alarmlist" id="alarmlist">
+		</ul>
+		<div id="ifdiv" class="ifdiv"></div>
+	</div>
+	<div class="mainr">
+		<div id="calendar" class="calendar_wrap">
+			<div class = "calt" id="calt">
+				<span class="gtoday" id="gtoday" ></span>
+				<div class="calcont">
+					<span onClick="Tesy.calendar.preMonth()" class="prem"></span>
+					<span id="yearmonth" class='thism'></span>
+					<span  onclick="Tesy.calendar.nextMonth()" class="nextm"></span>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="scover" id="scover" style="display:none"></div>
+<div class="evt_ly" id="evt_ly" style="display:none">
+	<div class="evtlybg"></div>
+	<div class="evtct">
+		<dl class="evt_edit">
+			<dt>事件描述:</dt><dd class="evt_text"><input type="text" id="eventct" /></dd>
+			<dt>事件时间:</dt><dd class="dateselect" id="dateselect"></dd>
+			<dt>重复时间:</dt><dd>
+				<ul class="radio" id="eradio">
+					<li>每周</li>
+					<li>每月</li>
+					<li>每季度</li>
+					<li>每年</li>
+					<li>不重复</li>
+				</ul>
+			</dd>
+			<dt>提&nbsp;&nbsp;&nbsp;前:</dt>
+			<dd>
+				<span class="remindday" >
+					<span id="rmday" class="rd"></span>
+					<button class="uparrow" id='rmup'></button>
+					<button class="downarrow" id='rmdown'></button>
+				</span>天开始提醒
+			</dd>
+			<dt class="spel">下次发生事件日:</dt><dd id="evthappen"></dd>
+		</dl>
+		<ul class="oplist" id='oplist'></ul>
+		<div id="minicalendar" style="display:none">
+			<div class="mini_head">
+				<span class="prem" onClick="calSelector.preMonth()"></span>
+				<span id="select_date"></span>
+				<span class="nextm" onClick="calSelector.nextMonth()"></span>
+			</div>
+			<div id="minical"></div>
+		</div>
+		<div class="tipwrap" id="tipwrap" style="display:none">
+			<div class="mention">
+				<div class="mtctt">请输入事件内容</div>
+				<ul class="tipop" id="tipop"><li><span class="yes_btn"></span></li><li><span class="cancel_btn"></span></li></ul>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript" src="functions/json/json2.js"></script>
+<script type="text/javascript" src="functions/dom/dom.js"></script>
+<script type="text/javascript" src="functions/event/event.js"></script>
+<script type="text/javascript" src="functions/date/lunar.js"></script>
+<script type="text/javascript" src="functions/date/date.js"></script>
+<script type="text/javascript" src="functions/interface.js"></script>
+<script type="text/javascript" src="functions/init.js"></script>
+
+</body>
+</html>
