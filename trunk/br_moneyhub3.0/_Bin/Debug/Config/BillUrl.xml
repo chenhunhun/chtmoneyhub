@@ -7,8 +7,8 @@
 		<type type="2">
 		<step seq="1">https://pbsz.ebank.cmbchina.com/CmbBank_GenShell/UI/GenShellPC/Login/Login.aspx</step>
 		<step seq="2">https://pbsz.ebank.cmbchina.com/CmbBank_GenShell/UI/GenShellPC/Login/GenIndex.aspx</step>
-		<step seq="3">https://pbsz.ebank.cmbchina.com/CmbBank_CreditCard/UI/Base/Blank.htm</step>
-		<step seq="99">https://pbsz.ebank.cmbchina.com/CmbBank_CreditCard/UI/CreditCardPC/CreditCard/am_QueryReckoningList.aspx</step>
+		<step seq="3">https://pbsz.ebank.cmbchina.com/CmbBank_CreditCardV2/UI/CreditCardPC/CreditCardV2/am_QueryReckoningSurvey.aspx</step>
+		<step seq="99">https://pbsz.ebank.cmbchina.com/CmbBank_CreditCardV2/UI/CreditCardPC/CreditCardV2/am_QueryReckoningList.aspx</step>
 		</type>
 	</site>	
 	<site id="a007" name="中信银行" dll="ecitic.dll">

@@ -2621,7 +2621,7 @@ function createAccountTree() {
 				content += "<span id='sMAName' fullname='" + n.aname.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/'/g, "&#39;") + "' class='sMAName'>" + n.aname.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/'/g, "&#39;") + "</span>";
 
 				//如果是招商银行信用卡，则显示导入账单
-				if (( n.tbBank_id == 7 ) && n.tid == 2) {
+				if (( n.tbBank_id == 6 || n.tbBank_id == 7 ) && n.tid == 2) {
 					content += " <span id='sImportBill' onclick='getCreditCardList("+n.aid+",\""+n.BankID+"\");'></span>";
 				}
 
@@ -3820,6 +3820,7 @@ function submitCreditCardBillList() {
 
 //关闭电子账单,账单事件的回调函数
 function closeBillList() {
+	createAccountTree();
 	renderTransView(currentAid,"");
 }
 

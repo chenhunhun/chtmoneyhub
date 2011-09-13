@@ -933,6 +933,10 @@ HRESULT CWebBrowserEventsManager::OnDocumentComplete(REFIID riid, LCID lcid, WOR
 					{
 						CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_THREAD_GET_BILL, CRecordProgram::GetInstance()->GetRecordInfo(L"导入账单处理%d", m_step));
 						state = CBillUrlManager::GetInstance()->GetBill(thisBrowser, m_pBillData, m_step);
+
+						if(m_pBillData->aid == "a006")
+							if(m_step == 4)
+								m_step ++;
 					}
 				}
 
