@@ -1,0 +1,11 @@
+LIBRARY	"LogDll"
+
+EXPORTS
+	LogInitialize @1
+	WriteSysLog @2
+	LogUninitialize @3
+	SetLogLevel @4
+	GetLogLevel @5	
+
+
+; Explicit exports can go here 
