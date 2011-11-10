@@ -11,11 +11,15 @@
 					<require type="activex" name="BoseraSafeInput" reg="reg-win7">
 						<file name="BoseraSafeInput.dll" />
 					</require>
+					<require type="classid" classid="B965C48D-824F-4f30-A456-D03EC3F244EA">
+				    </require>
 				</system>
 				<system type="WinVista" cpu="0">
 					<require type="activex" name="BoseraSafeInput" reg="reg-win7">
 						<file name="BoseraSafeInput.dll" />
 					</require>
+					<require type="classid" classid="B965C48D-824F-4f30-A456-D03EC3F244EA">
+				    </require>
 				</system>
 				<system type="WinXP" cpu="0">
 					<require type="activex" name="BoseraSafeInput" reg="reg-xp">
@@ -24,6 +28,8 @@
 					<require type="driver" name="Nsafepw" service="Protectorbosera" rstart="3" rtype="1">
 						<file name="Nsafepw.sys" />
 					</require>
+					<require type="classid" classid="B965C48D-824F-4f30-A456-D03EC3F244EA">
+				    </require>
 				</system>
 			</requirements>
 

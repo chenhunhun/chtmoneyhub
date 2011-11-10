@@ -16,6 +16,8 @@
 					</require>
 					<require type="file" name="PECKP.sys" path="%SystemRoot%\system32\drivers" replace="false">
 					</require>
+					<require type="classid" classid="3BD97475-E081-45B3-A355-8B74E176B1F6">
+				    </require>
 				</system>
 				<system type="All" cpu="64">
 					<require type="activex" name="PowerEnterSDB" reg="reg-64">
@@ -26,6 +28,8 @@
 					</require>
 					<require type="file" name="PECKP_x64.SYS" path="%SystemRoot%\system32\drivers" replace="false">
 					</require>
+					<require type="classid" classid="3BD97475-E081-45B3-A355-8B74E176B1F6">
+				    </require>
 					</system>
 			</requirements>
 			<page url="https://ebank.sdb.com.cn/perbank/logon_pro.jsp">

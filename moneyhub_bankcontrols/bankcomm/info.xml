@@ -11,6 +11,10 @@
 				<require type="activex" name="safeInput4jh" reg="reg">
 					<file name="safeInput4jh.dll" />
 				</require>
+				<require type="classid" classid="ECCBA953-80E5-11D3-9285-0080ADB811C5">
+				</require>
+				<require type="classid" classid="A3CD7F74-93C9-4BC4-B892-CCDF1514F714">
+				</require>
 				 </system>
 			</requirements>
 			<pages>

@@ -11,6 +11,8 @@
 					<require type="activex" name="editcontrol" reg="reg_editcontrol">
 						<file name="CMBEdit.dll" />
 					</require>
+					<require type="classid" classid="0CA54D3F-CEAE-48AF-9A2B-31909CB9515D">
+					</require>
 				</system>
 			</requirements>
 			<pages>
