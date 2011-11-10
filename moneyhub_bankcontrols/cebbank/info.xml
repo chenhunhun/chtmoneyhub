@@ -14,6 +14,10 @@
 					</require>
 					<require type="activex" name="PowerEnter" reg="PowerEnter">
 						<file name="PowerEnter.ocx" />
+					<require type="classid" classid="BEEE2807-1709-4184-A05D-1B2DE01EE4CF">
+				    </require>
+					<require type="classid" classid="DE8EB094-3725-4ED5-8B82-A7E09E0FE8A0">
+				    </require>
 					</require>
 				</system>
 			</requirements>
