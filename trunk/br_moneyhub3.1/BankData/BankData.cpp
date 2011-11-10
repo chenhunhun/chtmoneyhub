@@ -243,7 +243,7 @@ bool CBankData::ChangeOrder(const char* pBankID, int nTo, int nFrom)
 
 void CBankData::InitSysDbTempFile(void) // 初始化系统数据库临时文件
 {
-	if (m_strSysDbPath.empty())
+	if (m_strUtfSysDbPath.empty())
 	{
 		CString strTemp;
 		if (0 == GetModuleFileName(NULL, strTemp.GetBuffer(1024), 1023))
@@ -256,8 +256,8 @@ void CBankData::InitSysDbTempFile(void) // 初始化系统数据库临时文件
 		strTemp = strTemp.Left (strTemp.ReverseFind ('\\'));
 		std::string strCurrentPath = CW2A(strTemp);
 
-		m_strSysDbPath = strCurrentPath + "\\config\\SysDB.dat";
-		m_strGuestTemplete = strCurrentPath + "\\config\\Guest.dat";
+		m_strGuestTemplete = strTemp + L"\\config\\Guest.dat";
+		m_strSysDbPath = strTemp + L"\\config\\SysDB.dat";
 
 		//::WideCharToMultiByte(CP_UTF8, 0, strTemp, strTemp.GetLength(), szDbPath, 1024, NULL,FALSE);
 
@@ -265,28 +265,41 @@ void CBankData::InitSysDbTempFile(void) // 初始化系统数据库临时文件
 		SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, tempPath);
 		wcscat_s(tempPath, L"\\MoneyHub");
 		::CreateDirectoryW(tempPath, NULL);
+
+		m_strDataDbPath = tempPath;
+		m_strDataDbPath += L"\\DataDB.dat";
 	
 		char szDbPath[1024] = { 0 };
-		int srcCount = wcslen(tempPath);
+		int srcCount = wcslen(m_strDataDbPath.c_str());
 		srcCount = (srcCount > MAX_PATH) ? MAX_PATH : srcCount;
-		::WideCharToMultiByte(CP_UTF8, 0, tempPath, srcCount, szDbPath, 1024, NULL,FALSE);
+		::WideCharToMultiByte(CP_UTF8, 0, m_strDataDbPath.c_str(), srcCount, szDbPath, 1024, NULL,FALSE);
 
-		m_strDataDbPath = szDbPath;
-		m_strDataDbPath += "\\DataDB.dat"; // DataDB.dat文件放置在Moneyhub目录下
+		m_strUtfDataDbPath = szDbPath;
 
+		memset(szDbPath, 0, 256);
+		srcCount = wcslen(m_strSysDbPath.c_str());
+		srcCount = (srcCount > MAX_PATH) ? MAX_PATH : srcCount;
+		::WideCharToMultiByte(CP_UTF8, 0, m_strSysDbPath.c_str(), srcCount, szDbPath, 1024, NULL,FALSE);
+
+		m_strUtfSysDbPath = szDbPath;
 
 		// 如果正式数据库不存在
-		if (!IsFileExist((LPSTR)m_strSysDbPath.c_str()))
+		if (!IsFileExist((LPWSTR)m_strSysDbPath.c_str()))
 		{
 			CRecordProgram::GetInstance()->FeedbackError(MY_BANK_NAME, MY_ERROR_SQL_ERROR, L"SysDB is not exist, exit progrma.");
 			exit(0);
 		}
 		
 
-		if (!IsFileExist ((LPSTR)m_strDataDbPath.c_str()))
+		if (!IsFileExist ((LPWSTR)m_strDataDbPath.c_str()))
 		{
+			HANDLE hFile = CreateFileW(m_strDataDbPath.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, 0, NULL);
+			if (INVALID_HANDLE_VALUE == hFile)
+				return;
+
+			CloseHandle(hFile);
 			// 没有就创建一个
-			CreateDataDBFile((LPSTR)m_strDataDbPath.c_str());
+			CreateDataDBFile((LPSTR)m_strUtfDataDbPath.c_str());
 		}
 	}
 }
@@ -322,24 +335,27 @@ bool CBankData::InstallUpdateDB()
 	wcscat_s(tempPath, L"\\Data\\");
 	::CreateDirectoryW(tempPath, NULL);
 
+	std::wstring wstrPath = tempPath;
+
 	char szDbPath[1024] = { 0 };
 	int srcCount = wcslen(tempPath);
 	srcCount = (srcCount > MAX_PATH) ? MAX_PATH : srcCount;
 	::WideCharToMultiByte(CP_UTF8, 0, tempPath, srcCount, szDbPath, 1024, NULL,FALSE);
 
-	std::string strPath = szDbPath;
+	std::string utfstrPath = szDbPath;
 
-	std::string strMoneyhub = strPath + "moneyhub.dat"; // 记录下当前用户数据库路径
+	std::string strutfMoneyhub = utfstrPath + "moneyhub.dat"; // 记录下当前用户数据库路径
+	std::wstring strMoneyhub = wstrPath + L"moneyhub.dat";//utf-8转换有问题
 	// 在4和5两个版本中，数据库名称为moneyhub.dat
-	if (IsFileExist((LPSTR)strMoneyhub.c_str()))
+	if (IsFileExist((LPWSTR)strMoneyhub.c_str()))
 	{
 		try{
 			CRecordProgram::GetInstance()->RecordCommonInfo(L"BankData", 1000, L"开始升级数据库moneyhub.dat");
 			CppSQLite3DB dbSour;
-			dbSour.openWithNoKey(strMoneyhub.c_str());
+			dbSour.openWithNoKey(strutfMoneyhub.c_str());
 
 			CppSQLite3DB dbDesc;
-			dbDesc.open(m_strUserDbPath.c_str());
+			dbDesc.open(m_strUtfUserDbPath.c_str());
 
 			// 看看是不是4和5两个版本的数据库
 			int nVer = GetDBVersion(dbSour);
@@ -353,7 +369,7 @@ bool CBankData::InstallUpdateDB()
 				CopyDataFromOldVersoion(dbSour, dbDesc);
 
 				CppSQLite3DB dbDataDB;
-				dbDataDB.open(m_strDataDbPath.c_str());
+				dbDataDB.open(m_strUtfDataDbPath.c_str());
 				// 将usbnfo中的数据拷贝到DataDB中
 				CpyDbTb2OtherDbTb(dbSour, dbDataDB,"tbUSBInfo", "datUSBKeyInfo"); 
 				dbDataDB.close();
@@ -362,7 +378,7 @@ bool CBankData::InstallUpdateDB()
 			dbSour.close();
 			dbDesc.close();
 			// 删除掉以前版本的数据库
-			DeleteFileA(strMoneyhub.c_str());
+			DeleteFileW(strMoneyhub.c_str());//不能用utf8名称
 			CRecordProgram::GetInstance()->RecordCommonInfo(L"BankData", 1000, L"完毕升级数据库moneyhub.dat");
 		}
 		catch(CppSQLite3Exception& ex)
@@ -373,14 +389,15 @@ bool CBankData::InstallUpdateDB()
 		}
 
 	}
-	std::string strGuestDB = strPath + "Guest.dat"; // 从6升级到7版本数据库的操作
+	std::string strutfGuestDB = utfstrPath + "Guest.dat"; // 从6升级到7版本数据库的操作
+	std::wstring strGuestDB = wstrPath + L"Guest.dat"; // 从6升级到7版本数据库的操作
 	// 在6两个版本中，数据库名称为moneyhub.dat
-	if (IsFileExist((LPSTR)strGuestDB.c_str()))
+	if (IsFileExist((LPWSTR)strGuestDB.c_str()))
 	{
 		try{
 			CRecordProgram::GetInstance()->RecordCommonInfo(L"BankData", 1000, L"开始升级数据库Guest.dat");
 			CppSQLite3DB dbDesc;
-			dbDesc.open(strGuestDB.c_str());
+			dbDesc.open(strutfGuestDB.c_str());
 
 			// 看看是不是4和5两个版本的数据库
 			int nVer = GetDBVersion(dbDesc);
@@ -436,21 +453,21 @@ bool CBankData::InstallUpdateDB()
 const char* CBankData::GetDbPath(std::string strUsID)
 {
 	if (strUsID == "SysDB")
-		return m_strSysDbPath.c_str();
+		return m_strUtfSysDbPath.c_str();
 
 	if (strUsID == "DataDB")
 	{
-		if (!m_strDataDbPath.empty())
-			return m_strDataDbPath.c_str();
+		if (!m_strUtfDataDbPath.empty())
+			return m_strUtfDataDbPath.c_str();
 	}
 
 	// 返回用户数据库路径
 	if (strUsID.empty())
 	{
-		if (!m_strUserDbPath.empty())
-			return m_strUserDbPath.c_str();
+		if (!m_strUtfUserDbPath.empty())
+			return m_strUtfUserDbPath.c_str();
 
-		if (m_strUserDbPath.empty())
+		if (m_strUtfUserDbPath.empty())
 			strUsID = "Guest";
 	}
 
@@ -461,20 +478,22 @@ const char* CBankData::GetDbPath(std::string strUsID)
 	::CreateDirectoryW(tempPath, NULL);
 	wcscat_s(tempPath, L"\\Data\\");
 	::CreateDirectoryW(tempPath, NULL);
+	USES_CONVERSION;
+	std::wstring wstrUsID = A2W(strUsID.c_str());
+
+	m_strUserDbPath = tempPath + wstrUsID + L".dat"; // 记录下当前用户数据库路径
 
 	char szDbPath[1024] = { 0 };
-	int srcCount = wcslen(tempPath);
+	int srcCount = wcslen(m_strUserDbPath.c_str());
 	srcCount = (srcCount > MAX_PATH) ? MAX_PATH : srcCount;
-	::WideCharToMultiByte(CP_UTF8, 0, tempPath, srcCount, szDbPath, 1024, NULL,FALSE);
+	::WideCharToMultiByte(CP_UTF8, 0, m_strUserDbPath.c_str(), srcCount, szDbPath, 1024, NULL,FALSE);
 
-	std::string strPath = szDbPath;
+	m_strUtfUserDbPath = szDbPath; //为了sqlite3，存储utf8名称
 
-	m_strUserDbPath = strPath + strUsID + ".dat"; // 记录下当前用户数据库路径
-
-	if (!IsFileExist ((LPSTR)m_strUserDbPath.c_str()))
+	if (!IsFileExist ((LPWSTR)m_strUserDbPath.c_str()))
 	{
 		// 从系统数据库中拷贝
-		CopyFileA(m_strGuestTemplete.c_str(), m_strUserDbPath.c_str(), false);
+		CopyFileW(m_strGuestTemplete.c_str(), m_strUserDbPath.c_str(), false);//！！！这里面不能用utf8
 	}
 
 	
@@ -575,15 +594,15 @@ const char* CBankData::GetDbPath(std::string strUsID)
 	//		CreateAccountTables(db);
 	//		if (!m_strSysDbPath.empty())
 	//		{
-	//			CpyDbTb2OtherDbTb((LPSTR)m_strSysDbPath.c_str(), "sysAccountType", (LPSTR)m_strUserDbPath.c_str(), "tbAccountType");
-	//			CpyDbTb2OtherDbTb((LPSTR)m_strSysDbPath.c_str(), "sysCurrency", (LPSTR)m_strUserDbPath.c_str(), "tbCurrency");
-	//			CpyDbTb2OtherDbTb((LPSTR)m_strSysDbPath.c_str(), "sysCategory1", (LPSTR)m_strUserDbPath.c_str(), "tbCategory1");
-	//			CpyDbTb2OtherDbTb((LPSTR)m_strSysDbPath.c_str(), "sysCategory2", (LPSTR)m_strUserDbPath.c_str(), "tbCategory2");
+	//			CpyDbTb2OtherDbTb((LPSTR)m_strSysDbPath.c_str(), "sysAccountType", (LPSTR)m_strUtfUserDbPath.c_str(), "tbAccountType");
+	//			CpyDbTb2OtherDbTb((LPSTR)m_strSysDbPath.c_str(), "sysCurrency", (LPSTR)m_strUtfUserDbPath.c_str(), "tbCurrency");
+	//			CpyDbTb2OtherDbTb((LPSTR)m_strSysDbPath.c_str(), "sysCategory1", (LPSTR)m_strUtfUserDbPath.c_str(), "tbCategory1");
+	//			CpyDbTb2OtherDbTb((LPSTR)m_strSysDbPath.c_str(), "sysCategory2", (LPSTR)m_strUtfUserDbPath.c_str(), "tbCategory2");
 
 	//			////
 	//			TBCPYNODE path;
 	//			path.strSour = m_strSysDbPath;
-	//			path.strDes = m_strUserDbPath;
+	//			path.strDes = m_strUtfUserDbPath;
 	//			TBCPYNODE tabNode;
 	//			tabNode.strSour = "sysBank";
 	//			tabNode.strDes = "tbBank";
@@ -622,7 +641,7 @@ const char* CBankData::GetDbPath(std::string strUsID)
 	//	}
 	//}
 
-	return m_strUserDbPath.c_str();
+	return m_strUtfUserDbPath.c_str();
 }
 
 const char* CBankData::GetCouponPath()
@@ -2614,19 +2633,30 @@ int CBankData::InternalExecuteSQL(std::string strSQL)
 	}
 }
 
-bool CBankData::IsFileExist(LPSTR lpPath)
+bool CBankData::IsFileExist(LPWSTR lpPath)
 {
 	ATLASSERT(NULL != lpPath);
 	if (NULL == lpPath)
 		return false;
 
-	HANDLE hFile = CreateFileA(lpPath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+	HANDLE hFile = CreateFileW(lpPath, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
 	if (INVALID_HANDLE_VALUE == hFile)
 	{
 		DWORD dwErr = GetLastError();
 		// 2表示访问的文件不存在
 		if(2 == dwErr)
 			return false;
+	}
+	else
+	{
+		DWORD dwLength = GetFileSize(hFile, NULL);
+		if(dwLength < 10)
+		{
+			CloseHandle(hFile);
+			DeleteFileW(lpPath);
+			return false;
+		}
+			
 	}
 
 	CloseHandle(hFile);
@@ -3502,7 +3532,7 @@ bool CBankData::ReadCurrencyByID(int nID, int nID2, double& dValue)
 	if (m_strSysDbPath.empty())
 		return false;
 	CppSQLite3DB db;
-	db.open(m_strSysDbPath.c_str());
+	db.open(m_strUtfSysDbPath.c_str());
 
 	CppSQLite3Buffer bufSQL;
 	bufSQL.format("SELECT ExchageRate FROM tbFav WHERE sysCurrency_id=%d AND sysCurrency_id1=%d;", nID, nID2);
@@ -3518,17 +3548,6 @@ bool CBankData::ReadCurrencyByID(int nID, int nID2, double& dValue)
 
 bool CBankData::CreateDataDBFile(LPSTR lpPath)
 {
-	ATLASSERT(NULL != lpPath);
-	if (NULL == lpPath)
-		return false;
-
-	HANDLE hFile = CreateFileA(lpPath, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, 0, NULL);
-	if (INVALID_HANDLE_VALUE == hFile)
-		return false;
-
-	CloseHandle(hFile);
-
-	
 	CppSQLite3DB db;
 	db.open(lpPath);
 
@@ -3569,7 +3588,7 @@ CppSQLite3DB* CBankData::GetDataDbObject()
 	}
 	catch(...)
 	{
-		m_dbDataDB.open(m_strDataDbPath.c_str());
+		m_dbDataDB.open(m_strUtfDataDbPath.c_str());
 	}
 	return &m_dbDataDB;
 }
@@ -3582,7 +3601,7 @@ CppSQLite3DB* CBankData::GetSysDbObject()
 	}
 	catch(...)
 	{
-		m_dbSysDB.open(m_strSysDbPath.c_str());
+		m_dbSysDB.open(m_strUtfSysDbPath.c_str());
 	}
 	return &m_dbSysDB;
 }
