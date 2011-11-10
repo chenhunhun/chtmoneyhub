@@ -2,28 +2,29 @@
 <main>
   <category name="banks">
 
-<site id="cmbc" name="民生银行"  version="2.0.0.4">
+<site id="cmbc" name="民生银行"  version="2.0.0.5">
 			<domains>
 				<domain name="*.cmbc.com.cn/*" />
 			</domains>
 			<requirements>
-				<system type="All" cpu="0">
-					<require type="classid" classid="60931F6C-3ED3-4713-AEC6-6A59BF761B23">
+				<system type="All" cpu="32">
+					<require type="activex" name="CMBCCertKitAx" reg="reg">
+						<file name="CMBCCertKitAx.dll" />
 					</require>
-					<require type="classid" classid="03ACC284-B757-4B8F-9951-86E600D2CD06">
+					<require type="file" name="CFCALicense.dll" path="%SystemRoot%\system32" replace="false">
 					</require>
-					<require type="classid" classid="85599589-00AA-11D7-A7D0-00E04C3F6D70">
+				</system>
+				<system type="All" cpu="64">
+					<require type="activex" name="CMBCCertKitAx" reg="reg">
+						<file name="CMBCCertKitAx.dll" />
 					</require>
-					<require type="activex" name="CFCACertKitAx" reg="reg">
-						<file name="CFCACertKitAx.dll" />
-					</require>
-					<require type="file" name="license.dll" path="%SystemRoot%\system32" replace="false">
+					<require type="file" name="CFCALicense.dll" path="%SystemRoot%\SysWOW64" replace="false">
 					</require>
 				</system>
 			</requirements>
 			<pages>
 				<page url="https://business.cmbc.com.cn/index_Private.html">
-					<require name="CFCACertKitAx" />
+					<require name="CMBCCertKitAx" />
 				</page>
 			</pages>
 		</site>

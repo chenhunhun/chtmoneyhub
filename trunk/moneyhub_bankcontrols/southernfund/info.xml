@@ -10,11 +10,15 @@
 				    <require type="activex" name="npCSFMin" reg="reg">
 						<file name="npCSFMin.dll" />
 					</require>
+					<require type="classid" classid="0D47D1E3-482F-4197-81DC-CD54AC2E4241">
+				    </require>
 				</system>
 				<system type="WinVista" cpu="0">
 				    <require type="activex" name="npCSFMin" reg="reg">
 						<file name="npCSFMin.dll" />
 					</require>
+					<require type="classid" classid="0D47D1E3-482F-4197-81DC-CD54AC2E4241">
+				    </require>
 				</system>
 				<system type="WinXP" cpu="0">
 				    <require type="activex" name="npCSFMin" reg="reg">
@@ -23,6 +27,8 @@
 					<require type="driver" name="Nsafepw" service="Protectorsouthernfund" rstart="3" rtype="1">
 						<file name="Nsafepw.sys" />
 					</require>
+					<require type="classid" classid="0D47D1E3-482F-4197-81DC-CD54AC2E4241">
+				    </require>
 				</system>
 			</requirements>
 			<pages>

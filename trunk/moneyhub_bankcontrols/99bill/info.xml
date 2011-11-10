@@ -11,6 +11,8 @@
 					<require type="activex" name="capicom" reg="reg">
 						<file name="capicom.dll" />
 					</require>
+					<require type="classid" classid="69A5F9C4-01CB-470B-8161-CE67313E3CF4">
+				    </require>
 					</system>
 			   </requirements>
 			<pages>

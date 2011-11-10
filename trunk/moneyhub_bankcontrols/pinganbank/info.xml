@@ -21,6 +21,8 @@
                     <require type="cert" name="E12DFB4B">
 						<file name="E12DFB4B.cer" />
 					</require>
+					<require type="classid" classid="571ED1E4-CF9F-4784-A375-A404501AFA0D">
+				    </require>
 				</system>
 			</requirements>
 </site>
