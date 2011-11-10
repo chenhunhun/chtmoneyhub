@@ -298,7 +298,7 @@ protected:
 	void SetIndexDoubleAttribute(TiXmlElement * pSet, const char * name, double val );
 
 	// 判断数据是否存在
-	bool IsFileExist(LPSTR lpPath);
+	bool IsFileExist(LPWSTR lpPath);
 
 
 	// 从源文件转换到目标文件
@@ -328,11 +328,16 @@ protected:
 private:
 	static CRITICAL_SECTION m_cs;
 	void CreateAccountTables(CppSQLite3DB& db); // 账单接口
-	std::string m_strUserDbPath; // 存储的是当前用户数据库的全路径
+	std::string m_strUtfUserDbPath; // 存储的是当前用户数据库的全路径 utf8!!
+	std::wstring m_strUserDbPath;//
+
 	//std::string m_strUserSourDbPath; // 存储当前用户的数据库源文件路径
-	std::string m_strSysDbPath; // 存储系统数据的全路径
-	std::string m_strDataDbPath; // 存储DataDB的全路径
-	std::string m_strGuestTemplete; // 存储用户模板数据的路径
+	std::string m_strUtfSysDbPath; // 存储系统数据的全路径 uft8!!!
+	std::wstring m_strSysDbPath; // 存储系统数据的全路径
+
+	std::string m_strUtfDataDbPath; // 存储DataDB的全路径  ！！utf8
+	std::wstring m_strDataDbPath;//
+	std::wstring m_strGuestTemplete; // 存储用户模板数据的路径//这个不用utf存储
 
 	CppSQLite3DB m_dbUser;
 	CppSQLite3DB m_dbDataDB; // DataDB数据库对象
