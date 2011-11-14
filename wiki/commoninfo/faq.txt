@@ -22,11 +22,16 @@ sc query moneyhubprt
 
 https://e.bank.ecitic.com/perbank5/pb5640_mainCardSetting.do?EMP_SID=DZENFSIBGMJFIDBVDHHKBGJMBAFQGVGHHSBRHCEW 
 https://e.bank.ecitic.com/perbank5/pb5640_maincardSettingreq.do?EMP_SID=DZENFSIBGMJFIDBVDHHKBGJMBAFQGVGHHSBRHCEW HTTP/1.1
-
+submitIt()
+goto()
+<a title="信用卡" href="javascript:parent.quickLinkTag('2','pb5130_historyBillQry.do','PB110500');setSelected(1)">
+itInner( temp_menu2_url1);setCurrentMenuCode('PB120100');m2(2);"
+a href="javascript:submitInner( temp_menu2_url30);setCurrentMenuCode('PB110500');m2(31);"
 http://192.168.0.99:8010/ccnet/ViewFarmReport.aspx
 
 zhangjing@finantech.cn
 
+6222600910041629864
 
 F:\news\Chromium\mozilla-release\modules\plugin\base\public
 F:\news\Chromium\mozilla-release\nsprpub\pr\include
@@ -37,7 +42,7 @@ F:\news\Chromium\mozilla-release\xpcom
 F:\news\Chromium\mozilla-release\xpcom\glue
 
 
-
+6222600910041629864
 Quickoffice     Documents to go       Office2HD   office for mac    Keynote    Google Docs
 Pages相当于Word，Numbers相当于Excel，Keynote相当于 PowerPoint
 iWork
@@ -48,23 +53,37 @@ http://andyfurong.googlecode.com/svn/trunk
 f:\moneyhub\BankCore\Main.cpp
 void RunIECore(LPCTSTR lpszCmdline)
 {
-	
-	CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_THREAD_ID_INIT, L"进入RunIECore线程");
-
+	// Initialize
 	::DebugBreak();
+	//CRegKeyManager::Initialize();
+
+	CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_THREAD_ID_INIT, L"RegKeyManager初始化");
+
+
+	// 对该ie页面的消息的处理进行挂钩
+	//CAxHookManager::Initialize();
+	//CInternetSecurityManagerImpl::Initialize();
+
 
 
 f:\moneyhub\Security\BankDrv\MapViewOfSection.cpp
+/**
+*  设置钩子和卸载钩子函数
+*/
 VOID HookSSDT()
 {
-	NtMapViewOfSection = (NTMAPVIEWOFSECTION)UpdateService(g_NtMapViewOfSectionID, (PVOID)MyMapViewOfSection);
+	//NtMapViewOfSection = (NTMAPVIEWOFSECTION)UpdateService(g_NtMapViewOfSectionID, (PVOID)MyMapViewOfSection);
 	//sstHook_OpenProcess();
 }
 
 VOID UnHookSSDT()
 {
-	UpdateService(g_NtMapViewOfSectionID, (PVOID)NtMapViewOfSection);
+	WriteSysLog(LOG_TYPE_DEBUG,L" UnHookSSDT");
+	//::KeWaitForSingleObject(&g_DispatchMutex,Executive,KernelMode,FALSE,NULL);
+	//UpdateService(g_NtMapViewOfSectionID, (PVOID)NtMapViewOfSection);
 	//sstUnhook_OpenProcess();
+	WriteSysLog(LOG_TYPE_DEBUG,L" FinishHookSSDT");
+
 }
 
 /**
@@ -100,12 +119,17 @@ e:\moneyhub\BankUI\UIControl\MainFrame.cpp
 
 del  Moneyhub_Updater.exe
 
-<A onclick=m1(11) target=mainframe>我的账户</A>
-<A id=m2_31 class=menu2_off href="javascript:submitInner( temp_menu2_url30);setCurrentMenuCode('PB110500');m2(31);">历史账单查询</A>
-<INPUT class=button_bg onclick=javascript:submitFun(); name=qryName value=查询 type=button>
-<a href = javascript:setValue('201106','156','840','1') >-16.91</a>
-<a href = javascript:setValue('201106','840','156','1') >0.00</a>
+debug运行加密数据库
+//#ifdef OFFICIAL_VERSION
 
+	if (strncmp(szFile, "\\MoneyHub\\DataDB.dat", 20) == 0 || strncmp(szFile, "\\Config\\SysDB.dat", 17) == 0) 
+		sqlite3_key(mpDB, "qkQazJMUHPQNysS4xc0D", 20);
+	else
+		//sqlite3_key(mpDB, "NCrFT2RIeD0NY2wHOI8W", 20);
+		CheckPassword(szPw, nPwLen);
+//#else
+//	sqlite3_key(mpDB, "", 0);
+//#endif
 
 
 
@@ -158,10 +182,6 @@ abcd1234
 
 
 PassRefPtr<DOMWindow> DOMWindow::open(const String& urlString, const AtomicString& frameName, const String& windowFeaturesString,
-
-
-
-
 
 
 
