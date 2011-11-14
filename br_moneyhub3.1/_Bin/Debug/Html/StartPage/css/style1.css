@@ -3,7 +3,12 @@ html {
 	overflow: hidden;
 }
 *{margin:0; padding:0;}
-body{ font-size:12px; font-family:"宋体"; line-height:18px; overflow-y:hidden;}
+body {
+	font-size: 12px;
+	font-family: "宋体";
+	/*line-height: 18px;*/
+	overflow-y: hidden;
+}
 .clearfix:after {content:".";display:block;height:0;clear:both;visibility:hidden}
 .clearfix{zoom:1}
 
@@ -100,6 +105,8 @@ body{ font-size:12px; font-family:"宋体"; line-height:18px; overflow-y:hidden;
 }
 .app_box .app_box_bg_left {
 	background: url(../images/app_box_bg_left.png); 
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/app_box_bg_left.png', sizingMethod='crop');
 	width:70px;
 	height:284px;
 	top:0px;
@@ -108,7 +115,9 @@ body{ font-size:12px; font-family:"宋体"; line-height:18px; overflow-y:hidden;
 	overflow:hidden;
 }
 .app_box .app_box_bg_center {
-	background:url(../images/app_box_bg_center.png);background-repeat: repeat-x;background-position:0px 16px;
+	background: url(../images/app_box_bg_center.png);
+	background-repeat: repeat-x;
+	background-position: 0px 16px;
 	top:0px;
 	left:70px;
 	position:absolute;
@@ -182,6 +191,7 @@ body{ font-size:12px; font-family:"宋体"; line-height:18px; overflow-y:hidden;
 	height: 204px;
 	+height: 202px;
 	_height: 200px;
+	line-height: 18px;
 	float: left;
 	position: absolute;
 	top: 0px;
@@ -294,6 +304,7 @@ b.rtop b.r4, b.rbottom b.r4{margin: 0 1px;height: 2px}
 }
 #finantechad_ul {
 	list-style: none;
+	line-height: 18px;
 	padding: 1px 0 0 20px;
 	overflow-y: auto;
 	height: 168px;

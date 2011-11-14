@@ -436,6 +436,110 @@ bool CBankData::InstallUpdateDB()
 				CRecordProgram::GetInstance()->RecordCommonInfo(L"BankData", 1000,  L"完毕升级数据库6");
 			}
 
+			/*CppSQLite3Buffer bufSQL;
+			bufSQL.format("select count(id) as num from tbtransaction where tbcategory2_id = 10067");
+			CppSQLite3Query q2 = dbDesc.execQuery(bufSQL);
+
+			int nres = 0;
+			if(!q2.eof())
+			{
+				nres = q2.getIntField(0);				
+			}
+			q2.finalize();*/
+
+
+			//nres > 0// 说明是3.1版本，账户中最少有一条初始余额不为0
+			CppSQLite3Buffer bufSQL;
+			bufSQL.format("select a.id as aid,date(min(transdate),'-1 day') as handleDate,openbalance from tbsubaccount a left join tbtransaction b on a.id = b.tbsubaccount_id group by a.id;");
+			/*
+			bufSQL.format("select a.id as aid,date(min(transdate),'-1 day') as handleDate,openbalance, \
+						  num as num from tbsubaccount a left join tbtransaction b on a.id = b.tbsubaccount_id left join (select count(a.id) as num, \
+						  b.id as sid from tbsubaccount b left join tbtransaction a on a.tbsubaccount_id = b.id \
+						  where tbcategory2_id = 10067 group by b.id) c on a.id = c.sid group by a.id;");
+			*/
+			CppSQLite3Query q = dbDesc.execQuery(bufSQL);
+			while(!q.eof())
+			{
+				int iaid = q.getIntField(0);
+				char* handleDate = (char *)q.getStringField(1);
+				int iopenbalance = q.getIntField(2);
+
+				bool bTag = false;
+				bufSQL.format("select amount from tbtransaction a, tbsubaccount b where a.tbsubaccount_id = b.id and b.id = %d and a.tbcategory2_id = 10067 order by a.transdate,a.id asc limit 0, 1", iaid);
+				CppSQLite3Query q2 = dbDesc.execQuery(bufSQL);
+
+				if(!q2.eof())
+				{
+					int iamount = q2.getIntField(0);
+					if( iamount == iopenbalance) bTag = true;
+				}
+				q2.finalize();
+
+				if(iopenbalance != 0 && (!bTag))
+				{
+					if(handleDate != NULL && strlen(handleDate) > 0)
+					{
+						bufSQL.format("INSERT INTO tbTransaction(transdate, tbPayee_id, tbCategory2_id, amount, direction, tbSubaccount_id, exchangerate, comment, tbSubaccount_id1,transactionClasses ) values \
+							('%s', 0, 10067, %d, 0, %d, 0, '', 0, 0);", handleDate, iopenbalance, iaid);
+						dbDesc.execDML(bufSQL);
+					}
+					bufSQL.format("update tbsubaccount set openbalance=0 where id=%d; ", iaid);
+					dbDesc.execDML(bufSQL);
+				}
+				else
+				{
+					bufSQL.format("update tbsubaccount set openbalance=0 where id=%d; ", iaid);
+					dbDesc.execDML(bufSQL);
+				}
+				//调整子账户余额
+				int changeBalanceClasses = 10067;
+				//bufSQL.format("SELECT id, date(transdate,'0 day'), Amount FROM tbtransaction WHERE tbsubaccount_id=%d AND tbcategory2_id=10067 ORDER BY transdate DESC, id DESC LIMIT 1;", iaid);
+				bufSQL.format("SELECT id, strftime('%s',TransDate) AS Date, Amount FROM tbtransaction WHERE tbsubaccount_id=%d AND tbcategory2_id=10067 ORDER BY transdate DESC, id DESC LIMIT 1;", "%Y-%m-%d",iaid);
+				CppSQLite3Query q3 = dbDesc.execQuery(bufSQL);
+
+				int lastBalanceId = 0;
+				string  lastBalanceDate = "1900-01-01";
+				float lastBalanceAmount = 0;
+				if(!q3.eof()){
+					lastBalanceId = q3.getIntField(0);
+					lastBalanceDate = (char *)q3.getStringField(1);
+					lastBalanceAmount = q3.getFloatField(2);
+				}
+				q3.finalize();				
+
+				bufSQL.format("SELECT Type, SUM(Amount) sumamount FROM tbtransaction t, tbcategory2, tbcategory1 \
+					WHERE tbsubaccount_id=%d AND tbcategory2_id=tbcategory2.id AND tbcategory1_id=tbcategory1.id \
+					AND ((t.transdate>'%s') OR ((t.transdate='%s') AND (t.id>%d))) AND tbcategory2_id<>10067 GROUP BY Type", 
+					iaid, lastBalanceDate.c_str(), lastBalanceDate.c_str() , lastBalanceId);
+
+				CppSQLite3Query q4 = dbDesc.execQuery(bufSQL);
+				
+				float totalSpend = 0;
+				float totalIncome = 0;
+				while(!q4.eof())
+				{
+					int q4res = q4.getIntField(0);
+
+					if( q4res == 0)
+						totalSpend = q4.getFloatField(1);
+					else if( q4res == 1)
+						totalIncome = q4.getFloatField(1);
+
+					q4.nextRow();
+				}
+				q4.finalize();
+
+				lastBalanceAmount += totalIncome - totalSpend;
+
+				bufSQL.format("UPDATE tbSubAccount SET balance=%.2f WHERE id=%d",lastBalanceAmount, iaid);
+				dbDesc.execDML(bufSQL);				
+				q.nextRow();
+			}
+
+			q.finalize();
+
+
+
 			dbDesc.close();
 		}
 		catch(CppSQLite3Exception& ex)

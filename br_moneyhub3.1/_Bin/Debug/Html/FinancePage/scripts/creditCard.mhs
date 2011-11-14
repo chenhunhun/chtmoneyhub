@@ -1081,7 +1081,7 @@ function getBillLastAction(){
  	//赋值给currentAid
  	//以下开始处理显示样式
  	
- 	if(today[1] != "")  $('#'+today[1]).removeClass("now");
+ 	if(today[1] != "")  $('#month_'+today[1]).removeClass("now");
 	today.splice(1, 1, "");
 	isDuration = "temp";
 	//移除批量的checkbox样式
