@@ -2063,9 +2063,9 @@ function createMonthView(){
 		if (i < 10) cMonth = "0" + i;
 		else cMonth = i + "";
 		if (cMonth == today[1]) {
-			myHtml += "<td onclick='monthSelect(\"" + cMonth + "\")'><span id='" + cMonth+"' class=\"now\">" + i + "月</span></td>";	
+			myHtml += "<td onclick='monthSelect(\"" + cMonth + "\")'><span id='month_" + cMonth+"' class=\"now\">" + i + "月</span></td>";	
 		} else {
-			myHtml += "<td onclick='monthSelect(\"" + cMonth + "\")'><span id='" + cMonth+"'>" + i + "月</span></td>";
+			myHtml += "<td onclick='monthSelect(\"" + cMonth + "\")'><span id='month_" + cMonth+"'>" + i + "月</span></td>";
 		}
 	}
 	myHtml += '</tr></table>';
@@ -2082,8 +2082,8 @@ function monthSelect(month, aid) {
 		isDuration = "";
 		//显示样式
 		if (today[1] != "")
-		  $('#' + today[1]).removeClass("now");
-		$('#' + month).addClass("now");
+		  $('#month_' + today[1]).removeClass("now");
+		$('#month_' + month).addClass("now");
 		//更新当前数组
 		today.splice(1, 1, month);
 		//数据渲染
@@ -2099,7 +2099,7 @@ function monthSelect(month, aid) {
  */
 function viewAll() {
 	//移除显示月份
-	if(today[1] != "")  $('#'+today[1]).removeClass("now");
+	if(today[1] != "")  $('#month_'+today[1]).removeClass("now");
 	today.splice(1, 1, "");
 	isDuration = "temp";
 	//移除批量的checkbox样式

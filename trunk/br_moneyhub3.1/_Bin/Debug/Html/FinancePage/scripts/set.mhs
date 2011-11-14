@@ -1252,7 +1252,7 @@ function handleAddSA(TypeId) {
 				var CurrencyId = $("#newsa" + TypeId + "_form input[name='currency']").val();
 
 				if (TypeId == 7) Balance = -Balance;
-				content = GenerateAccount(TypeId, 0, AccountId, 0, 0, AccountName, Comment, CurrencyId, Balance, BankId);//此处需要添加期限和到期日
+				content = GenerateAccount(TypeId, 0, AccountId, SubAccountId, 0, AccountName, Comment, CurrencyId, Balance, BankId);//此处需要添加期限和到期日
 				$("#tAT" + TypeId).append(content);
 			}
 			$("#dAT" + TypeId).show();
@@ -2269,7 +2269,7 @@ function submitEditAccount(TypeId) {
  */
 function editEvent(TypeId){
     var AccountId = $("#newsa" + TypeId + "_form input[name='AccountId']").val(),
-        oldName = $("#tAT" + TypeId + " tr[accountid='" + AccountId + "'][subaccountid = 0]").attr("accountname"),
+        oldName = $("#tAT" + TypeId + " tr[accountid='" + AccountId + "'][subaccountid= 0]").attr("accountname"),
 	    oldSubName = $("#tAT" + TypeId + " tr[accountid='" + AccountId + "']").next().attr("accountname"),
 		enddate = $("#newsa" + TypeId + " input[name='sdate']").length > 0 ? $("#newsa" + TypeId + " input[name='sdate']").val() : "",
         alarm = ($("#newsa" + TypeId + " .sCheckBox").hasClass("sCheckBox2") == true) ? $("#newsa" + TypeId + " span[id='rmday']").text() : "",
@@ -2360,6 +2360,8 @@ function editEvent(TypeId){
 			}
 		}
 	} else if (TypeId == 5) {
+	    var SubAccountId = $("#newsa" + TypeId + " input[name='SubAccountId']").val();
+		oldName = $("#tAT5" + " tr[accountid='" + AccountId + "'][subaccountid = '"+ SubAccountId +"']").attr("accountname");
 		//投资类账户
 		oldSubName = "", newSubName = "";
 		if (enddate != "" && $("#newsa" + TypeId + " .sCheckBox").hasClass("sCheckBox2") == true){
