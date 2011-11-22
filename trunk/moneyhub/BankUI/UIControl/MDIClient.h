@@ -42,11 +42,13 @@ private:
 
 	CTuotuoTabCtrl &m_TabCtrl;
 	CTuotuoCategoryCtrl &m_CateCtrl;
+	bool				m_bShowed; // 记录是否已经加载了
 
 public:
 	bool killKernel(bool bKill = true);
 	static bool m_bSafe;
 private:
+	bool IsShowRegGuideDlg();
 	bool getPriviledge();
 	bool isIE6;
 	

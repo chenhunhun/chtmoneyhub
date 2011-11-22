@@ -196,15 +196,24 @@ struct tfield
 };
 typedef std::map<std::string, tfield> TableField; // 
 
+typedef enum USER_CHANGE_STATUS
+{
+	emUserUnLoad, // 用户未登录
+	emUserChangePwd, // 用户修改密码
+	emUserChangeMail, // 用修改邮箱
+}CHANGESTATUS;
+
 typedef struct USERINFO
 {
 	USERINFO()
 	{
 		struserid = "Guest";
+		emStatus = emUserUnLoad;
 	}
 	string       strmail;
 	string       strstoken;
 	string       struserid;
+	CHANGESTATUS emStatus;
 }USERINFO;
 
 class CBankData
@@ -293,8 +302,8 @@ public:
 	bool CreateNewUserDB(LPSTR lpstrUserDBName, LPSTR lpPassword, int nLen);
 	bool SetCurrentUserDB(LPSTR lpstrUserDBName, LPSTR lpPassword, int nLen);
 
-	// 修改当前用户密码
-	bool ChangeCurUserDBPwd(const char* pOldPwd, const int nOldLen, const char* pNewPwd, const int nNewLen);
+	// 修改用户数据库密码
+	bool ChangeUserDBPwd(const LPSTR lpstrUserDBName, const char* pOldPwd, const int nOldLen, const char* pNewPwd, const int nNewLen);
 	
 	// 
 	bool ReadNeedAutoLoadUser(string& strUserID, string& strMail, string& strStoken);

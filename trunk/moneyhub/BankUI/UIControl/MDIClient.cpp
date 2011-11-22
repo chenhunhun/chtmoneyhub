@@ -13,7 +13,8 @@
 #include <TlHelp32.h>
 
 bool CMDIClient::m_bSafe = true;
-CMDIClient::CMDIClient(CTuotuoTabCtrl &TabCtrl, CTuotuoCategoryCtrl &cateCtrl, FrameStorageStruct *pFS) : m_TabCtrl(TabCtrl), m_CateCtrl(cateCtrl), CFSMUtil(pFS)
+CMDIClient::CMDIClient(CTuotuoTabCtrl &TabCtrl, CTuotuoCategoryCtrl &cateCtrl, FrameStorageStruct *pFS) : m_TabCtrl(TabCtrl),
+m_CateCtrl(cateCtrl), CFSMUtil(pFS), m_bShowed(false)
 {
 	FS()->pMDIClient = this;
 	isIE6 = false;
@@ -159,6 +160,22 @@ bool CMDIClient::getPriviledge()
 
 }
 
+bool CMDIClient::IsShowRegGuideDlg()
+{
+	CHAR ptszValueName[50] = { 0 };
+	DWORD dType, dReturnBytes = 50;
+
+	// 在注册表中读取GInfo
+	if (ERROR_SUCCESS == ::SHGetValueA(HKEY_LOCAL_MACHINE, REGEDIT_MONHUB_PATH, MONHUB_GUIDEINFO_KEY, &dType, &ptszValueName, &dReturnBytes))
+	{
+		string strTp = ptszValueName;
+		if ("1" == strTp)
+			return false;
+	}
+	
+	return true; // 默认时弹出注册向导
+}
+
 bool CMDIClient::killKernel(bool bKill)
 {
 	bool bReturn = false;
@@ -267,6 +284,17 @@ void CMDIClient::ActivePage(CTabItem *pItem)
 	std::tstring  ms = pItem->GetURLText();
 
 	CRecordProgram::GetInstance()->RecordDebugInfo(MY_PRO_NAME, MY_COMMON_PROCESS, CRecordProgram::GetInstance()->GetRecordInfo(L"用户点击如下链接:%s", ms.c_str ()));
+
+	// 检验是否弹出注册向导
+	if (ms.find(L"Html\\FinancePage\\index.html") != std::tstring::npos)
+	{
+		if (IsShowRegGuideDlg() && !m_bShowed)
+		{
+			// 弹出注册向导
+			::PostMessage(GetParent(), WM_SHOW_USER_DLG, 0, MY_TAG_REGISTER_GUIDE);
+			m_bShowed = true;
+		}
+	}
 
 
 	// 张京要求，得调用JS TabActive函数

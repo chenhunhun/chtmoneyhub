@@ -20,6 +20,8 @@ public:
 	int GetTextButtonHeight();
 	int GetTextButtonWidth();
 
+	void ReadButtonText(std::wstring& strBtn);
+
 	// override
 	void DrawBackground(HDC hDC, const RECT &rc);
 	void DrawButton(HDC hDC, int iIndex, const RECT &rc, UINT uCurrentStatus);

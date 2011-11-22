@@ -207,8 +207,18 @@ LRESULT CAxUI::UserAutoLoad(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		strMail.clear();
 	}
 
-	CString cstrMail = CA2W(strMail.c_str());
-	::SendMessage(g_hMainFrame, WM_SETTEXT, WM_FINIHS_AUTO_LOAD, (LPARAM)(LPCTSTR)cstrMail);
+
+	// 通知UI更新当前用户信息（同步在UI中要使用这些值）
+	string strMesParam = strStoken + MY_PARAM_END_TAG;
+	strMesParam += strMail;
+	strMesParam += MY_PARAM_END_TAG;
+	strMesParam += strUserID;
+	strMesParam += MY_PARAM_END_TAG;
+
+	::SendMessage(g_hMainFrame, WM_SETTEXT, WM_UPDATE_USER_STATUS, (LPARAM)strMesParam.c_str());
+
+	/*CString cstrMail = CA2W(strMail.c_str());
+	::SendMessage(g_hMainFrame, WM_SETTEXT, WM_FINIHS_AUTO_LOAD, (LPARAM)(LPCTSTR)cstrMail);*/
 	return 0;
 }
 
@@ -225,10 +235,33 @@ LRESULT CAxUI::OnLoadUserQuit(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	// 将数据库转移至访客数据库
 	CBankData::GetInstance()->SetCurrentUserDB("Guest.dat", (LPSTR)strPw.c_str(), nLen);
 
+	// 检验当前用户是否是自动登录用户，如果是，则清空stoken，否则不更新
+	string strUserID = CBankData::GetInstance()->m_CurUserInfo.struserid;	
+	string strSQL = "select userid from datUserInfo where userid = '";
+	strSQL += strUserID;
+	strSQL += "' and autoload = 1";
+	string strQueryVal = CBankData::GetInstance()->QuerySQL(strSQL, "DataDB");
+	if (strQueryVal.find(strUserID) != string::npos)
+	{
+		strSQL = "update datUserInfo set autoload = 0, stoken = '' where userid = '";
+		strSQL += strUserID;
+		strSQL += "'";
+		CBankData::GetInstance()->QuerySQL(strSQL, "DataDB");
+	}
+
 	// 更改当前用户信息
 	CBankData::GetInstance()->m_CurUserInfo.strstoken.clear();
 	CBankData::GetInstance()->m_CurUserInfo.strmail.clear();
 	CBankData::GetInstance()->m_CurUserInfo.struserid = "Guest";
+
+
+
+	// 通知UI更新当前用户信息（同步在UI中要使用这些值）
+	string strMesParam = "Guest";
+	strMesParam += MY_PARAM_END_TAG;
+	strMesParam += MY_PARAM_END_TAG;
+	strMesParam += MY_PARAM_END_TAG;
+	//::PostMessage(g_hMainFrame, WM_SETTEXT, WM_NOTICE_UI_UPDATE_USERINFO, (LPARAM)strMesParam.c_str());
 
 	::SendMessage(g_hMainFrame, WM_SETTEXT, WM_UPDATE_USER_STATUS, (LPARAM)L"");
 	return 0;

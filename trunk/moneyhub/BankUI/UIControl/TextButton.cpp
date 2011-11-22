@@ -95,3 +95,8 @@ int CTextButton::GetTextButtonWidth()
 {
 	return m_nWidth;
 }
+
+void CTextButton::ReadButtonText(std::wstring& strBtn)
+{
+	strBtn = m_wstrShow;
+}

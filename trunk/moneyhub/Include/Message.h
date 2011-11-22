@@ -48,6 +48,7 @@
 #define WM_CHANGE_USER_DLG_NAME						(WM_USER + 0x4036) // 更改框架名称（JS调用）
 #define WM_AX_LOAD_USER_QUIT						(WM_USER + 0x4037) // 用户退出登录
 #define WM_CHANGE_FIRST_PAGE_SHOW					(WM_USER + 0x4038) // 根据用户是否登录，在首页显示不同内容
+#define WM_AX_CHANGE_SETTINT_STATUS					(WM_USER + 0x4039) // 通知内核用户进入设置时显示的界面
 
 
 #define WM_AX_NAVIGATE								(WM_USER + 0x5000)
@@ -89,6 +90,7 @@
 
 
 // 跨进程间的一些常量定义
+#define MY_PARAM_END_TAG								"#" // 多个参数合并用的分隔符（包括和PHP通讯，内核和UI）
 #define MY_TAG_LOAD_DLG									1 // 表示登录对话框
 #define MY_TAG_REGISTER_DLG								2 // 表示注册对话框
 #define MY_TAG_SETTING_DLG								3 // 表示注册对话框
@@ -99,3 +101,9 @@
 
 #define WY_STATUE_SHOW_DLG								1 // 显示窗口
 #define MY_STATUE_CLOSE_DLG								2 // 关闭窗口
+
+#define MY_USER_INFO_MENU_CLICK_MAILCHANGE				1
+#define MY_USER_INFO_MENU_CLICK_PWDCHANGE				2
+#define MY_USER_INFO_MENU_CLICK_QUIT					4
+#define REGEDIT_MONHUB_PATH								"Software\\Finantech\\MoneyHub\\Setting"
+#define MONHUB_GUIDEINFO_KEY							"GInfo"

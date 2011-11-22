@@ -438,6 +438,13 @@ LRESULT CAxControl::OnChangeFirtsPageShow(UINT uMsg, WPARAM wParam, LPARAM lPara
 	return 0;
 }
 
+LRESULT CAxControl::ChangeSettingShowStatus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	CHANGESTATUS emParam = (CHANGESTATUS)lParam;
+	CBankData::GetInstance()->m_CurUserInfo.emStatus = emParam;
+	return 0;
+}
+
 LRESULT CAxControl::OnShowInfoDlg(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	DWORD dw = 0;

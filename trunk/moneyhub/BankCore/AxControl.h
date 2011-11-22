@@ -52,6 +52,7 @@ public:
 
 		MESSAGE_HANDLER(WM_AX_GET_BILL, OnGetBill)
 
+		MESSAGE_HANDLER(WM_AX_CHANGE_SETTINT_STATUS, ChangeSettingShowStatus)
 		MESSAGE_HANDLER(WM_CHANGE_FIRST_PAGE_SHOW, OnChangeFirtsPageShow)
 		MESSAGE_HANDLER(WM_AX_SHOW_INFO_DLG, OnShowInfoDlg)
 		MESSAGE_HANDLER(WM_AX_END_INFO_DLG, OnEndInfoDlg)
@@ -82,6 +83,7 @@ public:
 	LRESULT OnSSLStatus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnGetMarshalWebBrowser2CrossThread(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
+	LRESULT ChangeSettingShowStatus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnFrameSetAlarm(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnFrameAddFav(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnFrameChangeProgress(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);

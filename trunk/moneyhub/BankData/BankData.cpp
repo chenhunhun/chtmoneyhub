@@ -291,13 +291,24 @@ bool CBankData::SetCurrentUserDB(LPSTR lpstrUserDBName, LPSTR lpPassword, int nL
 }
 
 // 修改当前用户密码
-bool CBankData::ChangeCurUserDBPwd(const char* pOldPwd, const int nOldLen, const char* pNewPwd, const int nNewLen)
+bool CBankData::ChangeUserDBPwd(const LPSTR lpstrUserDBName, const char* pOldPwd, const int nOldLen, const char* pNewPwd, const int nNewLen)
 {
-	ATLASSERT(NULL != pOldPwd && NULL != pNewPwd);
-	if (NULL == pOldPwd && NULL == pNewPwd)
+	ATLASSERT(NULL != pOldPwd && NULL != pNewPwd && NULL != lpstrUserDBName);
+	if (NULL == pOldPwd || NULL == pNewPwd || NULL == lpstrUserDBName)
 		return false;
 
-	m_dbUser.ChangePassword(pOldPwd, nOldLen, pNewPwd, nNewLen);
+	string strFilePath = m_strUtfDataPath + lpstrUserDBName;
+	
+	CppSQLite3DB tempDB;
+	// 把开数据库
+	tempDB.open(strFilePath.c_str(), pOldPwd, nOldLen);
+
+	// 修改密码
+	tempDB.ChangePassword(pOldPwd, nOldLen, pNewPwd, nNewLen);
+	tempDB.close();
+
+
+	return true;
 }
 
 void CBankData::InitSysDbTempFile(void) // 初始化系统数据库临时文件
@@ -3774,6 +3785,8 @@ bool CBankData::CreateDataDBFile(LPSTR lpPath)
 			   `autoinfo` int default(0), \
 			   `autoremb` int default(0));");
 
+	// JS要求初始化Guest进数据库
+	db.execDML("insert into datUserInfo values ('Guest', '', '', '', 0, 0, 0);");
 
 	db.execDML("CREATE  TABLE IF NOT EXISTS `datUSBKeyInfo` (\
 			   `vid` INTEGER NOT NULL,\
