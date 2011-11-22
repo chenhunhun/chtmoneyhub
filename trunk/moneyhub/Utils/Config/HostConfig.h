@@ -2,6 +2,8 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <list>
+#include "../../ThirdParty/tinyxml/tinyxml.h"
 using namespace std;
 
 enum webconfig
@@ -10,7 +12,8 @@ enum webconfig
 	kDownload = 1,//下载
 	kFeedback = 2,//反馈
 	kAdv = 3,//广告
-	kBenefit = 4 //优惠券
+	kBenefit = 4,//优惠券
+	kDownloadMode = 5 //测试下载模式
 };
 
 typedef   std::vector<std::wstring>  VECTORNPBNAME;
@@ -31,8 +34,13 @@ public:
 	// 根据参数获得网址的函数
 	wstring GetHostName(webconfig host);
 
+	bool IsUrlInUrlError(wstring url);
+
 private:
 	map<webconfig,wstring> m_host;
+	std::list<std::wstring> m_urlError;
+
+	bool ReadUrlData(const TiXmlNode *pErrorHtml);
 
 	std::string GetFileContent(wstring strPath,bool bCHK);
 	bool GetAllHostName(VECTORNPBNAME *pVvecNPB = NULL);

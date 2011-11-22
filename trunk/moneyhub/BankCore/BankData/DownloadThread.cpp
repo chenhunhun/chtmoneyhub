@@ -6,6 +6,7 @@
 #include "..\Security\Authentication\BankMdrVerifier\export.h"
 #include "..\Utils\ExceptionHandle\ExceptionHandle.h"
 #include "..\Utils\RecordProgram\RecordProgram.h"
+#include "..\Utils\PostData\BankDownloadMode.h"
 #include "../MyError.h"
 
 #define REPEATNUM               6 // 重试6次
@@ -37,6 +38,11 @@ CDownloadThread::CDownloadThread()
 	m_repeatNum = 0 ;//重复五次
 
 	m_bRetryWait = false;
+
+	m_pRead = NULL;
+	m_nLength = 0;
+	m_pReadLength = NULL;
+
 	//InitializeCriticalSection(&m_cs);
 }
 
@@ -45,22 +51,24 @@ CDownloadThread::~CDownloadThread()
 	//DeleteCriticalSection(&m_cs);
 }
 
-void CDownloadThread::DownLoadInit(LPCTSTR lpszHWID, LPCTSTR lpszUrl, LPCTSTR lpszSaveFile, LPSTR lpPostData)
+void CDownloadThread::DownLoadInit(LPCTSTR lpszHWID, LPCTSTR lpszUrl, LPSTR lpPostData)
 {
 	
-	m_strSaveFile = lpszSaveFile;
+//	m_strSaveFile = lpszSaveFile;
 	m_strDownURl = lpszUrl;
 	m_strHWID = lpszHWID;
 	m_strSendData = lpPostData;
 	m_dwPostDataLength = m_strSendData.size ();
 }
 
-int CDownloadThread::DownLoadData()
+int CDownloadThread::DownLoadDataWithFile(LPCTSTR lpszSaveFile)
 {
 	int nVal = 0;
 	CExceptionHandle::MapSEtoCE();
 	try
 	{
+		m_strSaveFile = lpszSaveFile;
+
 		// 检验线程是否已经退出
 	//	::EnterCriticalSection(&m_cs);
 		m_bDLThreadState = emBegin;
@@ -73,12 +81,27 @@ int CDownloadThread::DownLoadData()
 		{
 			//::LeaveCriticalSection (&m_cs);
 			
-			return ERR_UNKNOW;
+			return ERR_PARAM;
 		}
 
 
 		if (m_strSendData.empty () || m_dwPostDataLength <= 0)
-			nVal = TransferDataGet();
+		{
+			eDownloadMode dMode = CDownloadMode::GetInstance()->GetMode();
+			m_bBreakDownload  = (dMode == eHttpBreak) ? true: false;
+
+			if(m_bBreakDownload == false)
+				nVal = TransferDataGet();//非断点续传超时，那么重试
+			else
+			{
+				int nVal = TransferDataGet();
+				if(nVal != 0)
+				{
+					m_bBreakDownload = false;
+					nVal = TransferDataGet();
+				}
+			}
+		}
 		else
 			nVal = TransferDataPost ();
 
@@ -117,6 +140,20 @@ int CDownloadThread::DownLoadData()
 	return nVal;
 }
 
+int CDownloadThread::ReadDataFromSever(char* pDataRead, int nLength, DWORD* pRead)
+{
+	ATLASSERT(NULL != pDataRead && nLength > 0 && NULL != pRead);
+	if (NULL == pDataRead || nLength <= 0 || NULL == pRead)
+		return ERR_PARAM;
+
+	m_pRead = pDataRead;
+	m_nLength = nLength;
+	m_pReadLength = pRead;
+	*m_pReadLength = 0;
+
+	return TransferDataPost (FALSE);
+}
+
 #define NEED_STOP	if (m_bCancle) { \
 					CloseHandles(); \
 					return ERR_STOPPED; \
@@ -147,36 +184,11 @@ int CDownloadThread::TransferDataGet()
 	NEED_STOP;
 	
 	DWORD dwTimeOut = 60000;
-	if (!InternetSetOptionEx(m_hInetSession, INTERNET_OPTION_CONTROL_RECEIVE_TIMEOUT, &dwTimeOut, sizeof(DWORD), 0))
-	{
-		CRecordProgram::GetInstance()->FeedbackError(MY_ERROR_PRO_CORE, ERR_SETOPTION,
-			CRecordProgram::GetInstance()->GetRecordInfo(L"TransferDataGet的INTERNET_OPTION_CONTROL_RECEIVE_TIMEOUT异常！LastErrCode = %d", GetLastError()));
-		//OutputDebugString(strErr);
-	}
-	if (!InternetSetOptionEx(m_hInetSession, INTERNET_OPTION_CONTROL_SEND_TIMEOUT, &dwTimeOut, sizeof(DWORD), 0))
-	{
-		CRecordProgram::GetInstance()->FeedbackError(MY_ERROR_PRO_CORE, ERR_SETOPTION,
-			CRecordProgram::GetInstance()->GetRecordInfo(L"TransferDataGet的INTERNET_OPTION_CONTROL_SEND_TIMEOUT异常！LastErrCode = %d", GetLastError()));
-		//OutputDebugString(strErr);
-	}
-	if (!InternetSetOptionEx(m_hInetSession, INTERNET_OPTION_SEND_TIMEOUT, &dwTimeOut, sizeof(DWORD), 0))
-	{
-		CRecordProgram::GetInstance()->FeedbackError(MY_ERROR_PRO_CORE, ERR_SETOPTION,
-			CRecordProgram::GetInstance()->GetRecordInfo(L"TransferDataGet的INTERNET_OPTION_SEND_TIMEOUT异常！LastErrCode = %d", GetLastError()));
-		//OutputDebugString(strErr);
-	}
-	if (!InternetSetOptionEx(m_hInetSession, INTERNET_OPTION_RECEIVE_TIMEOUT, &dwTimeOut, sizeof(DWORD), 0))
-	{
-		CRecordProgram::GetInstance()->FeedbackError(MY_ERROR_PRO_CORE, ERR_SETOPTION,
-			CRecordProgram::GetInstance()->GetRecordInfo(L"TransferDataGet的INTERNET_OPTION_RECEIVE_TIMEOUT异常！LastErrCode = %d", GetLastError()));
-		//OutputDebugString(strErr);
-	}
-	if (!InternetSetOptionEx(m_hInetSession, INTERNET_OPTION_CONNECT_TIMEOUT, &dwTimeOut, sizeof(DWORD), 0))
-	{
-		CRecordProgram::GetInstance()->FeedbackError(MY_ERROR_PRO_CORE, ERR_SETOPTION,
-			CRecordProgram::GetInstance()->GetRecordInfo(L"TransferDataGet的INTERNET_OPTION_CONNECT_TIMEOUT异常！LastErrCode = %d", GetLastError()));
-		//OutputDebugString(strErr);
-	}
+	InternetSetOptionEx(m_hInetSession, INTERNET_OPTION_CONTROL_RECEIVE_TIMEOUT, &dwTimeOut, sizeof(DWORD), 0);
+	InternetSetOptionEx(m_hInetSession, INTERNET_OPTION_CONTROL_SEND_TIMEOUT, &dwTimeOut, sizeof(DWORD), 0);
+	InternetSetOptionEx(m_hInetSession, INTERNET_OPTION_SEND_TIMEOUT, &dwTimeOut, sizeof(DWORD), 0);
+	InternetSetOptionEx(m_hInetSession, INTERNET_OPTION_RECEIVE_TIMEOUT, &dwTimeOut, sizeof(DWORD), 0);
+	InternetSetOptionEx(m_hInetSession, INTERNET_OPTION_CONNECT_TIMEOUT, &dwTimeOut, sizeof(DWORD), 0);
 	
 	m_hInetConnection = ::InternetConnect(m_hInetSession, url.GetHostName(), url.GetPort(), NULL, NULL, INTERNET_SERVICE_HTTP, 0, (DWORD)this);
 	if (m_hInetConnection == NULL)
@@ -216,18 +228,24 @@ int CDownloadThread::TransferDataGet()
 	
 	_stprintf_s(szHeaders, _countof(szHeaders), _T("MoneyhubUID: %s\r\n"), m_strHWID.c_str());
 	HttpAddRequestHeaders(m_hInetFile, szHeaders, -1, HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE); 
+	HttpAddRequestHeaders(m_hInetFile, _T("User-Agent: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 2.0.50727; .NET CLR 3.0.04506.648; .NET CLR 3.5.21022; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729; .NET CLR 1.1.4322; .NET4.0C; .NET4.0E)\r\n"), -1, HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE); 
 	
-	_stprintf_s(szHeaders,_countof(szHeaders),_T("Range: bytes=%d-"), IsBreakPointFile(m_wcsBreakFileName.c_str()) );
-  	HttpAddRequestHeaders(m_hInetFile, szHeaders, -1, HTTP_ADDREQ_FLAG_ADD_IF_NEW ) ;
+	if(m_bBreakDownload)
+	{
+		_stprintf_s(szHeaders,_countof(szHeaders),_T("Range: bytes=%d-"), IsBreakPointFile(m_wcsBreakFileName.c_str()) );
+  		HttpAddRequestHeaders(m_hInetFile, szHeaders, -1, HTTP_ADDREQ_FLAG_ADD_IF_NEW ) ;
+	}
 	
 	BOOL bSend = ::HttpSendRequest(m_hInetFile, NULL, 0, NULL, 0);
 	if (!bSend)
 	{
 		CRecordProgram::GetInstance()->FeedbackError(MY_ERROR_PRO_CORE, ERR_INTSENDREQ,
 			CRecordProgram::GetInstance()->GetRecordInfo(L"TransferDataGet的发送请求异常！LastErrCode = %d", GetLastError()));
-//		OutputDebugString(strErr);
-
+		int Error = GetLastError();
 		CloseHandles();
+		if(Error == ERROR_INTERNET_TIMEOUT && m_bBreakDownload)
+			return ERROR_INTERNET_TIMEOUT;
+
 		return ERR_INTSENDREQ;
 	}
 
@@ -262,7 +280,10 @@ int CDownloadThread::TransferDataGet()
 	dwInfoSize = sizeof(szContentLength);
 	if (::HttpQueryInfo(m_hInetFile, HTTP_QUERY_CONTENT_LENGTH, szContentLength, &dwInfoSize, NULL))
 	{
-		m_ui64FileSize = (UINT64)_ttoi64(szContentLength) + IsBreakPointFile(m_wcsBreakFileName.c_str());
+		if(m_bBreakDownload)
+			m_ui64FileSize = (UINT64)_ttoi64(szContentLength) + IsBreakPointFile(m_wcsBreakFileName.c_str());
+		else
+			m_ui64FileSize = (UINT64)_ttoi64(szContentLength);
 		m_ui64TotalRead = 0;
 	}
 	else 
@@ -276,12 +297,22 @@ int CDownloadThread::TransferDataGet()
 
 	NEED_STOP;
 
-	return DownLoadBreakpointFile();
+	if(m_bBreakDownload)
+		return DownLoadBreakpointFile();
+	else
+		return DownloadNoBreakFile();
 }
 
 
-int CDownloadThread::TransferDataPost()
+int CDownloadThread::TransferDataPost(BOOL bWithFile)
 {
+	if(!bWithFile) // 不是用文件下载数据
+	{
+		ATLASSERT(NULL != m_pRead && m_nLength > 0 && NULL != m_pReadLength);
+		if (NULL == m_pRead || m_nLength <= 0 || NULL == m_pReadLength)
+			return ERR_PARAM;
+	}
+
 	CUrlCrack url;
 	if (!url.Crack(m_strDownURl.c_str()))
 	{
@@ -335,7 +366,9 @@ int CDownloadThread::TransferDataPost()
 
 	NEED_STOP;
 	
-	HttpAddRequestHeaders(m_hInetFile, _T("Content-Type: application/x-www-form-urlencoded\r\n"), -1, HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE); 
+	HttpAddRequestHeaders(m_hInetFile, _T("Content-Type: application/x-www-form-urlencoded\r\n"), -1, HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE);
+	HttpAddRequestHeaders(m_hInetFile, _T("User-Agent: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 2.0.50727; .NET CLR 3.0.04506.648; .NET CLR 3.5.21022; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729; .NET CLR 1.1.4322; .NET4.0C; .NET4.0E)\r\n"), -1, HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE); 
+	HttpAddRequestHeaders(m_hInetFile, _T("Accept-Language: zh-CN"), -1, HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE); 
 
 	TCHAR szHeaders[1024];
 	
@@ -380,14 +413,17 @@ int CDownloadThread::TransferDataPost()
 
 	NEED_STOP;
 	
-	m_hSaveFile = CreateFile(m_strSaveFile.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (m_hSaveFile == INVALID_HANDLE_VALUE)
+	if (bWithFile)
 	{
-		CRecordProgram::GetInstance()->FeedbackError(MY_ERROR_PRO_CORE, ERR_CREATEFILE,
-			CRecordProgram::GetInstance()->GetRecordInfo(L"TransferDataPost的CreateFile异常！LastErrCode = %d", GetLastError()));
-		//OutputDebugString(strErr);
-		CloseHandles();
-		return ERR_CREATEFILE;
+		m_hSaveFile = CreateFile(m_strSaveFile.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+		if (m_hSaveFile == INVALID_HANDLE_VALUE)
+		{
+			CRecordProgram::GetInstance()->FeedbackError(MY_ERROR_PRO_CORE, ERR_CREATEFILE,
+				CRecordProgram::GetInstance()->GetRecordInfo(L"TransferDataPost的CreateFile异常！LastErrCode = %d", GetLastError()));
+			//OutputDebugString(strErr);
+			CloseHandles();
+			return ERR_CREATEFILE;
+		}
 	}
 	
 	NEED_STOP;
@@ -408,7 +444,10 @@ int CDownloadThread::TransferDataPost()
 			break;
 		}
 
-		lpszData = new BYTE[dwSize];   
+		
+		lpszData = new BYTE[dwSize];
+		
+
 		DWORD dwDownloaded = 0;
 
 		if (!InternetReadFile(m_hInetFile, (LPVOID)lpszData, dwSize, &dwDownloaded))   
@@ -422,14 +461,29 @@ int CDownloadThread::TransferDataPost()
 		}   
 		else   
 		{   
-			DWORD dwBytesWritten = 0;
-			if (!WriteFile(m_hSaveFile, lpszData, dwDownloaded, &dwBytesWritten, NULL))
+			if (bWithFile) // 用文件
 			{
-				CRecordProgram::GetInstance()->FeedbackError(MY_ERROR_PRO_CORE, ERR_WRITEFILE,
-					CRecordProgram::GetInstance()->GetRecordInfo(L"TransferDataPost的WriteFile异常！LastErrCode = %d", GetLastError()));
-				//OutputDebugString(strErr);
-				CloseHandles();
-				return ERR_WRITEFILE;
+				DWORD dwBytesWritten = 0;
+				if (!WriteFile(m_hSaveFile, lpszData, dwDownloaded, &dwBytesWritten, NULL))
+				{
+					CRecordProgram::GetInstance()->FeedbackError(MY_ERROR_PRO_CORE, ERR_WRITEFILE,
+						CRecordProgram::GetInstance()->GetRecordInfo(L"TransferDataPost的WriteFile异常！LastErrCode = %d", GetLastError()));
+					delete []lpszData;
+					CloseHandles();
+					return ERR_WRITEFILE;
+				}
+			}
+			else
+			{
+				if (m_nLength < (*m_pReadLength) + dwDownloaded)
+				{
+					delete []lpszData;
+					CloseHandles();
+					return ERR_WRITEFILE;	
+				}
+
+				memcpy(m_pRead + (*m_pReadLength), lpszData, dwDownloaded);
+				*m_pReadLength += dwDownloaded;
 			}
 
 			delete []lpszData;   
@@ -537,7 +591,101 @@ UINT64  CDownloadThread::IsBreakPointFile(std::wstring wcsFile)
 	CloseHandle(hFile);
 	return uI64Return;
 }
+int CDownloadThread::DownloadNoBreakFile()
+{
+	DWORD dwBytesRead = 0;
+	char szReadBuf[1024];
+	DWORD dwBytesToRead = sizeof(szReadBuf);
 
+	wchar_t wcsNum[255];
+	DWORD   dwRegType = 0, dwReturnSize = sizeof(wcsNum), dwFilePoint;
+	UINT64  uI64Num = 0;
+	bool    bIsBreak = false;
+
+	dwFilePoint = (DWORD)(uI64Num);
+
+
+	NEED_STOP;
+	m_hSaveFile = CreateFile(m_wcsBreakFileName.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+
+
+	if ( INVALID_HANDLE_VALUE == m_hSaveFile )
+	{
+		CRecordProgram::GetInstance()->FeedbackError(MY_ERROR_PRO_CORE, ERR_CREATEFILE,
+			CRecordProgram::GetInstance()->GetRecordInfo(L"DownLoadBreakpointFile的CreateFile异常！LastErrCode = %d", GetLastError()));
+		CloseHandles();
+		return ERR_CREATEFILE;
+	}
+
+	do
+	{
+		NEED_STOP;
+
+		if (!::InternetReadFile(m_hInetFile, szReadBuf, dwBytesToRead, &dwBytesRead))
+		{
+			CloseHandles();
+
+			if(m_repeatNum < REPEATNUM)
+			{
+				m_repeatNum ++;
+				m_bRetryWait = true; // 重试等待
+
+				// 等待十秒后重试
+				int nTemp = 50;
+				while(nTemp >= 0)
+				{
+					nTemp --;
+					Sleep(200);
+					NEED_STOP;
+				}
+
+				m_bRetryWait = false;
+				CRecordProgram::GetInstance()->FeedbackError(MY_ERROR_PRO_CORE, ERR_INTREADFILE,
+					CRecordProgram::GetInstance()->GetRecordInfo(L"DownLoadBreakpointFile中的InternetReadFile异常！LastErrCode = %d", GetLastError()));
+
+				return this->TransferDataGet() == 0 ? false:true ;
+			}
+			else
+			{
+				CRecordProgram::GetInstance()->FeedbackError(MY_ERROR_PRO_CORE, ERR_OUTOFTIME,
+					CRecordProgram::GetInstance()->GetRecordInfo(L"DownLoadBreakpointFile下载超时！LastErrCode = %d", GetLastError()));
+
+				return ERR_OUTOFTIME; // 下载超时
+			}
+		}
+		else if (dwBytesRead)
+		{
+
+			DWORD dwBytesWritten = 0;
+			if (!WriteFile(m_hSaveFile, szReadBuf, dwBytesRead, &dwBytesWritten, NULL))
+			{
+				CRecordProgram::GetInstance()->FeedbackError(MY_ERROR_PRO_CORE, ERR_WRITEFILE,
+					CRecordProgram::GetInstance()->GetRecordInfo(L"DownLoadBreakpointFile的WriteFile异常！LastErrCode = %d", GetLastError()));
+
+				CloseHandles();
+				return ERR_WRITEFILE;
+			}
+
+			m_ui64TotalRead += dwBytesRead;
+		}
+	} 
+	while (dwBytesRead);
+
+	CloseHandles();	
+
+	NEED_STOP;
+	if( !MoveFileExW(m_wcsBreakFileName.c_str(), m_strSaveFile.c_str() , MOVEFILE_REPLACE_EXISTING|MOVEFILE_COPY_ALLOWED ) )
+	{
+		CRecordProgram::GetInstance()->FeedbackError(MY_ERROR_PRO_CORE, ERR_RENAMEFILE,
+			CRecordProgram::GetInstance()->GetRecordInfo(L"DownLoadBreakpointFile的MoveFileExW异常！LastErrCode = %d", GetLastError()));
+		NEED_STOP;
+	}
+
+	m_wcsBreakFileName.clear ();
+
+
+	return ERR_SUCCESS;
+}
 int CDownloadThread::DownLoadBreakpointFile()
 {
 	
@@ -787,12 +935,12 @@ void CDownloadAndSetupThread::DownLoadAndSetupDlFile(PDOWN_LOAD_PARAM_NODE pDown
 
 	// 初使化下载参数
 	DownLoadInit (pDownloadParam->strHWID.c_str (), pDownloadParam->strUrl.c_str (),
-		pDownloadParam->strSaveFile.c_str (), (LPSTR)pDownloadParam->strSendData.c_str ());
+		 (LPSTR)pDownloadParam->strSendData.c_str ());
 
 	
 	if (pDownloadParam->bCreateThread == false) // 不创建新线程
 	{
-		DownLoadData ();
+		DownLoadDataWithFile (pDownloadParam->strSaveFile.c_str ());
 
 		SetupDlFileOrNotNeed(m_emDlKind, m_bSetupDlFile);
 
@@ -894,7 +1042,7 @@ bool CDownloadAndSetupThread::SetupBankControl(LPCTSTR lpPath, LPCTSTR lpSetUp) 
 		if(tt.ExtractFile(strPath.c_str(), strSetup.c_str()))
 		{
 			strSetup += strTemp;
-			strSetup += L"\\info.chk";
+			strSetup += L"\\info.mchk";
 
 			// 检验解压是否成功
 			int nTime = 0;
@@ -1067,7 +1215,7 @@ bool CDownloadAndSetupThread::CheckDlFileAndShowErrMeg(LPCTSTR lpPath, MY_DOWNLO
 		{
 			//OutputDebugString(L"111---170");
 			Sleep(5000);
-			DownLoadData ();
+			DownLoadDataWithFile (m_strDlPath.c_str());
 			
 		}
 		return false;
@@ -1101,7 +1249,7 @@ DWORD WINAPI CDownloadAndSetupThread::DLAndSetupThreadProc(LPVOID lpParam)
 	//::EnterCriticalSection (&(pTemp->m_cs));
 
 	// 执行下载
-	pTemp->DownLoadData ();
+	pTemp->DownLoadDataWithFile (pTemp->m_strDlPath.c_str());
 
 	// 如果要安装则执行安装，如果不用安装则跳过
 	pTemp->SetupDlFileOrNotNeed(pTemp->m_emDlKind, pTemp->m_bSetupDlFile);

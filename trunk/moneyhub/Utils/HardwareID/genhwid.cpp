@@ -200,6 +200,20 @@ bool GenHWID(HWIDSTRUCT &id)
 	return true;
 }
 */
+
+char* GetMacString()
+{
+	MACSTRUCT mac = {0};
+	char chBuff[256] = {0};
+	if ( MAC_OK == GetFirstMAC(mac)) 
+	{
+		sprintf_s(chBuff, "%02X-%02X-%02X-%02X-%02X-%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);;
+	}
+
+	return chBuff;
+
+}
+
 std::string GenHWID2(bool bUrlEncode)
 {
 	if (!g_strHardwareId.empty())

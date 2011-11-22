@@ -1182,7 +1182,7 @@ bool CBkInfoDownloadManager::IsSetupAlready(LPSTR lpBankID)
 
 	CSecurityCheck temp;
 	std::string filePath;
-	filePath = strBankPath + "\\" + "bank.chk" ;
+	filePath = strBankPath + "\\" + "bank.mchk" ;
 
 	return (temp.VerifyMoneyHubList(strBankPath.c_str(), filePath.c_str(), message) < 0)? false:true;
 }
@@ -1332,6 +1332,8 @@ void CBkInfoDownloadManager::NotifyCoreBankCtrlDLFinish(LPSTR lpBankID)
 	if (NULL == pOper)
 		return;
 	pOper->UpDateFavBankID (strBkID);
+
+	CListManager::_()->CheckCom(strBkID);//尝试创建该对象，以确定是否已经将控件正确加入
 
 	//int nTp;
 	//CFavBankOperator::MyTranslateBetweenBankIDAndInt (strBkID, nTp);// 第三参数默认为true,表示将bankID转换成int

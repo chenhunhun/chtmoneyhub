@@ -86,7 +86,7 @@ public:
 	
 public:
 	// 安装反馈的函数
-	void Action_Install();
+	void Action_Install(int i = 0);
 	// 程序启动时的反馈函数
 	// 输入参数：UBStartupStyle ubss ：启动类型
 	void Action_ProgramStartup(UBStartupStyle ubss);
@@ -96,7 +96,7 @@ public:
 	// 输入参数：std::string& strUrl：浏览的页面
 	void Action_ProgramNavigate(const std::string& strUrl);
 	// 程序卸载时的反馈函数
-	void Action_Uninstall();
+	void Action_Uninstall(int i = 0);
 	// 程序升级时的反馈函数
 	// 输入参数：std::string before：升级前的版本信息；std::string end：升级后的版本信息
 	void Action_Upgrade(std::string before,std::string end);
@@ -109,7 +109,15 @@ public:
 
 	void Action_SendDataToServerWhenExit(void); // 退出时发送数据到服务器
 
+	static DWORD WINAPI _threadFeedBackToServer(LPVOID lp);// 独立进行反馈动作的线程
+
+	void BeginFeedBack();
+	void CloseFeedBack();
+
 protected:
+	bool m_bClose;
+	CRITICAL_SECTION m_cs;
+	HANDLE m_hThread;
 	// 存储当前moneyhub版本信息
 	std::string m_strMoneyVersion;
 	

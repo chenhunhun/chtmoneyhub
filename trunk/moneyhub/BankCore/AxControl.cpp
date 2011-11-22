@@ -23,6 +23,9 @@
 #include "ExternalDispatchImpl.h"
 #include "JS/JSParam.h"
 #include "GetBill/BillUrlManager.h"
+#include "../BankUI/UIControl/CoolMessageBox.h"
+#include "../BankUI/UIControl/MonthSelectDlg.h"
+#include "../BankUI/UIControl/AccountSelectDlg.h"
 
 CAxControl::CAxControl(HWND hChildFrame) : m_hChildFrame(hChildFrame), m_isGetBill(false),m_time(0)
 {
@@ -163,6 +166,8 @@ void CAxControl::OnDestroy()
 
 void CAxControl::OnClose()
 {
+	if(m_pCore)
+		m_pCore->m_pWebBrowser2->Stop();
 	DestroyWindow();
 }
 
@@ -208,7 +213,22 @@ LRESULT CAxControl::OnGetMarshalWebBrowser2CrossThread(UINT uMsg, WPARAM wParam,
 
 	return 0;
 }
+LRESULT CAxControl::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	if(wParam == MH_STARTDELAYEVENT)
+	{
+		KillTimer(MH_STARTDELAYEVENT);
+		if(m_time == 0)
+			if(m_url != L"")
+			{
+				CComVariant var;
+				m_time = 1;
+				m_pCore->m_pWebBrowser2->Navigate((BSTR)m_url.c_str(), &var, &var, &var, &var);
+			}
+	}
+	return 0;
 
+}
 LRESULT CAxControl::OnNavigate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	DWORD tid = ::GetCurrentThreadId();
@@ -221,19 +241,28 @@ LRESULT CAxControl::OnNavigate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 		if(tag >= 0 && tag <= 2)
 			CExternalDispatchImpl::m_hFrame[tag] = m_hWnd;
 
-		if(tag > 0 && tag < 4)
+		if(tag > 1 && tag < 6)
 			if(m_time == 0)
 			{
 				switch(tag)
 				{
-				case 1:
-					::SendMessage(m_hChildFrame, WM_SETTEXT, WM_ITEM_SET_TAB_TEXT, (LPARAM)L"日历提醒");
-					break;
 				case 2:
-					::SendMessage(m_hChildFrame, WM_SETTEXT, WM_ITEM_SET_TAB_TEXT, (LPARAM)L"我的账本");
+					{
+						::SendMessage(m_hChildFrame, WM_SETTEXT, WM_ITEM_SET_TAB_TEXT, (LPARAM)L"我的账本");
+						//SetTimer(MH_STARTDELAYEVENT, 5 * 1000 ,NULL);//设置5s之后加载管理页
+					}
 					break;
 				case 3:
 					::SendMessage(m_hChildFrame, WM_SETTEXT, WM_ITEM_SET_TAB_TEXT, (LPARAM)L"统计报表");
+					break;
+				case 4:
+					{
+						::SendMessage(m_hChildFrame, WM_SETTEXT, WM_ITEM_SET_TAB_TEXT, (LPARAM)L"管理");
+						SetTimer(MH_STARTDELAYEVENT, 3 * 1000 ,NULL);//设置3s之后加载管理页
+					}
+					break;
+				case 5:
+					::SendMessage(m_hChildFrame, WM_SETTEXT, WM_ITEM_SET_TAB_TEXT, (LPARAM)L"精选理财产品");
 					break;
 				default:
 					break;
@@ -374,8 +403,14 @@ LRESULT CAxControl::OnFrameDelFav(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 }
 LRESULT CAxControl::OnToolsChange(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	std::vector<std::string> paramVec;
-	CallJScript("renderAlarm", paramVec);
+	CComVariant var;
+	VariantInit(&var);
+	var.vt = VT_I4 ;
+	var.lVal = wParam;
+	if(m_pCore->m_pWebBrowser2)
+	{
+		m_pCore->m_pWebBrowser2->Refresh2(&var);
+	}
 	return 0;
 }
 LRESULT CAxControl::OnCouponChange(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -384,11 +419,93 @@ LRESULT CAxControl::OnCouponChange(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 	CallJScript("init", paramVec, 1);
 	return 0;
 }
-LRESULT CAxControl::CloseBillList(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+
+LRESULT CAxControl::OnCallJSTabActive(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	std::vector<std::string> paramVec;
-	CallJScript("closeBillList", paramVec);
+	CallJScript("TabActivated", paramVec);
 	return 0;
+}
+
+LRESULT CAxControl::OnChangeFirtsPageShow(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	std::vector<std::string> paramVec;
+	int nParam = (int)lParam;
+	if (nParam == MY_STATUE_USER_NOTLOAD)
+		CallJScript("beforeLogin", paramVec);
+	else if (nParam == MY_STATUE_USER_LAODED)
+		CallJScript("afterLogin", paramVec);
+	return 0;
+}
+
+LRESULT CAxControl::OnShowInfoDlg(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	DWORD dw = 0;
+	HANDLE hThread;
+	LPBILLSHOWINFO pInfo = new BILLSHOWINFO;
+	pInfo->pNotifyInterface = m_pEventsManager;
+	pInfo->type = wParam;
+	if(wParam == 0)
+		pInfo->info = L"正在登录......";
+	else if(wParam == 1)//显示正在导入账单的对话框
+		pInfo->info = L"正在导入账单......";
+	hThread = CreateThread(NULL, 0, _threadShowInfoDLG, (LPVOID)pInfo, 0, &dw);
+	CloseHandle(hThread);
+
+	return true;
+}
+
+
+LRESULT CAxControl::OnEndInfoDlg(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	_endShowInfoDLGthread();
+
+	return true;
+}
+
+LRESULT CAxControl::OnAccountSelect(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	ATLASSERT(NULL != lParam);
+	list<SELECTINFONODE>* pNodeList = (list<SELECTINFONODE>*)lParam;
+	if(NULL == pNodeList)
+		return 0;
+	if (pNodeList->size() < 1)
+		return 0;
+
+	HWND hMainFrame = FindWindow(_T("MONEYHUB_MAINFRAME"), NULL);
+	if (0 == wParam)
+	{
+		CMonthSelectDlg dlg(pNodeList);
+		return dlg.DoModal(hMainFrame);
+	}
+	else
+	{
+		CAccountSelectDlg dlg(pNodeList);
+		return dlg.DoModal(hMainFrame);
+	}
+
+
+	return 0;
+}
+
+
+LRESULT CAxControl::OnGetAllBill(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	char **ppInfo = (char**)lParam;
+	if(ppInfo == NULL)
+		return 0;
+
+	if((*ppInfo) == NULL)
+		return 0;
+	std::string info(*ppInfo);
+	delete (*ppInfo);
+	(*ppInfo) = NULL;
+	std::vector<std::string> paramVec;
+	paramVec.push_back(info);
+	CallJScript("returnBillXml", paramVec);
+	
+	return 0;
+
 }
 CComVariant CAxControl::CallJScript(std::string strFunc,std::vector<std::string>& paramVec, int nType)
 {
@@ -447,6 +564,7 @@ CComVariant CAxControl::CallJScript(std::string strFunc,std::vector<std::string>
 				LOCALE_SYSTEM_DEFAULT,&dispid);
 			if(FAILED(hr))
 			{
+				::SysFreeString(bstrMember);
 				CRecordProgram::GetInstance()->FeedbackError(MY_PRO_NAME, MY_THREAD_IE_STATE, CRecordProgram::GetInstance()->GetRecordInfo(L"CallJScript:%s GetIDsOfNames error",A2W(strFunc.c_str())));
 				return false;
 			}
@@ -466,7 +584,8 @@ CComVariant CAxControl::CallJScript(std::string strFunc,std::vector<std::string>
 			for( ;ite != paramVec.end(); ite ++)
 			{
 				//A2COLE是在栈中分配的空间，如果循环调用，有栈溢出，所以要限制适用调用的次数
-				dispparams.rgvarg[i].bstrVal = ::SysAllocString((LPOLESTR)A2COLE((*ite).c_str()));
+				wstring winfo = AToW((*ite), 936);
+				dispparams.rgvarg[i].bstrVal = ::SysAllocString((LPOLESTR)winfo.c_str());
 				dispparams.rgvarg[i].vt = VT_BSTR;
 				i ++;
 			}

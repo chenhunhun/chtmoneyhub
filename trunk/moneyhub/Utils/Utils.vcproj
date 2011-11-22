@@ -130,7 +130,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				AdditionalIncludeDirectories="$(SolutionDir)/Include;$(SolutionDir)/Include/WTL"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;MULTI_PROCESS_BY_TUOTUO;NO_PROTECT_DEFAULT;SQLITE_HAS_CODEC;"
+				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;MULTI_PROCESS_BY_TUOTUO;NO_PROTECT_DEFAULT;SQLITE_HAS_CODEC;OFFICIAL_VERSION;"
 				ExceptionHandling="2"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
@@ -528,6 +528,14 @@
 			</File>
 			<File
 				RelativePath=".\ListManager\CertFileData.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ListManager\ComInfo.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ListManager\ComInfo.h"
 				>
 			</File>
 			<File
@@ -1298,6 +1306,10 @@
 		<Filter
 			Name="PostData"
 			>
+			<File
+				RelativePath=".\PostData\BankDownloadMode.h"
+				>
+			</File>
 			<File
 				RelativePath=".\PostData\postData.cpp"
 				>

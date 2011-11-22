@@ -46,16 +46,15 @@ public:
 	void Redraw()						{ m_pCateCtrl->Invalidate(); }
 
 public:
-	HWND m_relateHwnd;
 	CTabItem *m_pSelectedItem;
 	std::vector<CTabItem*> m_TabItems;
+	wstring m_ShowInfo;
 
 private:
 	CTuotuoCategoryCtrl *m_pCateCtrl;
 	bool m_bNoClose;//œ‘ æ–≈œ¢
 
 	int m_bShowInfo;
-	wstring m_ShowInfo;
 
 	int m_nIndex;
 	std::tstring m_sText;

@@ -63,7 +63,7 @@ bool CSecurityCheck::CheckSelfModules()
 	USES_CONVERSION;
 
 	std::string strModulePath = CT2A(::GetModulePath());
-	std::string strCHK = strModulePath + "\\Authen.chk";
+	std::string strCHK = strModulePath + "\\Authen.mchk";
 	wchar_t message[MSG_BUF_LEN];
 
 	//Event(CHK_SECURITYCHECK, 5, NULL);
@@ -328,7 +328,7 @@ bool CSecurityCheck::CheckBankDataFiles(LPSTR path,wchar_t * message)
 				std::string subDir = path;
 				subDir = subDir + "\\" + fn;
 				std::string filePath = path;
-				filePath = filePath + "\\" + fn + "\\" + "bank.chk" ;
+				filePath = filePath + "\\" + fn + "\\" + "bank.mchk" ;
 
 				// 校验该银行是否收藏，没有收藏时跳过
 				std::string strBkID = CFavBankOperator::GetBankIDOrBankName(fn, false);
@@ -369,7 +369,7 @@ bool CSecurityCheck::CheckSelfDataFiles( bool bCheckBank, bool bThreadCheck)
 	if(IsInstall)
 		Event(CHK_SECURITYCHECK, ProcessPos, NULL, NULL);
 	std::string strModulePath = CT2A(::GetModulePath());
-	std::string strCHK = strModulePath + "\\MoneyHub.chk";
+	std::string strCHK = strModulePath + "\\MoneyHub.mchk";
 	wchar_t message[MSG_BUF_LEN];
 
 	int ret = VerifyMoneyHubList(strModulePath.c_str(), strCHK.c_str(), message);
@@ -404,7 +404,7 @@ bool CSecurityCheck::CheckSelfDataFiles( bool bCheckBank, bool bThreadCheck)
 		strDChk += "\\";
 		_strlwr_s((LPSTR)vecDirectoryName[i].c_str(), vecDirectoryName[i].size ()+1);
 		strDChk += vecDirectoryName[i].c_str();
-		strDChk += ".chk";
+		strDChk += ".mchk";
 		//MessageBoxA(NULL,strDPath.c_str(),strDChk.c_str(),MB_OK);
 		
 		ret = VerifyMoneyHubList(strDPath.c_str(), strDChk.c_str(), message);
@@ -451,7 +451,7 @@ bool CSecurityCheck::CheckSelfDataFiles( bool bCheckBank, bool bThreadCheck)
 bool CSecurityCheck::CheckSelfUrlList()
 {
 	std::string strModulePath = CT2A(::GetModulePath());//; getAppdataPath()
-	std::string strCHK = strModulePath + "\\BankInfo\\banks\\main\\info.chk";
+	std::string strCHK = strModulePath + "\\BankInfo\\banks\\main\\info.mchk";
 	wchar_t message[MSG_BUF_LEN];
 
 	ProcessPos ++;//21
@@ -533,7 +533,7 @@ int CSecurityCheck::VerifyUrlList(const char* lpCHKFileName, wchar_t *message)
 bool CSecurityCheck::CheckSelfSysList()
 {
 	std::string strModulePath = CT2A(::GetModulePath());
-	std::string strCHK = strModulePath + "\\Config\\syslist.chk";
+	std::string strCHK = strModulePath + "\\Config\\syslist.mchk";
 	wchar_t message[MSG_BUF_LEN];
 
 	//Event(CHK_SELFSYSLIST, 0, NULL);
@@ -853,7 +853,7 @@ bool CSecurityCheck:: CheckBlackListCache()// 生成黑名单
 {
 	CCloudFileSelector cfselector;
 	std::string strModulePath = CT2A(::GetModulePath());
-	std::string strCHK = strModulePath + "\\Config\\BlackList.chk";
+	std::string strCHK = strModulePath + "\\Config\\BlackList.mchk";
 	wchar_t message[MSG_BUF_LEN];
 
 	int ret = VerifyCloudList(strCHK.c_str(), message,cfselector);
@@ -1052,8 +1052,10 @@ bool CSecurityCheck::CheckWhiteListCache()
 	//通过的列表存储在cloudcheckor里面的passfiles里
 	CCloudCheckor::GetCloudCheckor()->SetShow((CProcessShow*)this);
 	ProcessHelp = 1;
+	CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_COMMON_PROCESS, L"Begin SysModuleVerify");
 	CCloudCheckor::GetCloudCheckor()->SysModuleVerify(&m_files,&waitlist);
 
+	CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_COMMON_PROCESS, L"SysModuleVerify Finish");
 
 	m_files.clear();
 
@@ -1140,7 +1142,7 @@ bool CSecurityCheck::CheckCache()
 	//获得所有文件
 	CCloudFileSelector cfselector;
 	std::string strModulePath = CT2A(::GetModulePath());
-	std::string strCHK = strModulePath + "\\Config\\CloudCheck.chk";
+	std::string strCHK = strModulePath + "\\Config\\CloudCheck.mchk";
 	wchar_t message[MSG_BUF_LEN];
 
 	int ret = VerifyCloudList(strCHK.c_str(), message,cfselector);
@@ -1204,7 +1206,7 @@ bool CSecurityCheck::CheckCache()
 		return false;
 	}
 	cfselector.ClearFiles();
-	ProcessPos += 1;//32
+	ProcessPos += 1;//41
 	Event(CHK_SECURITYCHECK, ProcessPos, NULL, NULL);
 
 	return true;

@@ -5,6 +5,8 @@
 #include <memory.h>
 #include "../../Encryption/AES/aes.h"
 #include "../../Encryption/SHA1/sha.h"
+#include "../../Encryption/SHA1/Sha256Calc.h"
+using namespace std;
 
 static const unsigned char inter_secert[512]= {
 	0xcaU, 0x34U, 0x17U, 0xbbU, 0xd4U, 0xaeU, 0x21U, 0x73U, 
@@ -553,4 +555,157 @@ int JSFileUnPack(unsigned char *in, int length, unsigned char *out)
 	}
 
 	return ret;
+}
+
+
+int UserKekPack(unsigned char *in, int length, unsigned char *out)
+{
+	assert(NULL != in && length > 0);
+	if (NULL == in || length<= 0)
+		return 0;
+
+	const int nSize = 32; // sha数组大小
+	const int nSATL1Len = 8; // SATL1大小
+
+	char* pChTemp = new char[nSize + 1];
+	memset(pChTemp, 0, nSize + 1);
+
+	memcpy(pChTemp, &inter_secert[162], nSATL1Len); // SATL1值
+
+	if (length + nSATL1Len > nSize)
+		memcpy(pChTemp + nSATL1Len, in, nSize - nSATL1Len);
+	else
+		memcpy(pChTemp + nSATL1Len, in, length);
+
+	for (int i = 0;i < 100; i ++)
+	{
+		Sha256Calc s1;
+
+		Sha256Calc_reset(&s1);
+		Sha256Calc_calculate(&s1, (SZ_CHAR *)pChTemp, nSize);
+
+		memset(pChTemp, 0, nSize);
+		memcpy(pChTemp, s1.Value, nSize);
+	}
+	
+	memcpy(out, pChTemp, nSize);
+	delete[] pChTemp;
+
+	return 0;
+}
+
+
+int UserEdekPack(unsigned char *in, int length, unsigned char* pKey, unsigned char *out)
+{
+
+	if (NULL == in || NULL == pKey || NULL == out)
+		return 0;
+
+	//unsigned char cacheAESKey[20] = {0};
+	unsigned char iv[20] = {0}; // vi用一个固定值
+	AES_KEY key;
+
+	AES_set_encrypt_key(pKey, 256, &key);
+
+	memcpy(iv,&inter_secert[162],8);
+	memcpy(&iv[8],&inter_secert[252],8);
+
+	int buffer_len = AES_cbc_encrypt(in, out, length, &key, iv, AES_ENCRYPT);
+
+	return 0;
+}
+
+int UserEdekUnPack(unsigned char *in, int length, unsigned char* pKey, unsigned char *out)
+{
+	if (NULL == in || NULL == pKey || NULL == out)
+		return 0;
+
+	//unsigned char cacheAESKey[20] = {0};
+	unsigned char iv[20] = {0}; // vi用一个固定值
+	AES_KEY key;
+
+	AES_set_decrypt_key(pKey, 256, &key);
+
+	memcpy(iv,&inter_secert[162],8);
+	memcpy(&iv[8],&inter_secert[252],8);
+
+	int buffer_len = AES_cbc_encrypt(in, out, length, &key, iv, AES_DECRYPT);
+
+	return 0;
+
+}
+
+// 格式化成十六进制字符串
+bool FormatHEXString(char *pData, int nLen, string& strEncode)
+{
+	ATLASSERT (NULL != pData && nLen > 0);
+	if (NULL == pData || nLen <= 0)
+		return false;
+	strEncode.clear();
+
+
+	//int dwSize = nLen * 2 + 1;
+	//unsigned char* pszOut = new unsigned char[dwSize];
+	//base64_encode((LPBYTE)pData, nLen, pszOut, &dwSize);
+
+	for(int i = 0; i < nLen; i ++)
+	{
+		CString strTp;
+		int nTemp = *(pData + i);
+		if (nTemp < 0)
+			nTemp += 256; // 取该字节的反码
+
+		strTp.Format(L"%02x", nTemp);
+		strEncode += CW2A(strTp);
+
+
+		// 根据PHP代码转换成C代码
+		/*int nOrd = *(pData + i);
+		strEncode += SingleDecToHex((nOrd - nOrd % 16) / 16);
+    	strEncode += SingleDecToHex(nOrd % 16);*/
+	}
+
+	return true;
+}
+
+// 格式化成十六进制字符串
+bool FormatDecVal(const char* pSour, char* pData, int& nLen)
+{
+	ATLASSERT (NULL != pSour && NULL != pData);
+	if (NULL == pSour || NULL == pData)
+		return false;
+
+	nLen = 0;
+	int nSourLen = strlen(pSour);
+	if (nSourLen <= 0)
+		return false;
+	//nLen = (nSourLen + 1) / 2;
+
+	for (int i = 0; i < nSourLen; i += 2)
+	{
+		int nTp = *(pSour + i);
+		int nTp2 = *(pSour + i + 1);
+
+		if( 47 < nTp && nTp < 58 )
+			nTp = nTp - 48;
+		 if( 96 < nTp && nTp < 103 ) 
+			 nTp = nTp - 87;
+
+		if( 47 < nTp2 && nTp2 < 58 )
+			nTp2 = nTp2 - 48;
+		 if( 96 < nTp2 && nTp2 < 103 ) 
+			 nTp2 = nTp2 - 87;
+
+		 // 一个字节存储的大小为-128至127
+		 int nVal = nTp * 16 + nTp2;
+		 if (nVal > 127)
+			 nVal -= 256;
+
+		*(pData + nLen) = nVal;
+
+		nLen ++;
+
+	}
+
+	return true;
 }

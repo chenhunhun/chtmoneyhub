@@ -16,6 +16,9 @@
 #pragma once
 class CAxControl;
 #include "windows.h"
+
+#define MY_PARAM_END_TAG		"#"
+
 class CExternalDispatchImpl : public IDispatch
 {
 
@@ -38,11 +41,16 @@ private:
 	CAxControl* m_pAxControl;
 	void RefreshPage(int nPage);	
 	std::string m_strBkID;
+	static std::map<std::string, std::string> m_mapParam;
 
 public:
 	static DWORD WINAPI DownloadBkCtrlThreadProc(LPVOID lpParam);
 	static HWND m_hFrame[3];
+	static HWND m_hAxui;
 	static HANDLE m_logHandle;
+	static CRect	s_rectClient;
+
+	bool IsVista();
 
 	//static CRITICAL_SECTION m_cs;
 

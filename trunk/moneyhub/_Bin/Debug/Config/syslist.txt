@@ -1379,3 +1379,15 @@ $[HKCR\CLSID\{A4A1A128-768F-41E0-BF75-E4FDDD701CBA}\InProcServer32\.]
 %systemroot%\SYSTEM32\JSCRIPT.DLL 
 %systemroot%\SYSTEM32\MSHTML.DLL 
 %systemroot%\SYSTEM32\MSWSOCK.DLL
+
+#财金汇导入账单
+%ProgramFiles%\MoneyHub\Config\Bill\Alipay.dll
+%ProgramFiles%\MoneyHub\Config\Bill\ccb.dll
+%ProgramFiles%\MoneyHub\Config\Bill\CMBChina.dll
+%ProgramFiles%\MoneyHub\Config\Bill\ecitic.dll
+%ProgramFiles%\MoneyHub\Config\Bill\ICBC.dll
+
+#根据bug2485添加
+%systemroot%\SYSTEM32\D3D8THK.DLL   
+%systemroot%\SYSTEM32\D3D9.DLL
+%systemroot%\SYSTEM32\MACROMED\FLASH\FLASH11C.OCX

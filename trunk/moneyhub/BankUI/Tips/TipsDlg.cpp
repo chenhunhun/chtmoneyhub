@@ -41,35 +41,35 @@ LRESULT CTipsDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	m_tipsString = GetDlgItem(IDC_MESSAGE_SHOW);
 	m_titleString.Attach(GetDlgItem(IDC_STATIC_TITLE));
 	m_pic.Attach(GetDlgItem(IDB_BITMAP_SHOW));
-	m_guideString.Attach(GetDlgItem(IDC_GUIDE));
+	//m_guideString.Attach(GetDlgItem(IDC_GUIDE));
 
 	m_titleString.SetFont(m_fontTitle);
 	m_tipsString.SetFont(m_fontText);
-	m_guideString.SetFont(m_fontText);
+	//m_guideString.SetFont(m_fontText);
 
 	ApplyButtonSkin(IDC_PREPAGE);
 	ApplyButtonSkin(IDC_NEXTPAGE);
 	ApplyButtonSkin(IDCANCEL);
 
-	DWORD dwType;
+	/*DWORD dwType;
 	DWORD dwValue;
-	DWORD dwReturnBytes = sizeof(DWORD);
+	DWORD dwReturnBytes = sizeof(DWORD);*/
 
-	m_bChecked = false;
-	if (ERROR_SUCCESS == ::SHGetValueW(HKEY_CURRENT_USER, L"Software\\Bank\\Setting",L"IsGuideShow", &dwType, &dwValue, &dwReturnBytes))
-	{
-		m_bChecked = !dwValue;//设置选中状态,0表示未选中
-	}
+	//m_bChecked = false;
+	//if (ERROR_SUCCESS == ::SHGetValueW(HKEY_CURRENT_USER, L"Software\\Bank\\Setting",L"IsGuideShow", &dwType, &dwValue, &dwReturnBytes))
+	//{
+	//	m_bChecked = !dwValue;//设置选中状态,0表示未选中
+	//}
 
-	m_imgCheckBox.m_strFileName = L"tips_checkbox";
-	m_imgCheckBox.LoadFromFile();
+	//m_imgCheckBox.m_strFileName = L"tips_checkbox";
+	//m_imgCheckBox.LoadFromFile();
 
-	CRect mt;
-	::GetWindowRect(GetDlgItem(IDC_CHECK1),&mt);
-	ScreenToClient(&mt);
-	m_dwCheckState = m_bChecked ? eCBS_Checked:eCBS_UnChecked ;
-	m_rcCheckBox = CRect(mt.left,mt.top+4,mt.left+16,mt.top+20);
-	m_rcCheckBoxRgn = CRect ( &mt);
+	//CRect mt;
+	//::GetWindowRect(GetDlgItem(IDC_CHECK1),&mt);
+	//ScreenToClient(&mt);
+	//m_dwCheckState = m_bChecked ? eCBS_Checked:eCBS_UnChecked ;
+	//m_rcCheckBox = CRect(mt.left,mt.top+4,mt.left+16,mt.top+20);
+	//m_rcCheckBoxRgn = CRect ( &mt);
 
 	Refresh();
 
@@ -130,7 +130,7 @@ LRESULT CTipsDlg::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 
 	m_pic.GetWindowRect(&rc);
 	ScreenToClient(&rc);
-	CSkinManager::DrawImagePart(dc, m_rcCheckBox , m_imgCheckBox , m_dwCheckState , 8) ;
+	//CSkinManager::DrawImagePart(dc, m_rcCheckBox , m_imgCheckBox , m_dwCheckState , 8) ;
 	CSkinManager::DrawImagePart(dc, rc , m_showList[m_page-1] , 0 , 1) ;
 
 	return 0;
@@ -139,76 +139,76 @@ LRESULT CTipsDlg::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 void CTipsDlg::OnMouseMove(UINT nFlags, CPoint point)
 {
 
-	CDCHandle hdc = GetDC();
+	//CDCHandle hdc = GetDC();
 
-	if ( m_rcCheckBoxRgn.PtInRect(point) )
-		{
-			switch(m_dwCheckState)
-			{
-			case eCBS_Checked:case eCBS_CheckedHover:case eCBS_CheckedActive:
-				if ( m_bChecked )
-					m_dwCheckState = eCBS_CheckedActive ;
-				else 
-					m_dwCheckState = eCBS_CheckedHover ;
-				break;
-			case eCBS_UnChecked:case eCBS_UnCheckedActive:case eCBS_UnCheckedHover:
-				if ( m_bChecked )
-					m_dwCheckState = eCBS_UnCheckedActive ;
-				else
-					m_dwCheckState = eCBS_UnCheckedHover ;
-				break;
-			default:
-				m_dwCheckState;
-				break;
-			}
-		}
-		else
-		{
-			switch(m_dwCheckState)
-			{
-			case eCBS_Checked:case eCBS_CheckedHover:case eCBS_CheckedActive:
-				m_dwCheckState = eCBS_Checked ;
-				break;
-			case eCBS_UnChecked:case eCBS_UnCheckedActive:case eCBS_UnCheckedHover:
-				m_dwCheckState = eCBS_UnChecked ;
-				break;
-			default:
-				m_dwCheckState;
-				break;
-			}
-		}
-		CSkinManager::DrawImagePart(hdc , m_rcCheckBox , m_imgCheckBox , m_dwCheckState , 8) ;
+	//if ( m_rcCheckBoxRgn.PtInRect(point) )
+	//	{
+	//		switch(m_dwCheckState)
+	//		{
+	//		case eCBS_Checked:case eCBS_CheckedHover:case eCBS_CheckedActive:
+	//			if ( m_bChecked )
+	//				m_dwCheckState = eCBS_CheckedActive ;
+	//			else 
+	//				m_dwCheckState = eCBS_CheckedHover ;
+	//			break;
+	//		case eCBS_UnChecked:case eCBS_UnCheckedActive:case eCBS_UnCheckedHover:
+	//			if ( m_bChecked )
+	//				m_dwCheckState = eCBS_UnCheckedActive ;
+	//			else
+	//				m_dwCheckState = eCBS_UnCheckedHover ;
+	//			break;
+	//		default:
+	//			m_dwCheckState;
+	//			break;
+	//		}
+	//	}
+	//	else
+	//	{
+	//		switch(m_dwCheckState)
+	//		{
+	//		case eCBS_Checked:case eCBS_CheckedHover:case eCBS_CheckedActive:
+	//			m_dwCheckState = eCBS_Checked ;
+	//			break;
+	//		case eCBS_UnChecked:case eCBS_UnCheckedActive:case eCBS_UnCheckedHover:
+	//			m_dwCheckState = eCBS_UnChecked ;
+	//			break;
+	//		default:
+	//			m_dwCheckState;
+	//			break;
+	//		}
+	//	}
+	//	CSkinManager::DrawImagePart(hdc , m_rcCheckBox , m_imgCheckBox , m_dwCheckState , 8) ;
 
-		ReleaseDC(hdc);
-		hdc = NULL; 
+	//	ReleaseDC(hdc);
+	//	hdc = NULL; 
 }
 
 void CTipsDlg::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-	if ( m_rcCheckBoxRgn.PtInRect(point) )
-	{
-		CDCHandle hdc = GetDC();
-		switch(m_dwCheckState)
-		{
-		case eCBS_Checked:case eCBS_CheckedHover:case eCBS_CheckedActive:
-			m_dwCheckState =  eCBS_UnCheckedHover;
-			break;
-		case eCBS_UnChecked:case eCBS_UnCheckedHover:case eCBS_UnCheckedActive:
-			m_dwCheckState =  eCBS_CheckedHover;
-			break;
-		default:
-			m_dwCheckState;
-			break;
-		}
-		m_bChecked = !m_bChecked;//取反
-		CSkinManager::DrawImagePart(hdc , m_rcCheckBox , m_imgCheckBox , m_dwCheckState , 8) ;
-		//此处添加对下次显示的配置
+	//if ( m_rcCheckBoxRgn.PtInRect(point) )
+	//{
+	//	CDCHandle hdc = GetDC();
+	//	switch(m_dwCheckState)
+	//	{
+	//	case eCBS_Checked:case eCBS_CheckedHover:case eCBS_CheckedActive:
+	//		m_dwCheckState =  eCBS_UnCheckedHover;
+	//		break;
+	//	case eCBS_UnChecked:case eCBS_UnCheckedHover:case eCBS_UnCheckedActive:
+	//		m_dwCheckState =  eCBS_CheckedHover;
+	//		break;
+	//	default:
+	//		m_dwCheckState;
+	//		break;
+	//	}
+	//	m_bChecked = !m_bChecked;//取反
+	//	CSkinManager::DrawImagePart(hdc , m_rcCheckBox , m_imgCheckBox , m_dwCheckState , 8) ;
+	//	//此处添加对下次显示的配置
 
-		DWORD i = (m_bChecked == true) ? 0:1;
-		::SHSetValueW(HKEY_CURRENT_USER,L"Software\\Bank\\Setting",L"IsGuideShow",REG_DWORD,&i,4);
-			ReleaseDC(hdc);
-		hdc = NULL; 
-	}
+	//	DWORD i = (m_bChecked == true) ? 0:1;
+	//	::SHSetValueW(HKEY_CURRENT_USER,L"Software\\Bank\\Setting",L"IsGuideShow",REG_DWORD,&i,4);
+	//		ReleaseDC(hdc);
+	//	hdc = NULL; 
+	//}
 }
 
 bool CTipsDlg::IsVista()

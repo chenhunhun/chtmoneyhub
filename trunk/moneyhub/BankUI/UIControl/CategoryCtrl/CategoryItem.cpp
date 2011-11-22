@@ -14,7 +14,6 @@ CCategoryItem::CCategoryItem(CTuotuoCategoryCtrl *pTabCtrl)
 , m_iXPos(0), m_iWidth(0)
 , m_pSelectedItem(NULL)
 {
-	m_relateHwnd = NULL;
 }
 
 void CCategoryItem::DoPaint(CDCHandle dc, ButtonStatus eTabStatus, CategoryPosition btnPos, ButtonStatus eBtn, bool bDrawCloseBtn, int iDeltaHeight)

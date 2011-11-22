@@ -67,12 +67,15 @@ public:
 	// 安全检测
 	bool	SecurityCheck();
 
+	void	RenameChk();
+
 	// 安装时的检测
 	int		InstallCheck();
 
 	bool	CheckPop(bool bCehck = true, HANDLE * pId = NULL);
 
 	bool	IsPopAlreadyRunning();
+	void	CheckHID();
 
 
 public:

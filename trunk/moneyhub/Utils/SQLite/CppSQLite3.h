@@ -139,6 +139,8 @@ public:
 
     int getIntField(int nField, int nNullValue=0);
     int getIntField(const char* szField, int nNullValue=0);
+	__int64 getInt64Field(int nField, int nNullValue=0);
+	__int64 getInt64Field(const char* szField, int nNullValue=0);
 
     double getFloatField(int nField, double fNullValue=0.0);
     double getFloatField(const char* szField, double fNullValue=0.0);
@@ -271,6 +273,8 @@ public:
 
 	// 以不带密码的方式打开(4和5两个版本的数据库是不带密码的)
 	void openWithNoKey(const char* szFile);
+
+	bool InitDbPassword(const char* szFile, const char* szPw, int nPwLen);
 
 
 	bool ChangePassword(const char* szOldPw, const int nOldLen, const char* szNewPw, const int nNewLen);

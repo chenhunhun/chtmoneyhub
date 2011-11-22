@@ -3,7 +3,12 @@ html {
 	overflow: hidden;
 }
 *{margin:0; padding:0;}
-body{ font-size:12px; font-family:"宋体"; line-height:18px; overflow-y:hidden;}
+body {
+	font-size: 12px;
+	font-family: "宋体";
+	/*line-height: 18px;*/
+	overflow-y: hidden;
+}
 .clearfix:after {content:".";display:block;height:0;clear:both;visibility:hidden}
 .clearfix{zoom:1}
 
@@ -51,7 +56,7 @@ body{ font-size:12px; font-family:"宋体"; line-height:18px; overflow-y:hidden;
 
 .favitem{ background:url(../images/Favbg.png) no-repeat; _background:none; _filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/Favbg.png',sizingMethod='crop'); height:165px; width:181px; text-align:center; padding:0; margin:0 auto;}
 .favitem .favlogo{ background-repeat:no-repeat; background-position:8px 2px; height:145px; width:132px; margin:0 0 0 24px; float:left; display:inline;}
-.favitem .favNav{ background-repeat:no-repeat; background-position:40px 30px; height:145px; width:132px; margin:0 0 0 24px; float:left; display:inline;}
+.favitem .favNav{ background-repeat:no-repeat; background-position:40px 30px; height:145px; width:132px; margin:0 0 0 12px; float:left; display:inline;}
 /*
 181*165
 120*134
@@ -100,6 +105,8 @@ body{ font-size:12px; font-family:"宋体"; line-height:18px; overflow-y:hidden;
 }
 .app_box .app_box_bg_left {
 	background: url(../images/app_box_bg_left.png); 
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/app_box_bg_left.png', sizingMethod='crop');
 	width:70px;
 	height:284px;
 	top:0px;
@@ -108,7 +115,9 @@ body{ font-size:12px; font-family:"宋体"; line-height:18px; overflow-y:hidden;
 	overflow:hidden;
 }
 .app_box .app_box_bg_center {
-	background:url(../images/app_box_bg_center.png);background-repeat: repeat-x;background-position:0px 16px;
+	background: url(../images/app_box_bg_center.png);
+	background-repeat: repeat-x;
+	background-position: 0px 16px;
 	top:0px;
 	left:70px;
 	position:absolute;
@@ -145,25 +154,16 @@ body{ font-size:12px; font-family:"宋体"; line-height:18px; overflow-y:hidden;
 .search_main p{background:url(../images/i.jpg) left center no-repeat;padding-left:12px;margin-left:45px;line-height:1.6;}
 
 .other_bottom {
-	overflow:hidden;
-	zoom:1;
-	position:absolute;
-	width: 100%;
-	min-width: 1000px;
+	overflow: hidden;
+	zoom: 1;
+	position: absolute;
+	height: 264px;
 	top: 10000px;
 }
 * html .other_bottom {
 	width: expression((documentElement.clientWidth < 1000) ? "1000px" : "100%" );
 }
-.other_bottom .lo {
-	background: url(../images/eventbg.png) no-repeat;
-	width: 300px;
-	height: 206px;
-	float:left;
-	display:inline;
-	margin-left:10px;
-	position: relative;
-}
+
 .other_bottom .lo dt{ font-size:14px; color:#105d91; font-weight:bold; height:36px; line-height:36px; border-bottom:1px dashed #bed7e9;}
 .other_bottom .lo .lf{ float:right; font-size:12px; font-weight:normal; text-decoration:none; color:#105d91;}
 .other_bottom .lo .lf:hover{ text-decoration:underline;}
@@ -179,28 +179,127 @@ body{ font-size:12px; font-family:"宋体"; line-height:18px; overflow-y:hidden;
 	right: 20px;
 	bottom: 10px;
 }
-.other_bottom #r_event {
-	width: 500px;
-	height: 204px;
-	+height: 202px;
-	_height: 200px;
-	float: left;
-	background-color: #fff;
-	position:relative;
-	filter: alpha(opacity=100);
-	display: inline;
-	border:1px solid  #b6c5d0
-}
-.other_bottom .finatech_ad {
+
+
+#afterlogin{
+	background: url(../images/warning.gif) no-repeat;
+	width: 235px;
+	height: 264px;
 	float:left;
-	height: 205px;
-	position:relative;
+	display:inline;
+	margin-left:10px;
+	position: relative;
+}
+
+#beforelogin{
+	background: url(../images/warning.gif) no-repeat;
+	width: 235px;
+	height: 264px;
+	float:left;
+	display:inline;
+	margin-left:10px;
+	position: relative;
+}
+
+#interval{
+	padding-bottom:20px;
+}
+
+.lefttitle1{
+	font-size: 14px;
+	color: #2f84c7;
+	font-weight: bold;
+	text-align: center;
+	padding-top:10px;
+}
+
+.lefttitle2{
+	font-size: 14px;
+	color: #2f84c7;
+	font-weight: bold;
+	text-align: center;
+	padding-top:10px;
+	padding-bottom:30px;
+}
+
+.lefticon1{
+	padding-left:12px;
+	line-height:25px;
+}
+
+.leftword1{
+	line-height:25px;
+	color:#78858e;
+}
+
+.leftword4{
+	line-height:25px;
+	color:#78858e;
+	padding-left:15px;
+}
+
+.leftwarn{
+	padding-bottom:10px;
+}
+
+.leftwarn2{
+	padding-bottom:20px;
+}
+
+.andian{
+	padding-right:10px;
+}
+
+.leftbutton1{
+	cursor:pointer;
+	padding-left:12px;
+}
+.leftbutton2{
+	cursor:pointer;
+	padding-left:15px;
+}
+.logAndreg{
+	padding-top:20px;
+}
+
+.lefticon2{
+	color:#1b5b8b;
+	padding-left:30px;
+}
+
+.leftword2{
+	padding-left:70px;
+	color:#25975c;
+	font-weight:bold;
+}
+
+.leftword3{
+	padding-left:70px;
+	color:#ee7236;
+	font-weight:bold;
+}
+
+.other_bottom #r_event {
+	height: 262px;
+	/*+height: 202px;
+	_height: 200px;*/
+	line-height: 18px;
+	float: left;
+	position: absolute;
+	top: 0px;
+	display: inline;
+	border:1px solid  #b6c5d0;
+}
+.other_bottom #finantech_ad {
+	height: 262px;
+	float: left;
+	position: relative;
 	list-style-position: outside;
 	display: inline;
 	overflow: hidden;
-	border:1px solid #b6c5d0
+	border: 1px solid #b6c5d0;
 }
-.other_bottom .finatech_ad li {
+.other_bottom #finantech_ad li {
 	color:#105d91;
 	border-bottom:1px dashed #e2ebf2;
 	padding-top:1px;
@@ -208,12 +307,12 @@ body{ font-size:12px; font-family:"宋体"; line-height:18px; overflow-y:hidden;
 	clear: both;
 	margin: 0 0 5px 0;
 }
-.other_bottom .finatech_ad li img {
+.other_bottom #finantech_ad li img {
 	margin: 7px 0 0 0;
 	display: block;
 	float: left;
 }
-.other_bottom .finatech_ad li a {
+.other_bottom #finantech_ad li a {
 	display: block;
 }
 .piclink {
@@ -248,11 +347,14 @@ b.rtop b.r4, b.rbottom b.r4{margin: 0 1px;height: 2px}
 .procUsb_view{ position:absolute; top:120px; left:50px; height:10px; width:99px;background:url(../images/proc.png) no-repeat;_background:none; _filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/proc.png',sizingMethod='crop');z-index:110;}
 .nnn{ position:absolute; top:2px; left:0; height:10px; width:0px;background:url(../images/procc.png) no-repeat;_background:none; _filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/procc.png',sizingMethod='crop');z-index:120;}
 .title_bg {
-	width: 100%;
-	+height: 33px;
+	height: 25px;
+	padding: 8px 0 0 10px;
 	background-image: url(../images/menu_bg.jpg);
 	background-repeat: repeat-x;
 	border-bottom: 1px solid #b6c5d0;
+}
+#title_bg_f {
+	cursor: pointer;
 }
 .title_container1 .more {
 	float: right;
@@ -271,7 +373,8 @@ b.rtop b.r4, b.rbottom b.r4{margin: 0 1px;height: 2px}
 	float: left;
 	padding: 1px 0 0 0;
 	background-color: #e2ebf2;
-	height: 20px;
+	height: 27px;
+	line-height:27px;
 }
 .tdrow li.lTDRowFirst {
 	width: 120px;
@@ -287,24 +390,29 @@ b.rtop b.r4, b.rbottom b.r4{margin: 0 1px;height: 2px}
 	float: left;
 	padding: 1px 0 0 0;
 	background-color: #f5fbff;
-	height:20px;
+	height:27px;
+	line-height:27px;
 }
 .tdrow1 li.lTDRowFirst {
 	width: 120px;
 }
-.title_img {
-	display: block;
-	margin: 8px 0 5px 10px;
-}
-ul.finantechad_ul {
+#finantechad_ul {
 	list-style: none;
+	line-height: 18px;
 	padding: 1px 0 0 20px;
 	overflow-y: auto;
-	height: 168px;
+	height: 228px;
 	+height: 170px;
 }
-.dFinance {
+#dFinance {
 	float: left;
 	padding-left: 0px;
 	width: 100%;
+}
+.sFinProduct {
+	float: left;
+}
+#sMoreInfo {
+	float: right;
+	padding: 0 20px 0 0;
 }

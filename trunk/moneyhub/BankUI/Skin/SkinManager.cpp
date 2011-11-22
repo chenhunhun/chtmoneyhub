@@ -13,7 +13,9 @@ CSkinManager::CSkinManager() : m_hTheme(NULL), m_ComboSkin(this), m_MainFrameBor
 m_MenuBarSkin(this), m_TabSkin(this), m_StatusBarSkin(this),
 m_ToolBarSkin(this), m_BigButtonSkin(this), m_SSLLockButtonSkin(this), m_HelpButtonSkin(this),
 m_CommonSkin(this), m_MenuSkin(this), m_TooltipSkin(this), m_CategorySkin(this), m_MenuButtonSkin(this),
-m_LogoButtonSkin(this), m_BackButtonSkin(this), m_ForwardButtonSkin(this), m_RefreshButtonSkin(this), m_CoolMenuSkin(this), m_SetButtonSkin(this), m_LoadButtonSkin(this), m_LoginButtonSkin(this), m_SepButtonSkin(this)
+m_LogoButtonSkin(this), m_BackButtonSkin(this), m_ForwardButtonSkin(this), m_RefreshButtonSkin(this), 
+m_CoolMenuSkin(this), m_SetButtonSkin(this), m_LoadButtonSkin(this), m_LoginButtonSkin(this), m_SepButtonSkin(this),
+m_AlarmButtonSkin(this), m_SynchroButtonSkin(this)
 {
 	g_pSkin = this;
 }
@@ -43,6 +45,8 @@ void CSkinManager::RefreshAllSkins(bool bReload)
 	Tooltip()->Refresh();
 	MenuButton()->Refresh();
 	LogoButton()->Refresh();
+	AlarmButton()->Refresh();
+	SynchroButton()->Refresh();
 	Common()->Refresh(bReload);
 
 	BackButton()->Refresh();

@@ -1,0 +1,7 @@
+@charset "utf-8";
+
+.hub-list-div {position: absolute; border: 1px solid #67A9DB; background: #FFFFFF; display: none;}
+.hub-list-option {width: 100%; clear: both; cursor: pointer; height: 28px;}
+.hub-list-name {float: left; height: 28px; line-height: 28px; width: 173px; font-size: 12px; color: #666E71; font-family: Arial;}
+.hub-list-img {float: right; width: 12px; height: 28px; visibility: hidden; background: url(../images/close.gif) no-repeat -12px 9px; margin-right: 5px !important; margin-right: 3px}
+

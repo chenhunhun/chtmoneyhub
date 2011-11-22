@@ -116,6 +116,16 @@ th, td {
 	height: 16px;
 	vertical-align: middle;
 }
+
+.sCheckBoxSelected {
+	background: url(../images/checkbox2.gif) no-repeat;
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	vertical-align: middle;
+}
+
+
 .sDBItem {
 	vertical-align: middle;
 }
@@ -238,4 +248,19 @@ th, td {
 	display: inline-block;
 	float: right;
 	margin: 0 10px 0 0;
+}
+
+.tree1{
+	background:url(../../images/tree1.gif) no-repeat 0px 5px;
+	*background:url(../../images/tree1.gif) no-repeat 0px 3px;
+	height: 12px;
+	width: 10px;
+	display: inline-block;
+}
+.tree2{
+	background:url(../../images/tree3.gif) no-repeat 0px 4px;
+	*background:url(../../images/tree3.gif) no-repeat 0px 2px;
+	height: 12px;
+	width: 10px;
+	display: inline-block;
 }

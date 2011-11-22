@@ -53,6 +53,19 @@
  * @type undefined
  * @see metadata()
  */
+ /*日期和全选*/
+$(document).ready(function(){
+	$(window).resize(function() {
+		$("#dRDCenter").width($("#dRightDate").width() - 190);
+	});
+	$(".sCheckBox").click(function(){
+		$(this).toggleClass("sCheckBox2");
+	});
+	$(".CheckBox").click(function(){
+		$(this).toggleClass("CheckBox2");
+	});
+});
+/*结束*/
 
 (function($) {
 

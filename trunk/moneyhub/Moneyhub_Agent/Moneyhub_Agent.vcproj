@@ -537,6 +537,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Zip"
+				>
+				<File
+					RelativePath=".\Zip\unzip.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Zip\zip.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Í·ÎÄ¼þ"
@@ -620,6 +632,18 @@
 				</File>
 				<File
 					RelativePath=".\Security\SysListReader.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Zip"
+				>
+				<File
+					RelativePath=".\Zip\unzip.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Zip\zip.h"
 					>
 				</File>
 			</Filter>

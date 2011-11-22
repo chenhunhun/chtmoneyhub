@@ -326,14 +326,9 @@ NTSTATUS NTAPI MyMapViewOfSection(IN HANDLE SectionHandle,
 
 	if (IsProcessProtected((DWORD)PsGetCurrentProcessId()) && (LONG)ProcessHandle == 0xFFFFFFFF)
 	{
-		WriteSysLog(LOG_TYPE_DEBUG,L" IsProcessProtected");
-		::KeWaitForSingleObject(&g_DispatchMutex,Executive,KernelMode,FALSE,NULL);
-		WriteSysLog(LOG_TYPE_DEBUG,L" IsProcessProtected KeWaitForSingleObject");
 		result = BkMapViewOfSection(SectionHandle, ProcessHandle, BaseAddress,
 		ZeroBits, CommitSize, SectionOffset, ViewSize, InheritDisposition,
 		AllocationType, Protect);
-		::KeReleaseMutex(&g_DispatchMutex,FALSE);
-		WriteSysLog(LOG_TYPE_DEBUG,L" IsProcessProtected KeReleaseMutex");
 	}
 	else
 		result = NtMapViewOfSection(SectionHandle, ProcessHandle, BaseAddress,
@@ -361,7 +356,7 @@ VOID UnHookSSDT()
 	UpdateService(g_NtMapViewOfSectionID, (PVOID)NtMapViewOfSection);
 	sstUnhook_OpenProcess();
 	WriteSysLog(LOG_TYPE_DEBUG,L" FinishHookSSDT");
-	//::KeReleaseMutex(&g_DispatchMutex,FALSE);
+
 }
 
 /**

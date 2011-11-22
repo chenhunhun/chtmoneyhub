@@ -177,7 +177,7 @@ appList = {
 		a011 : {
 		"id":"a011",
 		 "name":"广发银行",
-		 "url":"http://www.gdb.com.cn/",
+		 "url":"http://www.cgbchina.com.cn/",
 		 "imageUrl":"../../Config/logos/A015.gif",
 		 "favUrl":"../../Config/logos/A015_s.gif",
 		 "index":"gdfzyh,guangdongfazhanyinhang,GDB,Guangdong Development Bank,广东发展银行,广发",
@@ -185,9 +185,9 @@ appList = {
 		 "apptype":"banks",
 		 "position":"10",
 		 "sublink" : {
-		 	 "url" : "http://www.gdb.com.cn/",
+		 	 "url" : "http://www.cgbchina.com.cn/",
 			 "txt_ebank":"个人网银",
-			 "ebank":"https://ebanks.gdb.com.cn/perbank/"
+			 "ebank":"https://ebanks.cgbchina.com.cn/perbank/"
 		 }
 		},
 
@@ -203,13 +203,14 @@ appList = {
 		 "position":"11",
 		 "sublink" : {
 		 	 "url" : "http://www.hxb.com.cn/",
-		/*   "txt_ebank":"个人网银普通版",
-			 "ebank":"https://ebank.hxb.com.cn/HxPer/basPreLogin.do",
-			 "txt_vip":"个人网银签约版",
-			 "vip":"https://ebank.hxb.com.cn/HxPer/regLogin01.do",
-		*/
+		     "txt_ebank":"证书版登录",
+			 "ebank":"https://dbank.hxb.com.cn/easybanking/jsp/indexCert.jsp"
+		/*	 "txt_vip":"签约版登录",
+			 "vip":"https://sbank.hxb.com.cn/easybanking/jsp/login/login.jsp"
+		
 			 "txt_credit":"个人网银证书版",
 			 "credit":"https://dbank.hxb.com.cn/easybanking/jsp/indexCert.jsp"
+		*/
 		 }
 		},
 		a013 : {
@@ -245,9 +246,9 @@ appList = {
 		 "sublink" : {
 		 	 "url" : "http://www.cib.com.cn/",
 			 "txt_ebank":"个人普通用户",
-			 "ebank":"https://www.cib.com.cn/index.jsp",
-			 "txt_vip":"个人证书用户",
-			 "vip":"http://www.cib.com.cn/netbank/cn/persbankalert.html"
+			 "ebank":"https://personalbank.cib.com.cn/",
+			 "txt_vip":"网盾安装",
+			 "vip":"http://www.cib.com.cn/netbank/cn/download/20090603.html"
 		 }
 		},
 		a015 : {
@@ -521,8 +522,7 @@ appList = {
 			 "ebank":"http://home.alipay.com/security/product.htm"
 		 }
 		},
-		/*
-		e002 : {
+		/*e002 : {
 		"id":"e002",
 		 "name":"首信易支付",
 		 "url":"http://www.beijing.com.cn/",
@@ -535,7 +535,7 @@ appList = {
 		 "sublink" : {
 		 	 "url" : "http://www.beijing.com.cn/"
 		 }
-		},
+		},*/
 		e003 : {
 		"id":"e003",
 		 "name":"开联",
@@ -547,10 +547,11 @@ appList = {
 		 "apptype":"payments",
 		 "position":"2",
 		 "sublink" : {
-		 	 "url" : "http://www.openunion.cn/"
+		 	 "url" : "http://www.openunion.cn/",
+			 "txt_ebank":"连心卡",
+			 "ebank":"http://card.openunion.cn/"
 		 }
 		},
-		*/
 		e004 : {
 		"id":"e004",
 		 "name":"易宝支付",

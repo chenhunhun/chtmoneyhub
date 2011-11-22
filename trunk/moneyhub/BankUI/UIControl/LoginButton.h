@@ -16,6 +16,7 @@ public:
 	// override
 	void DrawBackground(HDC hDC, const RECT &rc);
 	void DrawButton(HDC hDC, int iIndex, const RECT &rc, UINT uCurrentStatus);
+	void EndShowDialog(void);
 
 protected:
 	BEGIN_MSG_MAP_EX(CLoginButton)
@@ -26,4 +27,7 @@ protected:
 
 	int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	LRESULT OnClick(int nIndex, POINT pt);
+private:
+	HWND m_hParentWnd;
+//	CWindow*		m_pShowDlg;
 };

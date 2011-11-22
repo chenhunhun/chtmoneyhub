@@ -62,6 +62,7 @@ int CSecurityCache::GetFileNumber()
 bool CSecurityCache::Init()
 {
 	Clear();
+	CRecordProgram::GetInstance()->RecordCommonInfo(L"SeCathe", 1000, L"创建Cathe");
 
 	//Vista权限问题
 	TCHAR szDataPath[MAX_PATH + 1];
@@ -74,7 +75,8 @@ bool CSecurityCache::Init()
 	::CreateDirectoryW(szAppDataPath, NULL);
 
 	WCHAR expName[MAX_PATH] ={0};
-	ExpandEnvironmentStringsW(m_cathfile, expName, MAX_PATH);
+	CRecordProgram::GetInstance()->RecordCommonInfo(L"SeCathe", 1000, m_cathfile.c_str());
+	ExpandEnvironmentStringsW(m_cathfile.c_str(), expName, MAX_PATH);
 	HANDLE hFile;
 	/*if(true == isonce)
 	{
@@ -138,10 +140,12 @@ bool CSecurityCache::Init()
 		delete[] unPackBuf;
 		return false;
 	}
-
+	CRecordProgram::GetInstance()->RecordCommonInfo(L"SeCathe", 1000, L"读入Cathe");
 	for(DWORD i = 0;i < (unsigned long)ret;)
 	{
 		SecCachStruct *data = new SecCachStruct;
+		if(data == NULL)
+			break;
 		memcpy(data->filename,unPackBuf + i,sizeof(data->filename));
 		i += sizeof(data->filename);
 		memcpy(data->chkdata,unPackBuf + i,SECURE_SIZE);
@@ -307,7 +311,7 @@ bool CSecurityCache::Flush()
 		return true;
 
 	WCHAR expName[MAX_PATH] ={0};
-	ExpandEnvironmentStringsW(m_cathfile, expName, MAX_PATH);
+	ExpandEnvironmentStringsW(m_cathfile.c_str(), expName, MAX_PATH);
 	HANDLE hFile;
 
 

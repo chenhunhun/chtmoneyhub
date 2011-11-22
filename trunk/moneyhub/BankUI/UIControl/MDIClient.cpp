@@ -16,6 +16,19 @@ bool CMDIClient::m_bSafe = true;
 CMDIClient::CMDIClient(CTuotuoTabCtrl &TabCtrl, CTuotuoCategoryCtrl &cateCtrl, FrameStorageStruct *pFS) : m_TabCtrl(TabCtrl), m_CateCtrl(cateCtrl), CFSMUtil(pFS)
 {
 	FS()->pMDIClient = this;
+	isIE6 = false;
+
+	DWORD dwValueNameLength = 100;        // 值名字符串长度   
+	WCHAR ptszValueName[100] = { 0 };    // 值名字符串
+
+	//获得ie版本信息
+	DWORD dwType, dwReturnBytes = sizeof(DWORD), dwPos = 0, dwSize = 0, dwMax = 0;
+	if( ERROR_SUCCESS == ::SHGetValueW(HKEY_LOCAL_MACHINE,L"SOFTWARE\\Microsoft\\Internet Explorer", L"Version", &dwType, &ptszValueName, &dwValueNameLength))
+	{
+		if(ptszValueName[0] == L'6')
+			isIE6 = true;
+	}
+	
 }
 
 
@@ -51,7 +64,14 @@ void CMDIClient::ClosePage(CTabItem *pItem)
 	pItem->m_pCategory->m_TabItems.erase(pItem->m_pCategory->m_TabItems.begin() + pItem->GetIndex());
 	pItem->m_pCategory->Redraw();
 	m_TabCtrl.DeleteItem(pItem->GetIndex());
-	pItem->GetChildFrame()->OptionalDestroy(0);
+	bool isTrueClose = true;
+
+	if(isIE6 && wcscmp(pItem->m_pCategory->GetWebData()->GetName() , L"支付宝") == 0)
+			isTrueClose = false;
+	if(isIE6 && pItem->m_pCategory->m_ShowInfo == L"支付宝")
+			isTrueClose = false;
+
+	pItem->GetChildFrame()->OptionalDestroy(0, isTrueClose);
 }
 
 void CMDIClient::CloseCategory(CCategoryItem *pCateItem)
@@ -64,7 +84,14 @@ void CMDIClient::CloseCategory(CCategoryItem *pCateItem)
 	ActiveCategory(pNewCate);
 
 	for (size_t i = 0; i < pCateItem->m_TabItems.size(); i++)
-		pCateItem->m_TabItems[i]->GetChildFrame()->OptionalDestroy(0);
+	{
+		bool isTrueClose = true;
+		if(isIE6 && wcscmp(pCateItem->GetWebData()->GetName() , L"支付宝") == 0)
+			isTrueClose = false;
+		if(isIE6 && pCateItem->m_ShowInfo == L"支付宝")
+			isTrueClose = false;
+		pCateItem->m_TabItems[i]->GetChildFrame()->OptionalDestroy(0, isTrueClose);
+	}
 	delete pCateItem;
 }
 void CMDIClient::HideCategory(CCategoryItem *pCateItem)
@@ -237,25 +264,16 @@ void CMDIClient::ActivePage(CTabItem *pItem)
 
 	SyncCurrentPageInfo();
 
-	// 刷新页面 fanzhenxing add
-	// 刷新优惠券和提醒、首页3个目录，其他不刷新
-	std::tstring financestr = _T("Html\\FinancePage\\report.html"); 
-	std::tstring Mainstr = _T("Html/StartPage"); 
-
 	std::tstring  ms = pItem->GetURLText();
 
 	CRecordProgram::GetInstance()->RecordDebugInfo(MY_PRO_NAME, MY_COMMON_PROCESS, CRecordProgram::GetInstance()->GetRecordInfo(L"用户点击如下链接:%s", ms.c_str ()));
 
-	if((ms.find(financestr) != std::tstring::npos))
-	{
-		pItem->GetAxControl().PostMessage(WM_AX_REFRESH, 0, 0);
-		//TerminateThread(g_threadHandleCheckIntegrity,-1);
-		//CloseHandle(g_threadHandleCheckIntegrity);
-		//g_threadHandleCheckIntegrity = (HANDLE)_beginthreadex(0, 0, _threadForCheckIntegrity, this, 0, 0) ;
-	}
 
-	wcscpy_s(g_noHookfilterUrl,3000,pItem->GetURLText());
-	*(g_noHookfilterUrl + 2999) = L'\0';
+	// 张京要求，得调用JS TabActive函数
+
+	if(pItem->m_pCategory->GetWebData()->IsNoClose())	
+		if (NULL != pItem->GetAxControl())
+			pItem->GetAxControl().PostMessage(WM_AX_CALL_JS_TABACTIVE, 0, 0);
 }
 
 void CMDIClient::SyncCurrentPageInfo(bool bUpdateStatusBarOnly)
@@ -407,7 +425,7 @@ LRESULT CMDIClient::OnCreateNewWebPage(UINT /* uMsg */, WPARAM wParam, LPARAM lP
 
 	// 记住这里进行分类建立窗口的功能
 	CTabItem *pItem = new CTabItem(pNewPage->bNoClose);
-	CCategoryItem *pCate = m_CateCtrl.FindOrCreateItem(strURL == _T("about:blank") ? strChildFrameUrl.c_str() : strURL.c_str(), pCreateFromItem, pNewPage->bGetBill, pNewPage->BillFlag);//记账页强制创建新页面
+	CCategoryItem *pCate = m_CateCtrl.FindOrCreateItem(strURL == _T("about:blank") ? strChildFrameUrl.c_str() : strURL.c_str(), pCreateFromItem,  pNewPage->bGetBill, pNewPage->BillFlag);//记账页强制创建新页面
 	pCate->m_TabItems.push_back(pItem);
 	pItem->m_pCategory = pCate;
 

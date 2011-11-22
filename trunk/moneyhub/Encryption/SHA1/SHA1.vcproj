@@ -396,6 +396,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Sha256Calc.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -438,6 +442,10 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\Base.h"
+				>
+			</File>
+			<File
 				RelativePath=".\md32_common.h"
 				>
 			</File>
@@ -446,7 +454,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Sha256Calc.h"
+				>
+			</File>
+			<File
 				RelativePath=".\sha_locl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SizeDef.h"
 				>
 			</File>
 			<File

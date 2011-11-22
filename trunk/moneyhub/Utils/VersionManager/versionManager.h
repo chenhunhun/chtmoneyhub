@@ -32,7 +32,7 @@ private:
 	 std::wstring getModulePath();
 
 	 bool  traverseFile(LPWSTR path, LPWSTR wName, VMMAPDEF& mapVersion );
-	 bool getVersionFromChk(LPSTR vs , LPCSTR lpCHKFileName, LPSTR szBankName = NULL);
+	 bool getVersionFromChk(std::wstring& vs , LPCSTR lpCHKFileName, std::wstring& szBankName);
 	 bool chkToXml(LPCSTR lpChkFileName , LPSTR  lpContentXml, UINT *pLen);
 
 private:

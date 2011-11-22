@@ -2,7 +2,9 @@
 #include "MenuDlg.h"
 
 
-CMenuDlg::CMenuDlg(HWND hParent):m_hParent(hParent), m_nBtnSelIndex(0), m_nBtnLastSel(0)
+CMenuDlg::CMenuDlg(HWND hParent, LPCTSTR lpBitPath, int nParentMessage, int nBtnNum, int nBtnSelHeight, int nExternHeightOnPaint):
+m_hParent(hParent),m_wstrBitPath(lpBitPath), m_nParentMessage(nParentMessage), m_nBtnNum(nBtnNum), m_nBtnSelHeight(nBtnSelHeight),
+m_nExternHeightOnPaint(nExternHeightOnPaint), m_nBtnSelIndex(0), m_nBtnLastSel(0)
 {
 }
 CMenuDlg::~CMenuDlg(void)
@@ -24,23 +26,23 @@ void CMenuDlg::ShowMenuWindow(CPoint pt)
 
 void CMenuDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	if (m_nBtnSelIndex >= 1 || m_nBtnSelIndex <= 4)
+	if (m_nBtnSelIndex >= 1 || m_nBtnSelIndex <= m_nBtnNum)
 	{
 		::ShowWindow(m_hWnd, false);
 		ATLASSERT (NULL != m_hParent);
-		::PostMessage(m_hParent, WM_MY_MENU_CLICKED, m_nBtnSelIndex, 0);
+		::PostMessage(m_hParent, m_nParentMessage, m_nBtnSelIndex, 0);
 	}
 }
 
 void CMenuDlg::OnMouseMove(UINT /* nFlags */, CPoint ptCursor)
 {
-	int nBeginHight = 14;
+	//int nBeginHight = 14;
 
-	int nBtnHight = 25;
+	//int nBtnHight = 25;
 
-	m_nBtnSelIndex = (ptCursor.y + nBtnHight - 1 - 14)/nBtnHight;
+	m_nBtnSelIndex = (ptCursor.y + m_nBtnSelHeight - 1 - m_nExternHeightOnPaint)/m_nBtnSelHeight;
 
-	if (m_nBtnSelIndex > 4 || m_nBtnSelIndex < 1)
+	if (m_nBtnSelIndex > m_nBtnNum || m_nBtnSelIndex < 1)
 		m_nBtnSelIndex = 0;
 
 	if (m_nBtnLastSel != m_nBtnSelIndex)
@@ -68,7 +70,7 @@ LRESULT CMenuDlg::OnActive(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHan
 LRESULT CMenuDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	if (NULL == m_imgNoBtnSel)
-		m_imgNoBtnSel.LoadFromFile(_T("NoSel.png"), true);
+		m_imgNoBtnSel.LoadFromFile(m_wstrBitPath.c_str(), true);
 
 	HBITMAP hBitmap = m_imgNoBtnSel.operator HBITMAP();
 	if (hBitmap)
@@ -89,9 +91,9 @@ LRESULT CMenuDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 LRESULT CMenuDlg::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	CPaintDC dc(m_hWnd);
-	int nBeginHight = 14;
+	//int nBeginHight = 14;
 
-	int nBtnHight = 25;
+	//int nBtnHight = 25;
 
 	// 如果选中的按钮没有发生改变，就没有必要进行重绘
 	if (m_nBtnSelIndex == m_nBtnLastSel && m_nBtnSelIndex != -1)
@@ -126,10 +128,10 @@ LRESULT CMenuDlg::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 
 	BYTE* lpBits = NULL;
 
-	if (m_nBtnSelIndex > 0 && m_nBtnSelIndex < 5)
+	if (m_nBtnSelIndex > 0 && m_nBtnSelIndex <= m_nBtnNum)
 	{
 		// 因为GetDIBits 得到的图片是逆过来的
-		DWORD dwLoopYB = bm.bmHeight - (nBeginHight + (m_nBtnSelIndex - 1) * (nBtnHight + 1));
+		DWORD dwLoopYB = bm.bmHeight - (m_nExternHeightOnPaint + (m_nBtnSelIndex - 1) * (m_nBtnSelHeight + 1));
 		
 		PBITMAPINFO bmpInf;  
 		int nPaletteSize=0;   
@@ -152,7 +154,7 @@ LRESULT CMenuDlg::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		if(bmpInf->bmiHeader.biBitCount == 32)   
 		{   
 			// 根据用户鼠标的位置，对位图进行选中着色
-			for(int i = dwLoopYB - nBtnHight; i < dwLoopYB; i++)   
+			for(int i = dwLoopYB - m_nBtnSelHeight; i < dwLoopYB; i++)   
 			{   
 				nOffset = i * nWidth * 4;   
 				for(int j=0; j<bm.bmWidth; j++)   

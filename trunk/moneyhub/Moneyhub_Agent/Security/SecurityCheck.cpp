@@ -70,7 +70,7 @@ void CSecurityCheck::Start(int bCheckType)
 bool CSecurityCheck::CheckSelfSysList()
 {
 	std::string strModulePath = CT2A(::GetModulePath());
-	std::string strCHK = strModulePath + "\\Config\\syslist.chk";
+	std::string strCHK = strModulePath + "\\Config\\syslist.mchk";
 	wchar_t message[MSG_BUF_LEN];
 
 	int ret = VerifySysList(strCHK.c_str(), message);
@@ -1041,7 +1041,7 @@ bool CSecurityCheck:: CheckBlackListCache()// 生成黑名单
 	CSecurityCache *pBlackCache = CGlobalData::GetInstance()->GetBlackCache();
 	CCloudFileSelector cfselector;
 	std::string strModulePath = CT2A(::GetModulePath());
-	std::string strCHK = strModulePath + "\\Config\\BlackList.chk";
+	std::string strCHK = strModulePath + "\\Config\\BlackList.mchk";
 	wchar_t message[MSG_BUF_LEN];
 
 	int ret = VerifyCloudList(strCHK.c_str(), message,cfselector);
@@ -1100,7 +1100,7 @@ bool CSecurityCheck::CheckCache()
 	//获得所有文件
 	CCloudFileSelector cfselector;
 	std::string strModulePath = CT2A(::GetModulePath());
-	std::string strCHK = strModulePath + "\\Config\\CloudCheck.chk";
+	std::string strCHK = strModulePath + "\\Config\\CloudCheck.mchk";
 	wchar_t message[MSG_BUF_LEN];
 
 	int ret = VerifyCloudList(strCHK.c_str(), message,cfselector);

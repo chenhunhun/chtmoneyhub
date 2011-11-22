@@ -31,7 +31,7 @@ public:
 private:
 	list<SecCachStruct*>  m_secuBucket[SECURE_BUCKET_SIZE];
 
-	wchar_t *m_cathfile;
+	wstring m_cathfile;
 	unsigned char *evalueCache;
 	int m_length;
 

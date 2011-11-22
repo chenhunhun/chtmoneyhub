@@ -4,6 +4,7 @@
 #include <wininet.h>
 
 #include "..\Utils\HardwareID\genhwid.h"
+#include "../../Utils/sn/SNManager.h"
 
 enum 
 {
@@ -33,7 +34,6 @@ protected:
 	HANDLE m_hSaveFile;
 
 	std::wstring m_strHWID;
-
 protected:
 	UINT64 m_ui64FileSize;
 	UINT64 m_ui64TotalRead;
@@ -42,11 +42,17 @@ private:
 	int TransferDataPost();
 	void CloseHandles();
 	
+	static CPostData * m_instance;
+
+public:
 	std::string UrlEncode(const std::string& src);   
 
-	static CPostData * m_instance;
-public:
 	static CPostData * getInstance();
 	void sendData(IN LPCTSTR lpszUrl, IN LPSTR pData, IN DWORD dwLen);
 	int PostData(IN LPCTSTR lpszUrl, IN LPVOID lpPostData, IN DWORD dwPostDataLength, IN LPCTSTR lpszSaveFile = NULL/*, CUpdateMgr* pUpdateMgr*/);
+
+	BOOL UseHttpSendReqEx( std::string& lpost);
+	int  PostIniBigData(IN LPCTSTR lpszUrl );
+	std::wstring UTF8ToUnicode(char* UTF8);
+	int TBigDataPost();
 };

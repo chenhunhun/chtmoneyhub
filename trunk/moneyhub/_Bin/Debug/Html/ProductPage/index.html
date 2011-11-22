@@ -5,8 +5,12 @@
 <title>精选理财产品</title>
 <link type="text/css" rel="stylesheet" href="../style/style.css" />
 <link type="text/css" rel="stylesheet" href="./style/style.css" />
-<script type="text/javascript" src="../scripts/jquery/jquery.min.js"></script>
+<!--<script type="text/javascript" src="../scripts/jquery/jquery.min.js"></script>-->
+<script type="text/javascript" src="../StartPage/scripts/jquery/jquery-1.4.4.js"></script>
+<script type="text/javascript" src="../scripts/jquery/jquery.tablesort.js"></script>
 <script type="text/javascript" src="./scripts/functions.mhs"></script>
+
+<script type="text/javascript" src="../FinancePage/scripts/public.mhs"></script>
 </head>
 <body>
 <div id="dLeft">
@@ -16,7 +20,7 @@
 	<div id="dLeftContent">
 		<div class="customScrollBox">
 			<div class="container">
-				<div class="content">
+				<div id="selectTree" class="content">
 		    		<div class="dBlock">
 		    			<div class="dBlockHeader">
 		    				<span>
@@ -25,7 +29,7 @@
 		    			</div>
 		    			<div class="dBlockContent">
 		    				<div class="dBItem">
-		    					<span class="sCheckBox" onclick="alert('aaa');">
+		    					<span class="sCheckBox">
 								</span>
 								<span class="sDBItem">
 									3%以下
@@ -80,14 +84,14 @@
 		</div>
 		<div id="dRTHeader">
 			<table class="dRTTable">
-				<tr>
-					<td><span class="sOrderBy"></span>产品名称</td>
-					<td><span class="sOrderBy"></span>银行</td>
-					<td><span class="sOrderBy"></span>认购起始日期</td>
-					<td><span class="sOrderBy"></span>理财期限</td>
-					<td><span class="sOrderBy"></span>币种</td>
-					<td><span class="sOrderBy"></span>预期收益</td>
-					<td>&nbsp;</td>
+				<tr id="sortHeader">
+					<td id="tdSort1"><span id="sortCon1" value="sortCon1"  class="tree1" style="display:none"></span>产品名称</td>
+					<td id="tdSort2"><span id="sortCon2" value="sortCon2" class="tree1" style="display:none"></span>银行</td>
+					<td id="tdSort3"><span id="sortCon3" value="sortCon3" class="tree1" style="display:none"></span>认购起始日期</td>
+					<td id="tdSort4"><span id="sortCon4" value="sortCon4" class="tree1" style="display:none"></span>认购截止日期</td>
+					<td id="tdSort5"><span id="sortCon5" value="sortCon5" class="tree1" style="display:none"></span>理财期限</td>
+					<td id="tdSort6"><span id="sortCon6" value="sortCon6" class="tree1" style="display:none"></span>币种</td>
+					<td id="tdSort7"><span id="sortCon7" value="sortCon7" class="tree1" style=""></span>预期收益</td>
 				</tr>
 			</table>
 		</div>
@@ -100,55 +104,13 @@
 		    		<div id="transContent" class="content" validate="{rangelength:[1,30]}">
 						<table id="dRightTableTrans" class="dRightTable">
 							<tr class="trDetail tDetail1">
-								<td>产品1</td>
-								<td>中国工商银行</td>
-								<td>2009-01-01</td>
-								<td>6个月</td>
-								<td>人民币</td>
-								<td>6.4%</td>
-								<td>aaa</td>
-							</tr>
-							<tr style="display:none;">
-								<td class="tdDetail" colspan="7">
-									<span class="sMIContent">aaa</span>
-									<span class="sMoreInfo"></span>
-								</td>
-							</tr>
-							<tr class="trDetail tDetail2">
-								<td>产品2</td>
-								<td>中国工商银行</td>
-								<td>2009-01-01</td>
-								<td>6个月</td>
-								<td>人民币</td>
-								<td>6.4%</td>
-								<td>aaa</td>
-							</tr>
-							<tr style="display:none;">
-								<td class="tdDetail" colspan="7">
-									<span class="sMIContent">aaa</span>
-									<span class="sMoreInfo"></span>
-								</td>
-							</tr>
-							<tr class="trDetail tDetail1">
-								<td>产品3</td>
-								<td>中国工商银行</td>
-								<td>2009-01-01</td>
-								<td>6个月</td>
-								<td>人民币</td>
-								<td>6.4%</td>
-								<td>aaa</td>
-							</tr>
-							<tr style="display:none;">
-								<td class="tdDetail" colspan="7">
-									<span class="sMIContent">aaa</span>
-									<span class="sMoreInfo"></span>
-								</td>
+								<td colspan="6">数据正在读取中，请稍候……</td>
 							</tr>
 						</table>
 					</div>
 				</div>
 				<div class="dragger_container" id="dRightDragger">
-		    		<div class="dragger">=</div>
+		    		<div class="dragger"></div>
 				</div>
 			</div>
 		</div>

@@ -36,21 +36,25 @@ CChildFrame::CChildFrame(FrameStorageStruct *pFS, HWND hWnd, LPCTSTR lpszWindowN
 
 //////////////////////////////////////////////////////////////////////////
 
-void CChildFrame::OptionalDestroy(int iType)
+void CChildFrame::OptionalDestroy(int iType, bool isTrueClose)
 {
 	SetWindowLongPtr(GWLP_USERDATA, NULL);
 	m_iDestroyType = iType;
 
 	::ShowWindow(m_pItem->GetAxControl(), SW_HIDE);
 	::SetParent(m_pItem->GetAxControl(), NULL);
-	::PostMessage(m_pItem->GetAxControl(), WM_CLOSE, 0, 0);
+
+	
+	if(isTrueClose)
+		::PostMessage(m_pItem->GetAxControl(), WM_CLOSE, 0, 0);
 	if (m_pItem)
 	{
 		CTabItem *pItem = m_pItem;
 		m_pItem = NULL;
 		delete pItem;
 	}
-	DestroyWindow();
+	if(isTrueClose)
+		DestroyWindow();
 }
 
 void CChildFrame::DoNavigateBack()
@@ -128,31 +132,16 @@ void CChildFrame::OnSize(UINT nType, CSize size)
 	if (m_pItem && m_pItem->GetAxControl())
 		m_pItem->GetAxControl().SetWindowPos(NULL, 0, 0, size.cx, size.cy, /*SWP_NOMOVE |*/ SWP_NOZORDER);
 }
-// 取消获取账单
-LRESULT CChildFrame::OnCloseBill(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
-{
-	if(m_pItem)
-		FS()->MDI()->CloseCategory(m_pItem->m_pCategory);
-	return 0;
-}
+// 获取账单关闭整个页面
 LRESULT CChildFrame::OnFinishBill(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
 {
-	if(m_pItem->m_pCategory->m_relateHwnd)
-		::SendMessage(m_pItem->m_pCategory->m_relateHwnd, WM_FINISH_GET_BILL, 0, 0);
-
-	mhMessageBox(GetRootWindow(m_hWnd), L"账单导入成功", L"财金汇账单功能", MB_OK);
-	if(m_pItem != NULL)
-		FS()->MDI()->CloseCategory(m_pItem->m_pCategory);
-	
-	return 0;
-}
-LRESULT CChildFrame::OnSetRelatedHwnd(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
-{
 	if(m_pItem)
-		m_pItem->m_pCategory->m_relateHwnd = (HWND)lParam;
-
+		FS()->MDI()->CloseCategory(m_pItem->m_pCategory);
+	::PostMessage(FS()->MainFrame()->m_IeWnd, WM_FINISH_GET_BILL, 0 ,0);
 	return 0;
 }
+
+
 LRESULT CChildFrame::OnGettingBill(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
 {
 	if(m_pItem)
@@ -160,12 +149,18 @@ LRESULT CChildFrame::OnGettingBill(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 		m_pItem->m_pCategory->SetShowInfo( 2 );
 		FS()->MainFrame()->RecalcClientSize(-1, -1);
 	}
-
-	::PostMessage(FS()->hMainFrame, WM_GETTING_BILL, 0, (LPARAM)m_hWnd);
-
 	return 0;
 }
 
+LRESULT CChildFrame::OnResetGetBill(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
+{
+	if(m_pItem)
+	{
+		m_pItem->m_pCategory->SetShowInfo( 1 );
+		FS()->MainFrame()->RecalcClientSize(-1, -1);
+	}
+	return 0;
+}
 //////////////////////////////////////////////////////////////////////////
 
 LRESULT CChildFrame::OnNotifyCreated(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)

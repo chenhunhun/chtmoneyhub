@@ -166,7 +166,7 @@ CListManager::CListManager(bool bBankCore) :m_bBankCore(bBankCore), m_hRegQueryM
 		}
 	}
 
-	///////////////////////////银行子文件 info.chk 单独遍历
+	///////////////////////////银行子文件 info.mchk 单独遍历
 	std::wstring wcsPath = getModulePathForSearch();
 	wcsPath += BANKDIRECTORY;	
 
@@ -174,7 +174,7 @@ CListManager::CListManager(bool bBankCore) :m_bBankCore(bBankCore), m_hRegQueryM
 	ATLASSERT (NULL != m_pFavBkOper);
 
 	m_result = true;
-	// 遍历Bank目录下的所有文件夹，并分析了各个银选择的info.chk文件
+	// 遍历Bank目录下的所有文件夹，并分析了各个银选择的info.mchk文件
 	if (m_bBankCore)
 	{
 		if (!traverseBankInfo((LPWSTR)wcsPath.c_str()))
@@ -262,7 +262,7 @@ bool CListManager::traverseBankInfo(LPWSTR path, LPWSTR parentPath) // gao 2010-
 		}
 		else  
 		{
-			if(wcscmp(fw.cFileName,L"info.chk") != 0)
+			if(wcscmp(fw.cFileName,L"info.mchk") != 0)
 				continue;
 
 			std::string strBankID = CFavBankOperator::GetBankIDOrBankName (WToA(parentPath), false); // 要获取的银行ID，所以传入false
@@ -323,7 +323,7 @@ void CWebsiteData::StartUAC(std::wstring appid)
 	//带参数打开
 	if(CreateProcessW(NULL, (LPWSTR)path.c_str(), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi))
 	{
-		WaitForSingleObject(pi.hProcess, INFINITE); //等待完成
+		//WaitForSingleObject(pi.hProcess, INFINITE); //等待完成
 		CloseHandle( pi.hProcess );		
 		CloseHandle( pi.hThread );		
 	}
@@ -574,6 +574,15 @@ int CListManager::GetDefaultPageIndex(LPCTSTR lpszUrl)
 	if (_tcsicmp((LPCTSTR)strUrl + _tcslen(strUrl) - strPartUrl.GetLength(), strPartUrl) == 0)
 		return kReportPage;
 
+	strPartUrl = _T("/Html/FinancePage/set.html");
+	if (_tcsicmp((LPCTSTR)strUrl + _tcslen(strUrl) - strPartUrl.GetLength(), strPartUrl) == 0)
+		return kSetPage;
+
+//	strPartUrl = _T("/Html/ProductPage/index.html");
+//	if (_tcsicmp((LPCTSTR)strUrl + _tcslen(strUrl) - strPartUrl.GetLength(), strPartUrl) == 0)
+//		return kProductPage;
+
+
 	return kPageInvalid;
 }
 
@@ -816,7 +825,55 @@ bool CListManager::AddANewFavBank(LPWSTR lpParam, bool bBankName)
 	return true;
 
 }
+bool CListManager::CheckCom(string appid)
+{
+	if(appid == "")
+	{
+		CWebsiteData* pWebsiteData = NULL;
 
+		WebDataMap::const_iterator it = m_WebsiteData.begin();
+		for(;it != m_WebsiteData.end();it ++)
+		{
+			pWebsiteData = (it->second);
+
+			ReqList::iterator rite = pWebsiteData->GetReqList()->begin();
+			for(;rite != pWebsiteData->GetReqList()->end();rite ++)
+			{
+				CRequirement *pRequirement = (*rite);
+
+				if (pRequirement->GetType() != Require_Class)
+					continue;
+				else
+					pRequirement->CheckComInfo();
+			}
+		}
+		return true;
+	}
+	else
+	{
+		USES_CONVERSION;
+		CWebsiteData* pWebsiteData = NULL;
+		std::wstring strBankName = A2W(CFavBankOperator::GetBankIDOrBankName(appid).c_str());
+		WebDataMap::const_iterator it = m_WebsiteData.find(strBankName);
+		if(it != m_WebsiteData.end())
+		{
+			pWebsiteData = (it->second);
+			
+			ReqList::iterator rite = pWebsiteData->GetReqList()->begin();
+			for(;rite != pWebsiteData->GetReqList()->end();rite ++)
+			{
+				CRequirement *pRequirement = (*rite);
+
+				if (pRequirement->GetType() != Require_Class)
+					continue;
+				else
+					pRequirement->CheckComInfo();
+			}
+		}
+		return true;
+	}
+	return true;
+}
 bool CListManager::DeleteAFavBank(string appid)
 {
 	if ("" == appid)

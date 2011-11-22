@@ -12,10 +12,10 @@ bool ModuleVerifier::Init()
 	char szAuthenPath[MAX_PATH + 1];
 	GetModuleFileNameA(NULL, szAuthenPath, MAX_PATH);
 	*(strrchr(szAuthenPath, '\\') + 1) = 0;
-	strcat_s(szAuthenPath,MAX_PATH + 1, "authen.chk");
+	strcat_s(szAuthenPath,MAX_PATH + 1, "authen.mchk");
 
 	g_pSysModVerify = new CSysModVerify();
-	//BankMdrVerifier::Init("authen.chk");
+	//BankMdrVerifier::Init("authen.mchk");
 	BankMdrVerifier::Init(szAuthenPath);
 	return true;
 }

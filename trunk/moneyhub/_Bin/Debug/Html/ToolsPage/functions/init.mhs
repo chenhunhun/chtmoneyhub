@@ -6,6 +6,22 @@ Tesy.init = function(){
     Tesy.renderAlarm();
 };
 
+function TabActivated() {
+    var eventFlag = 0;
+    try {
+       eventFlag = window.external.GetParameter("eventAlarm");
+	   window.external.SetParameter("eventAlarm", "0");
+	}catch(e){
+	   //TODO
+	   alert(e);
+	}
+	
+	if (eventFlag == "1") {//如果为1, 说明添加了提醒事件，则刷新页面
+	   window.location.reload();
+	}
+}
+
+
 Tesy.util = {};
 
 Tesy.util.buildCalendar = function(o){
@@ -290,7 +306,11 @@ Tesy.uEvents = {
                 if (typeof Tesy.eventlay == 'undefined') {
                     Tesy.eventlay = new Tesy.EventLay();
                 }
-                Tesy.eventlay.init(item);
+				if ((typeof item === "object") && (/(?:.到期$)/.test(item.description) == true)){
+                    return false;
+				}else {
+				    Tesy.eventlay.init(item);
+				}
             }
         })(odata)
         

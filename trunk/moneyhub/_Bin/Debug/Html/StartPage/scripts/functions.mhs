@@ -2,7 +2,14 @@ var selector, showlist;
 var bigStarInterval = new Array();
 
 function init(){
-    var wwwhost = "";
+	var userStatus=window.external.GetCurrentUserID( );
+	if(userStatus!="Guest"){
+	afterLogin();
+	}
+	if(userStatus=="Guest"){
+	beforeLogin();
+	} 
+	var wwwhost = "";
     try {
         wwwhost = window.external.GetHostName("web");
     } catch (e) {
@@ -36,7 +43,8 @@ function init(){
     };
     renderFinance();
 	renderAd();
-    DD_belatedPNG.fix('#app_box_bg_left,.apppagedoton,.apppagedotoff');
+    //DD_belatedPNG.fix('#app_box_bg_left,.apppagedoton,.apppagedotoff');
+    fixPNG(document.getElementById("iFinanceInfo"));
 }
 
 function rfalse() {
@@ -178,7 +186,6 @@ function favScroll(direction){
     }
 }
 
-
 /*添加APP部分的滚动事件*/
 function appScrollRun(d, speed){
     var appCt = document.getElementById("appContainer");
@@ -315,7 +322,6 @@ function renderFav(currentPage){
 	if (MH.control.favPageNum == 0) 
 		MH.control.favPageNum = 1;
 	MH.control.currentPage = 0;
-	//alert("111111");
 	/*根据页数显示*/
 	if (l > MH.control.favPageNum) {
 		/*页数大于1*/
@@ -380,7 +386,6 @@ function renderFav(currentPage){
 				continue;
 			var strHTML = "";
 			if (favStatus < 200) {
-				//alert("<200");
 				strHTML = '<div class="favitem"><div class="textFav" id="pro_' + appId + '">';
 				if (favStatus < 100) {
 					strHTML += "正在下载";
@@ -393,7 +398,6 @@ function renderFav(currentPage){
 				strHTML += '<div class="procCover" id="shadow_' + appId + '"><b class="rtop"><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b></b><table height="132px"><tr><td><br></td></tr></table><b class="rbottom"><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></b></div></div>';
 				strHTML += '<div class="proc" id="status_' + appId + '"><div class="nn" id="pr_' + appId + '"></div></div>';
 			} else {
-				//alert(">200");
 				strHTML = '<span class="delFav" onclick = delFavAction("'+appId+'","' + appId + '");></span>';				
 				strHTML += '<div class="favitem">';
 				strHTML += '<div class="textFav" id="pro_' + appId + '"></div>';
@@ -426,14 +430,12 @@ function renderFav(currentPage){
 				}
 			}
 			strHTML += '<dd class="laone"><a href="javascript:;"> </a></dd>' + '</dl>' + '</div></div>';
-			//alert("test");
 			li.innerHTML = strHTML;
 			li.id = "li_" + appId;
 			//添加禁止拖动的效果
 			try{
 				if (favStatus < 200) {
 					MH.dom.addClass(li, 'downloading');
-					//fav("favUL", li.id);
 				} else {
 					$('#favUL').sortable('option', 'handle', 'dt');
 				}	
@@ -441,11 +443,9 @@ function renderFav(currentPage){
 				alert(e.message);
 			}
 			
-			//alert("拖动没问题");	
 			//添加drop
-			li['onmouseover'] = (function(liEl){
-				return function(e){
-				
+			li['onmouseover'] = (function(liEl) {
+				return function(e) {
 					var e = window.event ? window.event : e;
 					var fromEl = e.srcElement ? e.srcElement : e.target;
 					var toEl = e.toElement ? e.toElement : e.relatedTarget;
@@ -464,10 +464,10 @@ function renderFav(currentPage){
 						});
 					}
 				}
-			})(li)
+			}) (li);
 			var method = (window.event) ? 'onmouseleave' : 'onmouseout';
-			li['onmouseout'] = (function(liEl){
-				return function(e){
+			li['onmouseout'] = (function(liEl) {
+				return function(e) {
 					var e = window.event ? window.event : e;
 					var fromEl = e.srcElement ? e.srcElement : e.target;
 					var toEl = e.toElement ? e.toElement : e.relatedTarget;
@@ -493,7 +493,6 @@ function renderFav(currentPage){
 				var t = '#pr_' + appId;
 				$(t).width(favStatus);
 			}
-			//alert("test1");
 		}
 	} else {
 		displayAppNav();
@@ -507,7 +506,6 @@ function renderFav(currentPage){
  * @param param4 状态   
  */
 function setDownloadStatus(appId, spro, param3, param4) {
-	//alert(appId+":::::::::"+spro+":::::::::"+param3+":::::::::"+param4)
 	if (param4 == 0) {
 		//开始下载
 		var t = '#pr_' + appId;
@@ -857,7 +855,6 @@ function handle(jsonArray){
 function ShowSlowly(appId) {
 	renderFav();
 	favZoomIn(appId);
-	//favPayAlert(appId);
 }
 
 function addFavAction(oNode, appId){
@@ -871,16 +868,6 @@ function addFavAction(oNode, appId){
     }
 }
 
-//支付收藏提醒
-/*
-function favPayAlert(appId){
-	switch(appId){
-		case "e001":
-			alert("如果您需要在支付宝中通过网银充值或支付,请同时收藏相关的银行");
-		break;	
-	}
-}
-*/
 function delFavAction(o, appId){
 	MH.interact.deleteFav(appId);
 	MH.interact.getFav();
@@ -921,15 +908,17 @@ function searchIndex(name, type){
     return resultArray;
 }
 
-/*
- * 模块名称：财金资讯
+/** 模块名称：财金资讯
  * 模块功能：获得股指信息
  * 显示模式：固定显示
  * 显示数量：九条
  * 刷新频率：六十秒
  */ 
-function renderFinance(){
-	var content="";
+function renderFinance() {
+	var content = "";
+	//要求jQuery支持跨域访问
+	jQuery.support.cors = true;
+
 	$.ajax({
 		url: 'http://www.moneyhub.cn/fininfo/getinfo.php?debug=1',
 		type: 'GET',
@@ -938,15 +927,10 @@ function renderFinance(){
 		timeout: 3000,
 		error: function(xml, textStatus, errorThrown) {
 			//加入事件
-			if ($("#r_event").html().length==0) {
-				content+='<div id="" class="title_container"><div class="title_bg"><div class="title_img"><img src="images/icon1.png" alt="" border="0"/></div></div><div style="float:left;padding-left:0px;width:100%">';
-				content+="&nbsp;&nbsp;数据读取错误，请手动<a href='javascript:renderFinance()'>刷新</a>"
-				content+="</div></div>";
-				$("#r_event").empty().append(content);	
-			}
+			content = "&nbsp;&nbsp;数据读取错误，请手动<a href='javascript:renderFinance()'>刷新</a>"
+			$("#dFinance").html(content);	
 		},
 		success: function(xml) {
-			content += '<div id="" class="title_container"><div class="title_bg"><div class="title_img"><img src="images/icon1.png" alt="" border="0"/></div></div><div class="dFinance">';
 			var flag = 0;
 			var tdclass;
 			$(xml).find("fininfo").each(function(i){
@@ -969,38 +953,37 @@ function renderFinance(){
 					content += '</ul>';	
 				}
 			});
-			content+="</div></div>";
-			$("#r_event").empty().append(content);
+			$("#dFinance").html(content);
 		},
 		complete:function() {
-		   setTimeout("renderFinance()",60000); //定时器
+		   setTimeout("renderFinance()", 60000); //定时器
 		}
 	});
 }
 
 function changeFinanceName(strName){
 	var str="";
-	switch (strName){
+	switch (strName) {
 		case "沪指":
-		str="上证综指";
-		break;
+			str = "上证综指";
+			break;
 		case "深指":
-		str="深证成指";
-		break;
+			str = "深证成指";
+			break;
 		case "恒数":
-		str="恒生指数";
-		break;
+			str = "恒生指数";
+			break;
 		case "今日银价":
-		str="银价（美元/盎司）";
-		break;
+			str = "银价（美元/盎司）";
+			break;
 		case "今日金价":
-		str="金价（美元/盎司）";
-		break;
+			str = "金价（美元/盎司）";
+			break;
 		case "外汇":
-		str="人民币/美元中间价";
-		break;
+			str = "人民币/美元中间价";
+			break;
 		default:
-		str=strName;
+			str = strName;
 	}
 	return str;
 }
@@ -1010,93 +993,74 @@ function changeFinanceName(strName){
  * 显示模式：随机显示
  * 显示数量：十条
  * 刷新频率：十秒
- */    
+ */
+var allData = new Array();
+var currentData = new Array();
+    
 function renderAd(){
-	var test;
-	var content="";
-	var count=0;
-	var styleTab="";
-	var allPage=0;
-	var curPage=0;
-	var pageNumber=3;
-	if (test != "") {
-		content+= '<div id="tabs1" class="title_container1">';
-		content+='<span class="finantechad_bg"><div class="title_bg"><div class="title_img"><img src="images/icon2.png" alt="" border="0"/></div></div>';
-		content+= '<ul class="finantechad_ul">';
-		//$("#finatech_ad").ajaxStart(function(){
-		/*
-		$.ajaxStart(function(){
-			content+="数据正在读取中，请耐心等候";
-			alert(content);
-			$("#finatech_ad").empty().append(content);
-			
-		});
-		*/
-		//$("#finatech_ad").ajax({
-		$.ajax({
-			//url: 'http://www.moneyhub.cn/banksite/getfinprod.php?debug=1&encode=0',
-			url: 'http://www.moneyhub.cn/banksite/fincontent.xml',
-			type: 'GET',
-			dataType: 'xml',
-			cache:false,
-			timeout: 10000,
-			error: function(xml){
-				//加入事件
-				//alert("1");
-				if ($("#finatech_ad").html().length==0) {
-					content+="数据读取错误，请手动<a href='javascript:renderAd()'>刷新</a>"
-					//alert(errorContent);
-					$("#finatech_ad").empty().append(content);
-				}
-				
-			},
-			success: function(xml){
-				$(xml).find("finprod").each(function(i){
-						//if (i < 10) {
-							content += '<li><img src="images/dian.gif" alt="" width="4" height="4" style="padding-right:8px;"/>';
-							var url = xorDecoding($(this).children("url").text());
-							//alert(url);
-							var test = "http://www.icbc.com.cn/icbc/";
-							if(url.replace(/\s*$/, "") == test ){
-								content += '<a onclick="javascript:if(confirm(\'查看该理财产品详情需要登录网银\')) window.open(\''+url+'\')">';	
-							} else {
-								content += '<a onclick="javascript:window.open(\''+url+'\')">';	
-							}
-							content += $(this).children("bank").text() + $(this).children("desc").text().substring(0,20) + '，';
-							content += '年化收益率<font color="red">'+$(this).children("interest").text()+'%</font>，';
-							content += '理财期限'+$(this).children("duration").text()+'天，';
-							content += '认购截止日'+$(this).children("enddate").text();
-							content += '</a></li>';
-						/*
-						} else {
-							return false;
-						}
-						*/
-						
-				});
-				content+="</ul></span>";
-				//alert(content);
-				$("#finatech_ad").empty().append(content);
-				
-				$("#finatech_ad li").mouseover(function(){
-				});
+	//要求jQuery支持跨域访问
+	jQuery.support.cors = true;
 
-                $("#finatech_ad li").mouseout(function(){
-				});
-				
-			},
-			complete:function() {
-				//renderadSet = setTimeout("renderAd()",10000); //定时器
-			}
-		});
-		$.ajaxStart(function(){
-			content+="数据正在读取中，请耐心等候";
-			//alert(Content);
-			$("#finatech_ad").empty().append(content);
-			
-		});
-	} else {
+	var content = "";
+	var count = 0;
+	var styleTab = "";
+	var allPage = 0;
+	var curPage = 0;
+	var pageNumber = 3;
+	$.ajax({
+		url: 'http://www.moneyhub.cn/banksite/fincontent.xml',
+		type: 'GET',
+		dataType: 'xml',
+		cache:false,
+		timeout: 10000,
+		error: function(xml){
+			//加入事件
+			content = "数据读取错误，请手动<a href='javascript:renderAd()'>刷新</a>"
+			$("#finantechad_ul").html(content);
+		},
+		success: function(xml){
+			$(xml).find("finprod").each(function(i){
+				var tempData = [];
+				tempData.push($(this).children("id").text());
+				tempData.push(trimStr($(this).children("bank").text()));
+				tempData.push($(this).children("desc").text());
+				tempData.push($(this).children("startdate").text());
+				tempData.push($(this).children("enddate").text());
+				tempData.push($(this).children("interest").text());
+				tempData.push($(this).children("duration").text());
+				tempData.push(xorDecoding($(this).children("url").text()));
+				tempData.push($(this).children("currency").text());
+				tempData.push($(this).children("descInfo").text());
+				allData.push(tempData);
+			});
+			renderAdData();
+		},
+		complete: function() {
+		}
+	});
+}
+
+function renderAdData() {
+	var content = "";
+	for (var i=0; i<allData.length; i++) {
+		content += '<li id=xmlData_' + allData[i][0] + '><img src="images/dian.gif" alt="" width="4" height="4" style="padding-right:8px;"/>';
+		var url = allData[i][7];
+		var test = "http://www.icbc.com.cn/icbc/";
+		if (url.replace(/\s*$/, "") == test ) {
+			content += '<a onclick="javascript:if(confirm(\'查看该理财产品详情需要登录网银\')) window.open(\''+url+'\')">';	
+		} else {
+			content += '<a onclick="javascript:window.open(\''+url+'\')">';	
+		}
+		content += allData[i][1] + allData[i][2].substring(0,20).replace(/\(推广\)/, "<font color='#ED96A7'>$&</font>") + '，';
+		content += '年化收益率<font color="red">'+allData[i][5]+'%</font>，';
+		content += '理财期限'+allData[i][6]+'天，';
+		content += '认购截止日'+allData[i][4];
+		content += '</a></li>';
 	}
+	$("#finantechad_ul").html(content);
+	createDefaultBank();
+	getUserChoice();
+	getMySelectData();
 }
 
 /*
@@ -1266,8 +1230,477 @@ function xorDecoding(_str) {
 
 function debug(string){
 	try{
-		window.external.WriteLog(string);
+		window.external.WriteLog(string+"\n");
 	}catch(e){
 		
 	}
 }
+
+//移除空格
+function trimStr(str) { 
+	var re = /\s*(\S[^\0]*\S)\s*/; 
+	re.exec(str); 
+	return RegExp.$1; 
+}
+
+/* 
+ * 以下为理财产品的相关代码，性能可能会有问题
+ */
+
+function getUserChoice(){
+	try{
+	var select = "select interestchoice as c1, durationchoice as c2, currencychoice as c3, bankchoice as c4 from tbProductChoice where id = 0";
+	var result = JSON.parse(window.external.QuerySQL(select));
+	for(var a = 1; a < defaultInterest.length;a++){
+		defaultInterest[a].splice(3,1,0);
+	}
+	if(result[0].c1!=""){
+		var c1array =result[0].c1.split("|");
+		for(var i=0;i<c1array.length;i++){
+			defaultInterest[c1array[i]].splice(3,1,1);
+		}	
+	}
+	for(var a = 1; a < defaultDuration.length;a++){
+		defaultDuration[a].splice(3,1,0);
+	}
+	if(result[0].c2!=""){
+		var c2array =result[0].c2.split("|");
+		for(var i=0;i<c2array.length;i++){
+			defaultDuration[c2array[i]].splice(3,1,1); 
+		}	
+	}
+	for(var a = 1; a < defaultCurrency.length;a++){
+		defaultCurrency[a].splice(2,1,0);
+	}
+	if(result[0].c3!=""){
+		var c3array =result[0].c3.split("|");
+		for(var i=0;i<c3array.length;i++){
+			defaultCurrency[c3array[i]].splice(2,1,1); 
+		}
+	}
+	for(var a = 1; a < defaultBank.length;a++){
+		defaultBank[a].splice(2,1,0);
+	}
+	if(result[0].c4!=""){
+		var c4array =result[0].c4.split("|");
+		for(var i=0;i<c4array.length;i++){
+			defaultBank[c4array[i]].splice(2,1,1); 
+		}
+	}
+	} catch(e){
+		alert(e.message);
+	}	
+}
+
+
+var defaultInterest=[
+	["预期收益率",0,0,0],
+	//["全选",0,100,1],
+	["3%以下",0,3,0],
+	["3%到5%",3,5,0],
+	["5%到10%",5,10,0],
+	["10%以上",10,100,0]
+];
+
+/*
+ * param1 名称；
+ * param2，3 区间
+ * param4 是否被选择 0 未选择,1已选择
+ */
+
+var defaultDuration=[
+	["理财期限",0,0,0],
+	//["全选",0,-1,1],
+	["1月内",1,30,0],
+	["1-3个月",30,90,0],
+	["3-6个月",90,180,0],
+	["6-12个月",180,365,0],
+	["1-2年",365,730,0],
+	["2年以上",730,10000,0]
+];
+
+/*
+ * param1 名称；
+ * param2，3 区间
+ * param4 是否被选择 0 未选择,1已选择
+ */
+
+var defaultCurrency=[
+	["币种","test",0],
+	["人民币","人民币",0],
+	["其他币种","其他币种",0]
+];
+
+/*
+ * param1 名称；
+ * param2 区间
+ * param3 是否被选择 0 未选择,1已选择
+ */
+
+//var defaultBank= [["银行","",1],["全选","",1]];
+var defaultBank= [["银行","",0]];
+
+function createDefaultBank(){
+	result=window.external.QuerySQL("select name as bankName,id from sysBank where classId=0", "SysDB")
+	result = JSON.parse(result);
+	$.each(result, function(i,n) {
+		var temp=new Array();
+		if(n.bankName=="光大银行") temp.push("中国光大银行"); 
+		else if(n.bankName=="民生银行") temp.push("中国民生银行");
+		else temp.push(n.bankName);
+		temp.push(n.id);
+	  	temp.push(0);
+	  	defaultBank.push(temp);
+	});
+}
+
+function getMySelectData() {
+	//alert("执行保存");
+	//saveUserChoice();
+	//将四个集合分开处理
+	arrayLength = allData.length;
+	//获取条件数组
+	try {
+		var interestCondition = new Array();
+		//alert(defaultInterest.length);
+		//alert(defaultInterest);
+		for(var i=1;i<defaultInterest.length;i++){
+			if(defaultInterest[i][3]==1){
+				//选择了这个条件
+				var tempLength=interestCondition.length; 
+				if(interestCondition[tempLength-1]==defaultInterest[i][1]){
+					//删除最后一个
+					interestCondition.pop();
+					interestCondition.push(defaultInterest[i][2]);	
+				} else {
+					interestCondition.push(defaultInterest[i][1]);
+					interestCondition.push(defaultInterest[i][2]);
+				}
+			}
+		}
+		//alert(interestCondition);
+		var durationCondition = new Array();
+		for(var i=1;i<defaultDuration.length;i++){
+			if(defaultDuration[i][3]==1){
+				//选择了这个条件
+				var tempLength=durationCondition.length; 
+				if(durationCondition[tempLength-1]==defaultDuration[i][1]){
+					//删除最后一个
+					durationCondition.pop();
+					durationCondition.push(defaultDuration[i][2]);	
+				} else {
+					durationCondition.push(defaultDuration[i][1]);
+					durationCondition.push(defaultDuration[i][2]);
+				}
+			}
+		}
+		//alert(durationCondition);
+		var currencyCondition = new Array();
+		for(var i=1;i<defaultCurrency.length;i++){
+			if(defaultCurrency[i][2]==1){
+				//选择了这个条件
+				currencyCondition.push(defaultCurrency[i][1]);
+			}
+		}
+		//alert(currencyCondition);
+		var bankCondition = new Array();
+		for(var i=1;i<defaultBank.length;i++){
+			if(defaultBank[i][2]==1){
+				//选择了这个条件
+				bankCondition.push(defaultBank[i][0]);
+			}
+		}
+		//alert(bankCondition);
+	} catch(e){
+		alert(e.message);
+	}
+	try{
+	//生成年化收益率数组
+	arrayInterest = new Array();
+	for(var i=0;i<allData.length;i++){
+		for(var j=0;j<interestCondition.length;){
+			if(interestCondition[j]<=allData[i][5]&&allData[i][5]<interestCondition[j+1]){
+				//将ID存入，终止循环
+				arrayInterest.push(allData[i][0]);
+				break;
+			} else {
+				j=j+2;
+			}
+		}	
+	}
+	
+	//生成投资期限数组
+	arrayDuration = new Array();
+	for(var i=0;i<allData.length;i++){
+		for(var j=0;j<durationCondition.length;){
+			if(durationCondition[j]<=allData[i][6]&&allData[i][6]<durationCondition[j+1]){
+				//将ID存入，终止循环
+				arrayDuration.push(allData[i][0]);
+				break;
+			} else {
+				j=j+2;
+			}
+		}	
+	}
+	
+	//生成币种数组
+	arrayCurrency = new Array();
+	currencyTempLength=currencyCondition.length;
+	isRMB=false;
+	if(currencyTempLength==2){
+		for(var i=0;i<allData.length;i++){
+			arrayCurrency.push(allData[i][0]);
+		}
+	} else if(currencyTempLength==1){
+		if(currencyCondition[0]==defaultCurrency[1][0]) isRMB = true;
+		for(var i=0;i<allData.length;i++){
+			if(isRMB){
+				if(allData[i][8] == defaultCurrency[1][0]) arrayCurrency.push(allData[i][0]);
+			} else {
+				if(allData[i][8] != defaultCurrency[1][0]) arrayCurrency.push(allData[i][0]);
+			}
+		}
+	}
+	
+	//生车银行数组
+	arrayBank = new Array();
+	for (var i=0;i<allData.length;i++) {
+		for(var j=0;j<bankCondition.length;j++){
+			if(bankCondition[j]==allData[i][1] ){
+				//将ID存入，终止循环
+				arrayBank.push(allData[i][0]);
+				break;
+			}
+		}	
+	}
+	if(interestCondition.length == 0 || currencyCondition.length == 0 || durationCondition.length == 0 || bankCondition.length == 0 ){
+		//有条件为不选择
+		var newData = new Array();
+		renderNewData(newData);
+	} else {
+		var nowConditionArray = new Array();
+		var newData = new Array();
+		if(interestCondition.length>0){
+			nowConditionArray.push(arrayInterest);
+			//合并数组
+			newData = arrayInterest.sort(sortNumber);
+		} 
+		if(durationCondition.length>0){
+			nowConditionArray.push(arrayDuration);
+			if(newData.length>0){
+				//合并数组
+				newData= getNewData(newData,arrayDuration.sort(sortNumber));
+			}
+		}
+		if(currencyCondition.length>0){
+			nowConditionArray.push(arrayCurrency);
+			if(newData.length>0){
+				//合并数组
+				newData= getNewData(newData,arrayCurrency.sort(sortNumber));
+			}
+		}
+		if(bankCondition.length>0){
+			nowConditionArray.push(arrayBank);
+			if(newData.length>0){
+				//合并数组
+				newData= getNewData(newData,arrayBank.sort(sortNumber));
+			}
+		}
+		renderNewData(newData);	
+	}
+	}catch(e){
+		alert(e.message);
+	}
+}
+
+function renderNewData(a){
+	try{
+		for(var i=0;i<allData.length;i++){
+			var isShow = false;
+			for(var j=0; j<a.length;j++){
+				if(allData[i][0]==a[j]){
+					isShow = true;
+					break;	
+				}
+			}
+			if(isShow){
+				//此部分处理显示的样式
+				$("#xmlData_"+allData[i][0]).show(); 
+			} else {
+				$("#xmlData_"+allData[i][0]).hide();
+			}
+		}
+	} catch(e){
+		alert(e.message);
+	}
+	
+}
+
+function getNewData(a,b){
+	try{
+		var c = new Array();
+		var i = 0;
+		var j = 0;
+		
+		for(i=0;i<a.length;i++){
+			for(j=0;j<b.length;j++){
+				if(a[i]==b[j]){
+					c.push(a[i]);
+					break;
+				}
+			}
+		}
+	}catch(e){
+		//alert("1::"+e.message);
+	}
+	return c;
+}
+
+function sortNumber(a, b){
+	return a - b
+}
+
+function TabActivated() {
+	var ConditionChange = -1;
+	ConditionChange = window.external.GetParameter("ConditionChange");
+	window.external.SetParameter("ConditionChange", "-1");
+	if ((ConditionChange != undefined) && (ConditionChange != "-1")) {
+		getUserChoice();
+		getMySelectData();
+	}
+}
+
+
+
+
+/** 获取饼图数据
+ * @param startDate 开始日期
+ * @param endDate 结束日期
+ * @param during 按周还是按月
+ * @param curStyle   
+ */
+function getXML(startDate, endDate, during, curStyle){
+	var xmlStr = "";
+	try {
+		xmlStr = window.external.GetXMLData(startDate, endDate, during, curStyle);
+	} catch (e) {
+		xmlStr="";
+		xmlStr += '<chart>';
+			xmlStr += '<set seriesName="保险费" value="25" />';
+		  	xmlStr += '<set seriesName="待报销" value="75" />';
+		xmlStr += '</chart>';
+		xmlStr += '<chart>';
+		    xmlStr += '<set seriesName="其它收入" value="100" />';
+		xmlStr += '</chart>';
+		xmlStr += '<chart>';
+		if (during != "month") {
+		    xmlStr += '<set seriesName="支出" value="67" />';
+		    xmlStr += '<set seriesName="收入" value="33" />';
+		} else {
+		    xmlStr += '<set seriesName="支出" value="20" />';
+		    xmlStr += '<set seriesName="收入" value="80" />';
+		}
+		xmlStr += '</chart>';
+		xmlStr += '<chart>';
+		    xmlStr += '<set seriesName="保险费" value="1000.00" />';
+		    xmlStr += '<set seriesName="待报销" value="3000.00" />';
+		xmlStr += '</chart>';
+		xmlStr += '<chart>';
+		    xmlStr += '<set seriesName="其它收入" value="2000.00" />';
+		xmlStr += '</chart>';
+		xmlStr += '<chart>';
+		    xmlStr += '<set seriesName="支出" value="4000.00" />';
+		    xmlStr += '<set seriesName="收入" value="2000.00" />';
+		xmlStr += '</chart>';
+	}
+	return xmlStr;
+}
+
+
+
+/** 从xml字符串得到xml对象
+ * @param {} data 传入的xml字符串
+ * @return {} xml 得到的xml对象
+ */
+function getXMLInstance(data)   
+{
+    var xml;
+    if($.browser.msie){
+        xml = new ActiveXObject("Microsoft.XMLDOM");
+        xml.async = false;
+        xml.loadXML(data);
+    }else{
+        xml = new DOMParser().parseFromString(data, "text/xml");
+    }
+    return xml;
+}
+
+
+//登录前首页左下角显示
+function beforeLogin(){
+$("#beforelogin").show();
+$("#afterlogin").hide();
+//$("#beforelogin").css("display","inline");
+//$("#afterlogin").css("display","none");
+}
+
+
+//登录后首页左下角显示
+function afterLogin(){
+	try{
+		var getValue="0.00"; //总收入
+		var outValue="0.00";   // 总支出
+		var assetsValue="0.00";  // 总资产
+		var debtValue="0.00";     // 总负债
+		var startdate="";
+		var enddate="";
+		var now=new Date();
+		var year=now.getYear();
+		var month=now.getMonth()+1;
+		var xmlStr1="";
+		var xmlStr2="";
+		startdate=year+"-"+month+"-01";
+		enddate=year+"-"+month+"-31"
+		xmlStr1=getXML(startdate, enddate, "month", "Pie");
+		xmlStr1 = xmlStr1.replace(/<chart>/g,"");
+		xmlStr1 = xmlStr1.replace(/<\/chart>/g,"");
+		xmlStr1 = '<?xml version="1.0" encoding="utf-8" ?><test>' + xmlStr1 + '</test>';
+		xmlStr1 = getXMLInstance(xmlStr1);
+		$(xmlStr1).find("set").each(function(i){
+		if (i == 6) {
+					outValue = $(this).attr("value");
+					//保留两位
+					outValue = outValue.substring(0,outValue.indexOf(".")+3);  
+				}
+		if (i == 7) {
+					getValue = $(this).attr("value");
+					getValue = getValue.substring(0,getValue.indexOf(".")+3);
+				} 
+			}); 					
+		xmlStr2 = getXML(startdate, enddate, "month", "newPie");	
+		xmlStr2 = xmlStr2.replace(/<chart>/g,"");
+		xmlStr2 = xmlStr2.replace(/<\/chart>/g,"");
+		xmlStr2 = '<?xml version="1.0" encoding="utf-8" ?><test>' + xmlStr2 + '</test>';
+		xmlStr2 = getXMLInstance(xmlStr2);
+		$(xmlStr2).find("set").each(function(i){
+		if (i == 8) {
+					assetsValue = $(this).attr("value");
+					assetsValue = assetsValue.substring(0,assetsValue.indexOf(".")+3);  
+				}
+		if (i == 9) {
+					debtValue = $(this).attr("value");
+					debtValue = debtValue.substring(0,debtValue.indexOf(".")+3);
+				} 
+			});
+		$("#number3").html(getValue);		
+		$("#number4").html(outValue);
+		$("#number2").html(debtValue);
+		$("#number1").html(assetsValue);
+		$("#beforelogin").hide();
+		$("#afterlogin").show();
+	
+	}catch(e){
+		alert("catch语句");
+		}
+	
+	}

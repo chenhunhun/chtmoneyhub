@@ -117,7 +117,7 @@ int main (int argc, char *argv[])
 		char module_path[MAX_PATH + 1];
 		GetModuleFileNameA(NULL, module_path, MAX_PATH);
 		*(strrchr(module_path, '\\') + 1) = 0;
-		strcat_s(module_path,261, "Authen.chk");
+		strcat_s(module_path,261, "Authen.mchk");
 
 		FILE* fp;
 		fopen_s(&fp,module_path, "wb");

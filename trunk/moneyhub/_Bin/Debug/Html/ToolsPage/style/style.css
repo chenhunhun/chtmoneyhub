@@ -71,7 +71,7 @@ a.more:hover{text-decoration:underline}
 
 .evt_ly{height:259px; width:398px; overflow:hidden; position:absolute; top:30%; left:50%; margin-left:-200px; z-index:200;}
 .evtlybg{height:259px; width:398px; position:absolute; top:0; left:0; z-index:100;background:url(../images/eventbg.png) no-repeat;_background:none;_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/eventbg.png',sizingMethod='crop');}
-.evtct{ height:240px; width:378px; position:absolute; top:2px; left:10px;z-index:200;}
+.evtct{ height:240px; width:384px; position:absolute; top:2px; left:10px;z-index:200;}
 
 .evt_edit{margin:16px 0 0 18px; height:184px;}
 .evt_edit dt{ float:left; clear:both; height:24px; width:54px; line-height:24px; margin-bottom:10px;color:#3e637c; font-weight:bold;white-space:nowrap ;}
@@ -80,8 +80,6 @@ a.more:hover{text-decoration:underline}
 .dateselect{ line-height:24px; color:#3e637c; text-indent:8px; background:url(../images/minic.gif) right center no-repeat; width:198px; padding-right:20px; cursor:pointer;}
 .evt_text{ background:url(../images/inputbg.gif) right 0 no-repeat; width:277px;}
 .evt_text input{border:none; padding-left:6px; color:#3e637c;padding-top:2px; background:none; height:20px; line-height:20px;width:270px;}
-.radio li{ float:left; background:url(../images/radio.gif) 0 center no-repeat; padding-left:18px; margin-right:6px; cursor:pointer;}
-.radio li.cur{background:url(../images/radioed.gif) 0 center no-repeat;}
 .remindday{ background:url(../images/area.gif) no-repeat; float:left;cursor:pointer;height:24px; width:44px; margin-right:4px; text-align:center; position:relative;}
 .remindday .uparrow,.remindday .downarrow{ float:right;height:12px; width:24px;background:url(../images/up.gif) no-repeat right 0; border:none; cursor:pointer; position:absolute; right:0;top:0;}
 .remindday .downarrow{background:url(../images/down.gif) no-repeat right 0; position:absolute; right:0;top:12px;}

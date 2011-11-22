@@ -169,7 +169,7 @@ NTSTATUS CreateDevice (
 #pragma PAGEDCODE
 VOID DDKUnload (IN PDRIVER_OBJECT pDriverObject) 
 {
-	::KeWaitForSingleObject(&g_DispatchMutex,Executive,KernelMode,FALSE,NULL);
+	//::KeWaitForSingleObject(&g_DispatchMutex,Executive,KernelMode,FALSE,NULL);
 	KdPrint(("==> DriverUnload\n"));
 	
 	// 取消进程回调
@@ -187,7 +187,7 @@ VOID DDKUnload (IN PDRIVER_OBJECT pDriverObject)
 	WriteSysLog(LOG_TYPE_DEBUG,L" ClearBlackCache");
 
 	LogUninitialize();
-	::KeReleaseMutex(&g_DispatchMutex,FALSE);
+	//::KeReleaseMutex(&g_DispatchMutex,FALSE);
 
 	while(g_HookCounter>0)
 	{
