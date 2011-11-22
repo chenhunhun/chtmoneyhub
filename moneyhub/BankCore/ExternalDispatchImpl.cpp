@@ -60,8 +60,10 @@
 #define CMD_USER_AUTO_LOAD		L"AutoLoad" // 自动登录
 #define CMD_SHELL_EXPLORER		L"ShellExplorer" // 跳转到网页
 #define CMD_CHANGE_WINDOW_NAME	L"ChangeWindowName"
-#define CMD_CHANGE_MAIL_PWD		L"ChangeMailOrPwd"
-#define CMD_GET_CUR_USERID		L"GetCurrentUserID"
+#define CMD_CHANGE_MAIL_PWD		L"ChangeMailOrPwd" // 修改邮箱或密码
+#define CMD_GET_CUR_USERID		L"GetCurrentUserID" // 获取当前登录用户的USID，未登录时返回“Guest”
+#define CMD_SET_GUIDE_INFO_PM	L"SetRegGuideInfoParam" // 设置注册向导是否提示参数
+#define CMD_GET_CUR_USERSTATUS	L"GetCurrentSettingStatus" // 获取用户设置的状态（密码，邮箱，）
 
 #define CMD_SHOWWAITWINDOW		L"ShowWaitWindow"
 
@@ -114,6 +116,8 @@
 #define DISPID_CHANGE_WIN_NAME	12434
 #define DISPID_CHANGE_MIAL_PWD	12435
 #define DISPID_GET_CUR_USERID	12436
+#define DISPID_SET_GUIDE_INFO	12437
+#define DISPID_GET_CUR_STATUS	12438
 
 #define DISPID_GET_BILL_LIST	12500
 
@@ -325,6 +329,14 @@ STDMETHODIMP CExternalDispatchImpl::GetIDsOfNames(REFIID riid, LPOLESTR *rgszNam
 		else if(CSTR_EQUAL == CompareString(lcid, NORM_IGNORECASE | NORM_IGNOREWIDTH, CMD_GET_CUR_USERID, -1, (TCHAR *)rgszNames[i], -1))
 		{
 			rgDispId[i] = DISPID_GET_CUR_USERID;
+		}
+		else if(CSTR_EQUAL == CompareString(lcid, NORM_IGNORECASE | NORM_IGNOREWIDTH, CMD_SET_GUIDE_INFO_PM, -1, (TCHAR *)rgszNames[i], -1))
+		{
+			rgDispId[i] = DISPID_SET_GUIDE_INFO;
+		}
+		else if(CSTR_EQUAL == CompareString(lcid, NORM_IGNORECASE | NORM_IGNOREWIDTH, CMD_GET_CUR_USERSTATUS, -1, (TCHAR *)rgszNames[i], -1))
+		{
+			rgDispId[i] = DISPID_GET_CUR_STATUS;
 		}
 		else if (CSTR_EQUAL == CompareString(lcid, NORM_IGNORECASE | NORM_IGNOREWIDTH, CMD_GET_BILL_LIST, -1, (TCHAR *)rgszNames[i], -1))
 		{
@@ -995,19 +1007,16 @@ STDMETHODIMP CExternalDispatchImpl::Invoke(DISPID dispIdMember, REFIID riid, LCI
 			string strPassword = OLE2A(pDispParams->rgvarg[1].bstrVal);
 			string strMail = OLE2A(pDispParams->rgvarg[2].bstrVal);
 
-			//string hid = "xml=gaohuitai2006@163.com#kekValue#33351731445934782129#0L5lgKrJ8NdSpe5qgEpKp6GyKskHJ%2FvK#";
-
-
+			// 加密生成KEK
 			char pKek[33] = {0};
-			//memset(pOut, 0, strPassword.length() + 1];
-			UserKekPack((unsigned char*)strPassword.c_str(), strPassword.length(), (unsigned char*)pKek); // 加密生成KEK
+			UserKekPack((unsigned char*)strPassword.c_str(), strPassword.length(), (unsigned char*)pKek);
 			string strTp;
 			FormatHEXString(pKek, 32, strTp);
 
+			// 构造发送到服务器端的参数
 			string strParam = "xml=" + strMail + MY_PARAM_END_TAG;
-			strParam += strTp;//strTp
+			strParam += strTp;
 			strParam += MY_PARAM_END_TAG;
-
 
 			string strHWID = GenHWID2();
 			wstring wstrHWID = CA2W(strHWID.c_str());
@@ -1019,16 +1028,18 @@ STDMETHODIMP CExternalDispatchImpl::Invoke(DISPID dispIdMember, REFIID riid, LCI
 			strParam += strHWID;
 			strParam += MY_PARAM_END_TAG;
 
-			CDownloadThread downloadThread;
-			downloadThread.DownLoadInit(wstrHWID.c_str(), L"http://moneyhub.ft.com/server/manu_log_on.php", (LPSTR)strParam.c_str());
 			char chTemp[1024] = {0};
 			DWORD dwRead = 0;
 			string strSub;
+			CDownloadThread downloadThread;
+			downloadThread.DownLoadInit(wstrHWID.c_str(), L"http://moneyhub.ft.com/server/manu_log_on.php", (LPSTR)strParam.c_str());
 			int nBackVal = downloadThread.ReadDataFromSever(chTemp, 1024, &dwRead);
 			if (ERR_SUCCESS != nBackVal)
 			{
 				CRecordProgram::GetInstance()->FeedbackError(MY_PRO_NAME, MY_THREAD_IE_EXTERNEL, CRecordProgram::GetInstance()->GetRecordInfo(L"手动通讯时与服务器通信失败:%d",nBackVal));
-				// 用本地登录进行登录
+
+				ExcuteLocalLoad(strMail.c_str(), (unsigned char* )pKek, 32);
+				
 			}
 
 			//if () 如果为41，成功，如果43，已经存在
@@ -1055,70 +1066,75 @@ STDMETHODIMP CExternalDispatchImpl::Invoke(DISPID dispIdMember, REFIID riid, LCI
 				string strBack = CBankData::GetInstance()->QuerySQL(strSQL, "DataDB");
 				if (strBack.find(strUserID) == string::npos) // 不存在
 				{
-					string strSQL = "insert into datUserInfo(userid, mail, edek) values ('";
-					strSQL += strUserID;
-					strSQL += "','";
-
-					strSQL += strMail;
-
-					strSQL += "','";
-					strSQL += strEDEK;
-
-					strSQL += "')";
+					string strSubSQL = "insert into datUserInfo(userid, mail, edek) values ('";
+					strSubSQL += strUserID;
+					strSubSQL += "','";
+					strSubSQL += strMail;
+					strSubSQL += "','";
+					strSubSQL += strEDEK;
+					strSubSQL += "')";
 
 					// 新加一条记录到DataDB中
-					CBankData::GetInstance()->ExecuteSQL(strSQL, "DataDB");
+					CBankData::GetInstance()->ExecuteSQL(strSubSQL, "DataDB");
 				}
+
+
+				// 检验当前用户是否是自动登录用户，如果是，则更新stoken，否则不更新
+				strSQL = "select userid from datUserInfo where userid = '";
+				strSQL += strUserID;
+				strSQL += "' and autoload = 1";
+				string strQueryVal = CBankData::GetInstance()->QuerySQL(strSQL, "DataDB");
 
 				strSQL = "update  datUserInfo set edek = '";
 				strSQL += strEDEK;
-
-				strSQL += "', stoken = '";
-				strSQL += strStoken;
-	
+				if (strQueryVal.find(strUserID) != string::npos)
+				{
+					strSQL += "', stoken = '";
+					strSQL += strStoken;
+				}
 				strSQL += "', mail = '";
 				strSQL += strMail;
 				strSQL += "'";
-
 				if (strAutoLoad == "true")
 				{
+					// 将以前设置的自动登录覆盖
+					string strSubSQL = "update datUserInfo set autoload = 0 where autoload = 1";
+					CBankData::GetInstance()->ExecuteSQL(strSubSQL, "DataDB");
+
 					strSQL += ",autoload = 1";
 				}
-
 				strSQL += " where userid = '";
 				strSQL += strUserID;
-
 				strSQL += "'";
 
 				// 记录mail,EDEK到DataDB.dat中
 				CBankData::GetInstance()->ExecuteSQL(strSQL, "DataDB");
 
-				//strSub.clear(); // 成功时不返回任何数据给JS
-
-
 				char edekVal[33] = {0};
 				char keyVal[USER_DB_PWD_LEN + 1] = {0};
 				int nBack = 0;
-
 				// 将十六进制符串变成十进制数据
 				FormatDecVal(strEDEK.c_str(), edekVal, nBack);
 
 				// 将EDEK进行解密
 				UserEdekUnPack((unsigned char*)edekVal, 32, (unsigned char*)pKek, (unsigned char*)keyVal);
 
-				string strUserDb = strUserID + ".dat";
 				// 将该用户的库设置成当前数据库,并用密码打开
+				string strUserDb = strUserID + ".dat";
 				CBankData::GetInstance()->SetCurrentUserDB((LPSTR)strUserDb.c_str(), keyVal, USER_DB_PWD_LEN);
 
-
-				// 更改当前用户信息
+				// 更改当前用户信息(JS要使用USERID)
 				CBankData::GetInstance()->m_CurUserInfo.strstoken = strStoken;
 				CBankData::GetInstance()->m_CurUserInfo.strmail = strMail;
 				CBankData::GetInstance()->m_CurUserInfo.struserid = strUserID;
 
-				// 让主框架程序显示修登录的用户名
-				wstring wstr = CA2W(strMail.c_str());
-				::SendMessage(g_hMainFrame, WM_SETTEXT, WM_UPDATE_USER_STATUS, (LPARAM)wstr.c_str());
+				// 通知UI更新当前用户信息（同步在UI中要使用这些值）
+				string strMesParam = strStoken + MY_PARAM_END_TAG;
+				strMesParam += strMail;
+				strMesParam += MY_PARAM_END_TAG;
+				strMesParam += strUserID;
+				strMesParam += MY_PARAM_END_TAG;
+				::SendMessage(g_hMainFrame, WM_SETTEXT, WM_UPDATE_USER_STATUS, (LPARAM)strMesParam.c_str());
 
 			}
 
@@ -1183,8 +1199,6 @@ STDMETHODIMP CExternalDispatchImpl::Invoke(DISPID dispIdMember, REFIID riid, LCI
 			strParam += strHWID;
 			strParam += MY_PARAM_END_TAG;
 
-			//Base64Encode(pEDEK, 32, strParam);
-			//Base64Encode(strParam); // 做Base64编码
 
 			string strSend = "xml=" + strParam;
 
@@ -1202,7 +1216,6 @@ STDMETHODIMP CExternalDispatchImpl::Invoke(DISPID dispIdMember, REFIID riid, LCI
 			}
 			else
 			{
-				//if () 如果为41，成功，如果43，已经存在
 				string strRead = chTemp;
 				if (strRead.find(MY_PARAM_END_TAG) != string::npos)
 					strSub = strRead.substr(0, strRead.find(MY_PARAM_END_TAG));
@@ -1214,27 +1227,20 @@ STDMETHODIMP CExternalDispatchImpl::Invoke(DISPID dispIdMember, REFIID riid, LCI
 					strRead = strRead.substr(strRead.find(MY_PARAM_END_TAG) + strTag.length(), strRead.length());
 					string strUserID = strRead.substr(0, strRead.find(MY_PARAM_END_TAG));
 
-
-
 					string strSQL = "insert into datUserInfo(userid, mail, edek) values ('";
 					strSQL += strUserID;
 					strSQL += "','";
-
 					strSQL += strMail;
-
 					strSQL += "','";
 					strSQL += strTp;
-
 					strSQL += "')";
 
 					// 记录mail,EDEK到DataDB.dat中
 					CBankData::GetInstance()->ExecuteSQL(strSQL, "DataDB");
 
-					strMail = strMail.substr(0, strMail.find('.'));
-					strMail += ".dat";
-
 					// 创建一个新用户库,用DEK进行加密
-					CBankData::GetInstance()->CreateNewUserDB((LPSTR)strMail.c_str(), (LPSTR)chValue, USER_DB_PWD_LEN);	
+					string strUserDB = strUserID + ".dat";
+					CBankData::GetInstance()->CreateNewUserDB((LPSTR)strUserDB.c_str(), (LPSTR)chValue, USER_DB_PWD_LEN);	
 					CRecordProgram::GetInstance()->FeedbackError(MY_PRO_NAME, MY_THREAD_IE_EXTERNEL, L"用户注册成功！");
 
 				}
@@ -1264,18 +1270,14 @@ STDMETHODIMP CExternalDispatchImpl::Invoke(DISPID dispIdMember, REFIID riid, LCI
 
 			strParam += MY_PARAM_END_TAG;
 
-
-			string strTp;
-			// 格式化十六进制的字符串
-			FormatHEXString((char*)strParam.c_str(), strParam.length(), strTp);
-
-			string strMail = "xml=" + strTp;
+			string strSend = "xml=";
+			strSend += strParam;
 
 			wstring wstrHWID = CA2W(GenHWID2().c_str());
 			
 
 			CDownloadThread downloadThread;
-			downloadThread.DownLoadInit(wstrHWID.c_str(), L"http://moneyhub.ft.com/server/before_registration.php ", (LPSTR)strMail.c_str());
+			downloadThread.DownLoadInit(wstrHWID.c_str(), L"http://moneyhub.ft.com/server/before_registration.php ", (LPSTR)strSend.c_str());
 			char chTemp[256] = {0};
 			DWORD dwRead = 0;
 			string strSub;
@@ -1377,7 +1379,8 @@ STDMETHODIMP CExternalDispatchImpl::Invoke(DISPID dispIdMember, REFIID riid, LCI
 			string strSN = CSNManager::GetInstance()->GetSN();
 
 			string strSub,strTp;
-			std::string strParam = strUserID;
+			std::string strParam = "xml=";
+			strParam += strUserID;
 			if (strType == "password")
 			{
 				strParam += MY_PARAM_END_TAG;
@@ -1406,8 +1409,9 @@ STDMETHODIMP CExternalDispatchImpl::Invoke(DISPID dispIdMember, REFIID riid, LCI
 				UserEdekPack(chValue, USER_DB_PWD_LEN, (unsigned char *)pNewKek, (unsigned char*)pNewEDEK); // 将KEK加密生成EDEK
 
 				// 添加EDEK
-				FormatHEXString(pNewEDEK, 32, strTp);
-				strParam += strTp;
+				string strNewEDEK;
+				FormatHEXString(pNewEDEK, 32, strNewEDEK);
+				strParam += strNewEDEK;
 				strParam += MY_PARAM_END_TAG;
 
 				// 添加OldKek
@@ -1445,33 +1449,41 @@ STDMETHODIMP CExternalDispatchImpl::Invoke(DISPID dispIdMember, REFIID riid, LCI
 						strRead = strRead.substr(strRead.find(MY_PARAM_END_TAG) + strTag.length(), strRead.length());
 						string strStoken = strRead.substr(0, strRead.find(MY_PARAM_END_TAG));
 
-						strRead = strRead.substr(strRead.find(MY_PARAM_END_TAG) + strTag.length(), strRead.length());
-						string strEDEK = strRead.substr(0, strRead.find(MY_PARAM_END_TAG));
-						// 更新EDEK， stoken
-						string strSQL = "update  datUserInfo set edek = '";
-						strSQL += strEDEK;
-
-						strSQL += "', stoken = '";
-						strSQL += strStoken;
-						strSQL += "'";
-
-						strSQL += " where userid = '";
-						strSQL += strUserID;
-						strSQL += "'";
-
-						// 记录stoken,EDEK到DataDB.dat中
-						CBankData::GetInstance()->ExecuteSQL(strSQL, "DataDB");
+						//strRead = strRead.substr(strRead.find(MY_PARAM_END_TAG) + strTag.length(), strRead.length());
+						//string strEDEK = strRead.substr(0, strRead.find(MY_PARAM_END_TAG));
 
 						// 读取OldEDEK,解密出数据库密码
-						strSQL = "select edek from datUserInfo where userid = '";
+						string  strSQL = "select edek from datUserInfo where userid = '";
 						strSQL += strUserID;
 						strSQL += "'";
 						string strQueryVal = CBankData::GetInstance()->QuerySQL(strSQL, "DataDB");
-						string strFind = "userid\":\"";
+						string strFind = "edek\":\"";
 						if (strQueryVal.find(strFind) != string::npos)
 						{
 							strQueryVal = strQueryVal.substr(strQueryVal.find(strFind) + strFind.length(), strQueryVal.length());
 							strQueryVal = strQueryVal.substr(0, strQueryVal.find("\""));
+
+							// 检验当前用户是否是自动登录用户，如果是，则更新stoken，否则不更新
+							string  strSQL = "select userid from datUserInfo where userid = '";
+							strSQL += strUserID;
+							strSQL += "' and autoload = 1";
+							strQueryVal = CBankData::GetInstance()->QuerySQL(strSQL, "DataDB");
+
+							// 更新EDEK， stoken
+							strSQL = "update  datUserInfo set edek = '";
+							strSQL += strNewEDEK;
+							if (strQueryVal.find(strUserID) != string::npos)
+							{
+								strSQL += "', stoken = '";
+								strSQL += strStoken;
+							}
+							strSQL += "'";
+							strSQL += " where userid = '";
+							strSQL += strUserID;
+							strSQL += "'";
+
+							// 记录stoken,EDEK到DataDB.dat中
+							CBankData::GetInstance()->ExecuteSQL(strSQL, "DataDB");
 
 							char chOldEDEK[33] = {0};
 							char chOldPwd[USER_DB_PWD_LEN + 1] = {0};
@@ -1483,14 +1495,16 @@ STDMETHODIMP CExternalDispatchImpl::Invoke(DISPID dispIdMember, REFIID riid, LCI
 							// 将EDEK进行解密
 							UserEdekUnPack((unsigned char*)chOldEDEK, 32, (unsigned char*)pOldKek, (unsigned char*)chOldPwd);
 
-							string strUserDb = strUserID + ".dat";
-							// 将该用户的库设置成当前数据库,并用密码打开
-							//CBankData::GetInstance()->SetCurrentUserDB((LPSTR)strUserDb.c_str(), keyVal, USER_DB_PWD_LEN);
+							string strDBPath = strUserID + ".dat";
+							// 修改用户密码
+							CBankData::GetInstance()->ChangeUserDBPwd((LPSTR)strDBPath.c_str(), (char*)chOldPwd, USER_DB_PWD_LEN, (char*)chValue, USER_DB_PWD_LEN);
 						}
 
 					}
 					else // 退出当前登录，重返访客身份
-					{}
+					{
+						::SendMessage(g_hMainFrame, WM_USER_INFO_MENU_CLICKED, 0, MY_USER_INFO_MENU_CLICK_QUIT);
+					}
 				}
 
 			}
@@ -1540,20 +1554,40 @@ STDMETHODIMP CExternalDispatchImpl::Invoke(DISPID dispIdMember, REFIID riid, LCI
 						// 读取mail
 						string strTag = MY_PARAM_END_TAG;
 						strRead = strRead.substr(strRead.find(MY_PARAM_END_TAG) + strTag.length(), strRead.length());
-						string strNewMail = strRead.substr(0, strRead.find(MY_PARAM_END_TAG));
+						string strNewStoken = strRead.substr(0, strRead.find(MY_PARAM_END_TAG));
+
+
+						// 检验当前用户是否是自动登录用户，如果是，则更新stoken，否则不更新
+						string  strSQL = "select userid from datUserInfo where userid = '";
+						strSQL += strUserID;
+						strSQL += "' and autoload = 1";
+						string strQueryVal = CBankData::GetInstance()->QuerySQL(strSQL, "DataDB");
 
 						// 更新mail， stoken
-						string strSQL = "update  datUserInfo set mail = '";
-						strSQL += strNewMail;
-						strSQL += "'";
-
-						strSQL += " where userid = '";
+						strSQL = "update  datUserInfo set mail = '";
+						strSQL += strValue;
+						if (strSQL.find(strUserID) != string::npos)
+						{
+							strSQL += "', stoken = '";
+							strSQL += strNewStoken;
+						}
+						strSQL += "' where userid = '";
 						strSQL += strUserID;
-
 						strSQL += "'";
 
-						// 记录mail,EDEK到DataDB.dat中
+						// 记录mail,stoken到DataDB.dat中
 						CBankData::GetInstance()->ExecuteSQL(strSQL, "DataDB");
+
+
+						// 通知UI更新当前用户信息（同步在UI中要使用这些值）
+						string strMesParam = strNewStoken + MY_PARAM_END_TAG;
+						strMesParam += strValue;
+						strMesParam += MY_PARAM_END_TAG;
+						strMesParam += strUserID;
+						strMesParam += MY_PARAM_END_TAG;
+
+						// 更新UI显示登录用户
+						::SendMessage(g_hMainFrame, WM_SETTEXT, WM_UPDATE_USER_STATUS, (LPARAM)strMesParam.c_str());
 					}
 				}
 
@@ -1570,6 +1604,7 @@ STDMETHODIMP CExternalDispatchImpl::Invoke(DISPID dispIdMember, REFIID riid, LCI
 	}
 	else if (dispIdMember == DISPID_GET_CUR_USERID && (wFlags & DISPATCH_METHOD))
 	{
+		// 未登录时返回"Guest"
 		if (pVarResult != NULL)
 		{
 			string strUserID = CBankData::GetInstance()->m_CurUserInfo.struserid;
@@ -1579,6 +1614,34 @@ STDMETHODIMP CExternalDispatchImpl::Invoke(DISPID dispIdMember, REFIID riid, LCI
 		}
 		return S_OK;
 	}
+
+	else if (dispIdMember == DISPID_SET_GUIDE_INFO && (wFlags & DISPATCH_METHOD))
+	{
+		if(pDispParams->rgvarg[0].vt == VT_BSTR)
+		{
+			string strTp = OLE2A(pDispParams->rgvarg[0].bstrVal);
+			// 写入注册表
+			if (ERROR_SUCCESS == ::SHSetValueA(HKEY_LOCAL_MACHINE, REGEDIT_MONHUB_PATH,MONHUB_GUIDEINFO_KEY, REG_SZ, strTp.c_str(), strTp.length()))
+			{
+			}
+		}
+		return S_OK;
+	}
+	
+	else if (dispIdMember == DISPID_GET_CUR_STATUS && (wFlags & DISPATCH_METHOD))
+	{
+		if (pVarResult != NULL)
+		{
+			int nVal = CBankData::GetInstance()->m_CurUserInfo.emStatus;
+			// 返回参数值
+			pVarResult->vt = VT_BSTR;
+			CString strTemp;
+			strTemp.Format(L"%d", nVal);
+			pVarResult->bstrVal = ::SysAllocString((LPOLESTR)(LPCTSTR)strTemp);
+		}
+		return S_OK;
+	}
+
 
 	else if (dispIdMember == DISPID_GET_SIZE && (wFlags & DISPATCH_METHOD))
 	{
@@ -1782,6 +1845,52 @@ bool CExternalDispatchImpl::IsVista()
 	return ((bRet != FALSE) && (ovi.dwMajorVersion >= 6));
 }
 
+// 进行本地登录
+int CExternalDispatchImpl::ExcuteLocalLoad(const char* pMail, const unsigned char* pKek, int nLen)
+{
+	ATLASSERT(NULL != pMail && NULL != pKek);
+	if (NULL == pMail || NULL == pKek)
+		return 0;
+
+	// 读取OldEDEK,解密出数据库密码
+	string strSQL = "select userid, edek from datUserInfo where mail = '";
+	strSQL += pMail;
+	strSQL += "'";
+	string strQueryVal = CBankData::GetInstance()->QuerySQL(strSQL, "DataDB");
+	string strFind = "userid\":\"";
+	if (strQueryVal.find(strFind) == string::npos)
+		return 0;
+
+	strQueryVal = strQueryVal.substr(strQueryVal.find(strFind) + strFind.length(), strQueryVal.length());
+	string strUserID = strQueryVal.substr(0, strQueryVal.find("\""));
+
+	if (strUserID.length() <= 0)
+		return 0;
+
+	strFind = "edek\":\"";
+	if (strQueryVal.find(strFind) == string::npos)
+		return 0;
+
+	strQueryVal = strQueryVal.substr(strQueryVal.find(strFind) + strFind.length(), strQueryVal.length());
+	strQueryVal = strQueryVal.substr(0, strQueryVal.find("\""));
+
+	char chOldEDEK[33] = {0};
+	char chOldPwd[USER_DB_PWD_LEN + 1] = {0};
+
+	// 将十六进制符串变成十进制数据
+	int nBack = 0;
+	FormatDecVal(strQueryVal.c_str(), chOldEDEK, nBack);
+
+	// 将EDEK进行解密
+	UserEdekUnPack((unsigned char*)chOldEDEK, 32, (unsigned char*)pKek, (unsigned char*)chOldPwd);
+
+	strUserID += ".dat";
+	// 修改当前用户密码
+	bool bVal = CBankData::GetInstance()->SetCurrentUserDB((LPSTR)strUserID.c_str(), chOldPwd, USER_DB_PWD_LEN);
+
+	return bVal;
+}
+
 // Base64Encode
 //bool CExternalDispatchImpl::Base64Encode(char *pData, int nLen, string& strEncode)
 //{
@@ -1803,35 +1912,3 @@ bool CExternalDispatchImpl::IsVista()
 //	return true;
 //}
 
-// 格式化成十六进制字符串
-//bool FormatHEXString(char *pData, int nLen, string& strEncode)
-//{
-//	ATLASSERT (NULL != pData && nLen > 0);
-//	if (NULL == pData || nLen <= 0)
-//		return false;
-//	strEncode.clear();
-//
-//
-//	//int dwSize = nLen * 2 + 1;
-//	//unsigned char* pszOut = new unsigned char[dwSize];
-//	//base64_encode((LPBYTE)pData, nLen, pszOut, &dwSize);
-//
-//	for(int i = 0; i < nLen; i ++)
-//	{
-//		CString strTp;
-//		int nTemp = *(pData + i);
-//		if (nTemp < 0)
-//			nTemp += 256; // 取该字节的反码
-//
-//		strTp.Format(L"%02x", nTemp);
-//		strEncode += CW2A(strTp);
-//
-//
-//		// 根据PHP代码转换成C代码
-//		/*int nOrd = *(pData + i);
-//		strEncode += SingleDecToHex((nOrd - nOrd % 16) / 16);
-//    	strEncode += SingleDecToHex(nOrd % 16);*/
-//	}
-//
-//	return true;
-//}

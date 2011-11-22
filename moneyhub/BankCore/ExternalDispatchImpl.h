@@ -17,7 +17,6 @@
 class CAxControl;
 #include "windows.h"
 
-#define MY_PARAM_END_TAG		"#"
 
 class CExternalDispatchImpl : public IDispatch
 {
@@ -36,6 +35,10 @@ public :
 	STDMETHOD(GetTypeInfo)(UINT iTInfo, LCID lcid, ITypeInfo** ppTInfo);
 	STDMETHOD(GetIDsOfNames)(REFIID riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId);
 	STDMETHOD(Invoke)(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS  *pDispParams, VARIANT  *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr);
+
+private:
+	// 进行本地登录
+	int ExcuteLocalLoad(const char* pMail, const unsigned char* pKek, int nLen);
 
 private:
 	CAxControl* m_pAxControl;

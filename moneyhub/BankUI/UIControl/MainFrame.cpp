@@ -65,10 +65,22 @@ CMainFrame::~CMainFrame()
 
 LRESULT CMainFrame::UpdateUserLoadStatus(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL &/*bHandled*/)// 更新用户登录状态
 {
-	CString strTp = (LPCTSTR)lParam;
-	strTp.TrimRight();
+	// 参数是按stoken#mail#userid#发送过来
+	string strRead = (LPSTR)lParam;
 
-	if (strTp.IsEmpty())
+	// 更新UI中的登录用户信息(供同步使用)
+	string strTag = MY_PARAM_END_TAG;
+	//strRead = strRead.substr(strRead.find(MY_PARAM_END_TAG) + strTag.length(), strRead.length());
+	CBankData::GetInstance()->m_CurUserInfo.strstoken = strRead.substr(0, strRead.find(MY_PARAM_END_TAG));
+
+	strRead = strRead.substr(strRead.find(MY_PARAM_END_TAG) + strTag.length(), strRead.length());
+	string strMail = strRead.substr(0, strRead.find(MY_PARAM_END_TAG));
+	CBankData::GetInstance()->m_CurUserInfo.strmail = strMail;
+
+	strRead = strRead.substr(strRead.find(MY_PARAM_END_TAG) + strTag.length(), strRead.length());
+	CBankData::GetInstance()->m_CurUserInfo.struserid = strRead.substr(0, strRead.find(MY_PARAM_END_TAG));
+
+	if (strMail.length() == 0)
 		m_emLoad = emNotLoad;
 	else
 		m_emLoad = emNetLoaded;
@@ -98,8 +110,22 @@ LRESULT CMainFrame::UpdateUserLoadStatus(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
 		// 提醒按钮
 		pt.x = pt.x - m_AlarmButton.GetFullWidth() - 10;
 
-		m_pTextButton = new CTextButton(&m_tsm);
-		m_pTextButton->CreateButton(m_hWnd, strTp, TEXT_BTN_USER_NAME);
+		if (m_pTextButton != NULL)
+		{
+			wstring strText;
+			m_pTextButton->ReadButtonText(strText);
+			string strTpText = CW2A(strText.c_str());
+			if (strTpText != strMail)
+			{
+				delete m_pTextButton;
+				m_pTextButton = NULL;
+			}
+		}
+		if (m_pTextButton == NULL)
+		{
+			m_pTextButton = new CTextButton(&m_tsm);
+			m_pTextButton->CreateButton(m_hWnd, CA2W(strMail.c_str()), TEXT_BTN_USER_NAME);
+		}
 		// 文本按钮
 		pt.x = pt.x - m_pTextButton->GetTextButtonWidth() - 20;
 		pt.y = 49;
@@ -639,7 +665,8 @@ LRESULT CMainFrame::OnMyMenuClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPara
 	switch(nVal)
 	{
 	case 1:
-		OnHelpSetting(0, 0, 0, bHandled);
+		//OnHelpSetting(0, 0, 0, bHandled);
+		PostMessage(WM_SHOW_USER_DLG, 0, MY_TAG_SETTING_DLG);
 		break;
 	case 2:
 		OnHelpTips(0, 0, 0, bHandled);
@@ -682,13 +709,23 @@ LRESULT CMainFrame::OnUserMenuClick(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 	int nVal = wParam;
 	switch(nVal)
 	{
-	case 1: // 更改邮箱
-		break;
-	case 2: // 更改密码
-		break;
+	case MY_USER_INFO_MENU_CLICK_MAILCHANGE: // 更改邮箱
+		{
+			// 调用JS去更新首页的显示内容 
+			::SendMessage(FS()->TabItem()->GetChildFrame()->GetItem()->GetAxControl(), WM_AX_CHANGE_SETTINT_STATUS, 0, emUserChangeMail);
+			PostMessage(WM_SHOW_USER_DLG, 0, MY_TAG_SETTING_DLG);
+			break;
+		}
+	case MY_USER_INFO_MENU_CLICK_PWDCHANGE: // 更改密码
+		{
+			// 调用JS去更新首页的显示内容 
+			::SendMessage(FS()->TabItem()->GetChildFrame()->GetItem()->GetAxControl(), WM_AX_CHANGE_SETTINT_STATUS, 0, emUserChangePwd);
+			PostMessage(WM_SHOW_USER_DLG, 0, MY_TAG_SETTING_DLG);
+			break;
+		}
 	case 3: // 导入数据
 		break;
-	case 4: // 退出
+	case MY_USER_INFO_MENU_CLICK_QUIT: // 退出
 		::PostMessage(m_IeWnd, WM_AX_LOAD_USER_QUIT, 0, 0);
 		break;
 	default:
@@ -719,8 +756,8 @@ LRESULT CMainFrame::OnShowHelpMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 LRESULT CMainFrame::OnHelpSetting(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CSettingDlg dlg;
-	dlg.DoModal();
+	/*CSettingDlg dlg;
+	dlg.DoModal();*/
 
 	return 0;
 }
