@@ -30,7 +30,7 @@ public:
 //	LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
 
 public:
-	CMenuDlg(HWND hParent);
+	CMenuDlg(HWND hParent, LPCTSTR lpBitPath, int nParentMessage, int nBtnNum, int nBtnSelHeight, int nExternHeightOnPaint);
 	~CMenuDlg(void);
 	void ShowMenuWindow(CPoint pt);
 
@@ -46,16 +46,23 @@ private:
 
 	
 protected:
+	wstring	m_wstrBitPath; // 菜单图片名称
 	//CTuoImage m_imgRngBg;
-	CTuoImage m_imgNoBtnSel;
+	CTuoImage m_imgNoBtnSel; // 菜单背景图图片
+
+	int m_nBtnNum; // 菜单的按钮总数
+	int m_nExternHeightOnPaint; // 绘制菜单时第一项（上面部分）和最后一项（下面部分）选中时不绘制成选中颜色的高度
+	int m_nBtnSelHeight; // 选中时菜单项的高度
 
 	/*CTuoImage m_imgSelBtn1;
 	CTuoImage m_imgSelBtn2;
 	CTuoImage m_imgSelBtn3;
 	CTuoImage m_imgSelBtn4;*/
+
+	UINT m_nParentMessage; // 点击时父窗口的响应消息
 	
 	HWND m_hParent;
-	int m_nBtnSelIndex;
-	int m_nBtnLastSel;
+	int m_nBtnSelIndex; // 菜单当前先中项的索引
+	int m_nBtnLastSel; // 菜单最近选中项的索引
 
 };

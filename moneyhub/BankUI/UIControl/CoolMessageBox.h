@@ -4,6 +4,7 @@
 #include "..\Resource\Resource.h"
 #include "..\Skin\SkinManager.h"
 #include "AltSkinClasses.h"
+
 #include "Util.h"
 #define MH_STARTDELAYEVENT (0xfe02)
 
@@ -507,4 +508,27 @@ struct MsgData
 	wstring info;
 	int res;
 };
+
+class INotifyInterface
+{
+public:
+	INotifyInterface(){};
+	// 取消导入账单
+	virtual void CancelGetBill() = 0;	
+	virtual void GetBillExceedTime() = 0;
+	virtual void SetNotifyWnd(HWND nHwnd) = 0;
+};
+
+typedef struct ShowInfoStruct  
+{
+	INotifyInterface* pNotifyInterface;
+	wstring info;
+	int type;
+}BILLSHOWINFO, *LPBILLSHOWINFO;
+
+extern CWindow* g_hJSWndInfoDlg;
 DWORD WINAPI  _threadShowWaitDLG(LPVOID lp);
+DWORD WINAPI  _threadShowInfoDLG(LPVOID lp);
+DWORD WINAPI  _threadShowJSInfoDLG(LPVOID lp);
+void WINAPI  _endShowInfoDLGthread();
+void WINAPI  _endShowJSInfoDLG();

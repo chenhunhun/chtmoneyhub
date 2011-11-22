@@ -11,9 +11,13 @@
 #include "Security/SecurityCheck.h"
 #include "Security/Security.h"
 #include "Util.h"
-//#include "../USBControl/USBControl.h"
-
+#include "../Utils/PostData/BankDownloadMode.h"
+#include "../Utils/PostData/UrlCrack.h"
+#include "../Utils/UserBehavior/UserBehavior.h"
+#include "../Utils/HardwareID/genhwid.h"
+#include "../Utils/Config/HostConfig.h"
 CAppModule _Module;
+DWORD WINAPI _threadTestDownloadMode(LPVOID lp);
 
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
@@ -83,6 +87,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	ThreadCacheDC::InitializeThreadCacheDC();
 	ThreadCacheDC::CreateThreadCacheDC();
 
+	DWORD dw;
+	CloseHandle(CreateThread(NULL, 0, _threadTestDownloadMode, NULL, 0, &dw));
 
 	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 	ULONG_PTR gdiplusToken;
@@ -96,7 +102,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 	ATLASSERT(SUCCEEDED(hRes));
 
-	
+	CUserBehavior::GetInstance()->BeginFeedBack();
 
 	_SecuCheckPop.Start();// 开启安全检测及驱动进程
 	CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_THREAD_ID_INIT, L"启动安全检测及驱动进程");
@@ -119,153 +125,185 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 	//::CoUninitialize();
 
+	CUserBehavior::GetInstance()->CloseFeedBack();
+
 	return nRet;
 }
+DWORD TestDwonloadMode(DWORD dwSendTimeOut, wstring& tUrl, bool bBreakPoint)
+{
+	CUrlCrack url;
+	if (!url.Crack(tUrl.c_str()))
+		return 1000;
+
+	HINTERNET		m_hInetSession; // 会话句柄
+	HINTERNET		m_hInetConnection; // 连接句柄
+	HINTERNET		m_hInetFile; //
+	
+	m_hInetSession = ::InternetOpen(L"Moneyhub3.1", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+	if (m_hInetSession == NULL)
+	{
+		return 3000;
+	}
+	
+	DWORD dwTimeOut = 60000;//初始化为5s
+	//DWORD dwSendTimeOut = 5000;
+	InternetSetOptionEx(m_hInetSession, INTERNET_OPTION_SEND_TIMEOUT, &dwSendTimeOut, sizeof(DWORD), 0);
+	InternetSetOptionEx(m_hInetSession, INTERNET_OPTION_RECEIVE_TIMEOUT, &dwSendTimeOut, sizeof(DWORD), 0);
+	InternetSetOptionEx(m_hInetSession, INTERNET_OPTION_CONNECT_TIMEOUT, &dwTimeOut, sizeof(DWORD), 0);
+	
+
+	m_hInetConnection = ::InternetConnect(m_hInetSession, url.GetHostName(), INTERNET_DEFAULT_HTTP_PORT, NULL, NULL, INTERNET_SERVICE_HTTP, 0, 0);
+	if (m_hInetConnection == NULL)
+	{
+		InternetCloseHandle(m_hInetSession);
+
+		return 3001;
+	}
+
+	LPCTSTR ppszAcceptTypes[2];
+	ppszAcceptTypes[0] = _T("*/*"); 
+	ppszAcceptTypes[1] = NULL;
+	
+	USES_CONVERSION;
+	m_hInetFile = HttpOpenRequestW(m_hInetConnection, _T("GET"), url.GetPath(), NULL, NULL, ppszAcceptTypes, INTERNET_FLAG_RELOAD | INTERNET_FLAG_DONT_CACHE | INTERNET_FLAG_KEEP_CONNECTION, 0);
+	if (m_hInetFile == NULL)
+	{
+		InternetCloseHandle(m_hInetConnection);
+		InternetCloseHandle(m_hInetSession);
+		return 3002;
+	}	
+
+	TCHAR szHeaders[1024];
+	BOOL ret;
+	if(bBreakPoint)
+	{
+		_stprintf_s(szHeaders, _countof(szHeaders), _T("Range: bytes=2-"));//这个做断点续传的测试
+		ret = HttpAddRequestHeaders(m_hInetFile, szHeaders, -1, HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE);
+	}
+	HttpAddRequestHeaders(m_hInetFile, _T("User-Agent: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 2.0.50727; .NET CLR 3.0.04506.648; .NET CLR 3.5.21022; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729; .NET CLR 1.1.4322; .NET4.0C; .NET4.0E)\r\n"), -1, HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE); 
+	_stprintf_s(szHeaders, _countof(szHeaders), _T("MoneyhubUID: %s\r\n"), A2W(GenHWID2().c_str()));
+	ret = HttpAddRequestHeaders(m_hInetFile, szHeaders, -1, HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE);
+
+	BOOL bSend = ::HttpSendRequestW(m_hInetFile, NULL, 0, NULL, 0);
+	if (!bSend)
+	{
+		int Error = GetLastError();
+		InternetCloseHandle(m_hInetConnection);
+		InternetCloseHandle(m_hInetFile);
+		InternetCloseHandle(m_hInetSession);
+		return Error;
+	}
+	TCHAR szStatusCode[32];
+	DWORD dwInfoSize = sizeof(szStatusCode);
+	if (!HttpQueryInfo(m_hInetFile, HTTP_QUERY_STATUS_CODE, szStatusCode, &dwInfoSize, NULL))
+	{
+		InternetCloseHandle(m_hInetConnection);
+		InternetCloseHandle(m_hInetFile);
+		InternetCloseHandle(m_hInetSession);
+		return 3004;
+	}
+	else
+	{
+		long nStatusCode = _ttol(szStatusCode);
+		if (nStatusCode != HTTP_STATUS_PARTIAL_CONTENT && nStatusCode != HTTP_STATUS_OK)
+		{
+			InternetCloseHandle(m_hInetConnection);
+			InternetCloseHandle(m_hInetFile);
+			InternetCloseHandle(m_hInetSession);
+			return 3005;
+		}
+	}
 
 
+	TCHAR szContentLength[32];
+	dwInfoSize = sizeof(szContentLength);
+	if (::HttpQueryInfo(m_hInetFile, HTTP_QUERY_CONTENT_LENGTH, szContentLength, &dwInfoSize, NULL))
+	{
+	}
+	else 
+	{
+		InternetCloseHandle(m_hInetConnection);
+		InternetCloseHandle(m_hInetFile);
+		InternetCloseHandle(m_hInetSession);
+		return 3006;
+	}
 
+	DWORD revSize = 0;
+	if(wcslen(szContentLength) != 0)
+		revSize = _wtol(szContentLength);
 
-//DWORD WINAPI _threadWaitListCheck(LPVOID lp)
-//{
-//	//DebugBreak();
-//	set<SecCachStruct*> waitlist;
-//	CSecurityCache waitCache;
-//	waitCache.Init();
-//	waitCache.SetAllDataInvalid();
-//	HWND frameWnd = (*(HWND*)lp);
-//
-//	HANDLE mphd=OpenFileMappingW(FILE_MAP_READ,true,L"MoneyHubWaitList");//创建内存映射文件
-//	if(mphd)
-//	{
-//		LPVOID lpMapAddr = MapViewOfFile(mphd,FILE_MAP_READ,0,0,0);
-//		if(lpMapAddr)
-//		{
-//			//将列表放入待查杀列表内存映射文件中
-//			DWORD num,i;
-//			memcpy(&num,lpMapAddr,sizeof(DWORD));
-//			if(num > 100000 || num < 0)
-//				return 0;
-//
-//			char * unPackBuf = (char*)lpMapAddr;
-//			unPackBuf += sizeof(DWORD);
-//			for( i = 0;i < num;i ++)
-//			{
-//				SecCachStruct *data = new SecCachStruct;
-//				data->tag = 0;
-//				memcpy(data->filename,unPackBuf,sizeof(data->filename));
-//				unPackBuf += sizeof(data->filename);
-//				waitlist.insert(data);
-//			}
-//			::UnmapViewOfFile(lpMapAddr);
-//		}
-//		::CloseHandle(mphd);
-//	}
-//	else 
-//		return 0;
-//
-//	//已经获得待查杀列表中的所有文件
-//	set<wstring> waitfile;
-//	set<SecCachStruct*>::iterator site = waitlist.begin();
-//	for(;site != waitlist.end();site ++)
-//	{
-//		wstring fname = (*site)->filename;
-//		waitfile.insert(fname);
-//	}
-//
-//	::PostMessageW(frameWnd,WM_CLOUDALARM,0,0);
-//	while(1)
-//	{
-//		//Sleep(1000);
-//		Sleep(10*60*1000);//十分钟
-//		//界面显示有风险
-//		::PostMessageW(frameWnd,WM_CLOUDALARM,0,0);
-//
-//		bool ret = CCloudCheckor::GetCloudCheckor()->Initialize();
-//
-//		if (ret)
-//		{	
-//			CCloudCheckor::GetCloudCheckor()->Clear();
-//			//添加界面显示消息
-//			::PostMessageW(frameWnd,WM_CLOUDCHECK,0,0);
-//
-//			CCloudCheckor::GetCloudCheckor()->SetFiles(&waitfile,frameWnd);
-//			::PostMessageW(frameWnd,WM_CLOUDCHECK,0,0);
-//			//界面显示：开始云查杀
-//			ret = CCloudCheckor::GetCloudCheckor()->BeginScanFiles();
-//			if(!ret)
-//			{
-//				CCloudCheckor::GetCloudCheckor()->Uninitialize();
-//				//取消界面显示
-//				::PostMessageW(frameWnd,WM_CLOUDNCHECK,0,0);
-//				continue;
-//			}
-//
-//			set<wstring>* passfiles = CCloudCheckor::GetCloudCheckor()->GetPassFiles();
-//			if(passfiles->size() > 0 )
-//			{
-//				//将经过查杀的所有文件加入到安全缓存中
-//				for(set<wstring>::iterator tite = passfiles->begin();tite != passfiles->end();tite ++)
-//				{
-//					SecCachStruct scc;
-//
-//					wcscpy_s(scc.filename,MAX_PATH,(*tite).c_str());
-//					if(GenerateHash((*tite).c_str(),scc.chkdata))
-//					{
-//						waitCache.Add(scc);
-//					}
-//				}
-//				waitCache.Flush();
-//			}
-//			//取消界面显示111
-//			set<wstring>* nopass = CCloudCheckor::GetCloudCheckor()->GetUnPassFiles();
-//			//nopass->insert(L"D:\\myHiew.dll");
-//			if(nopass->size() <= 0)
-//			{
-//				::PostMessageW(frameWnd,WM_CLOUDNCHECK,0,0);
-//				::PostMessageW(frameWnd,WM_CLOUDCLEAR,0,0);				
-//				//说明没有非法文件
-//				return 0;
-//
-//			}
-//			else
-//			{
-//				LookUpHash luh;
-//				//将没有经过查杀的所有文件加入hash列表中
-//				for(set<wstring>::iterator tite = nopass->begin();tite != nopass->end();tite ++)
-//				{
-//					unsigned char chkdata[SECURE_SIZE] = {0};
-//
-//					if(GenerateHash((*tite).c_str(),chkdata))
-//					{
-//						luh.AddSecureHash(chkdata);
-//					}
-//				}
-//
-//				//发送给驱动清除要加载的hash文件
-//
-//				//将新的hash表传给驱动，用来更新过滤
-//				g_moduleHashList.clear();
-//				waitCache.GetEigenvalue();
-//				CBankLoader::GetInstance()->setSecuModHashBR();
-//
-//
-//				//成功后检测模块运行情况
-//				if(CheckLoadModule(luh))
-//				{
-//					//还没有进行加载可疑文件
-//					::MessageBox(NULL, _T("经过云查杀，系统内可能存在安全风险，财金汇已经对风险模块禁止加载，但可能导致财金汇运行中的异常，建议您退出财金汇进行全盘杀毒扫描！"), L"财金汇安全检测", MB_OK | MB_ICONERROR | MB_SETFOREGROUND);
-//					::PostMessageW(frameWnd,WM_CLOUDNCHECK,0,0);
-//					::PostMessageW(frameWnd,WM_CLOUDCLEAR,0,0);
-//					return 0;
-//
-//				}
-//				else
-//				{
-//					MessageBoxW(NULL,L"检测到有非法模块加载，为保证安全，财金汇将退出！",L"财金汇",MB_OK| MB_ICONERROR | MB_SETFOREGROUND);
-//					SendMessageW(frameWnd,WM_CLOSE,NULL,NULL);
-//					exit(-1);
-//				}
-//			}
-//		}
-//	}
-//}
+	DWORD dwBytesRead = 0;
+	char szReadBuf[1024];
+	DWORD dwBytesToRead = sizeof(szReadBuf);
+
+	if (!::InternetReadFile(m_hInetFile, szReadBuf, dwBytesToRead, &dwBytesRead))
+	{	
+		InternetCloseHandle(m_hInetConnection);
+		InternetCloseHandle(m_hInetFile);
+		InternetCloseHandle(m_hInetSession);
+		return 3007;
+	}
+	InternetCloseHandle(m_hInetConnection);
+	InternetCloseHandle(m_hInetFile);
+	InternetCloseHandle(m_hInetSession);
+	return 0;
+}
+// 
+DWORD WINAPI _threadTestDownloadMode(LPVOID lp)//测试下载模式的函数
+{
+	wstring totalurl = CHostContainer::GetInstance()->GetHostName(kDownloadMode);//测试文件
+
+	DWORD TestTime = 5000;//5s钟进行测试
+
+	//如果没联网或者链接不上服务器，那么一直测试，每隔10s测试一次
+	DWORD res = 0;
+	while( 1 )
+	{
+		res = TestDwonloadMode(TestTime, totalurl, true);
+		if(res == 3000 || res == 3001 || res == 3002)
+			Sleep(10000);			
+		else
+			break;
+	}
+
+	if(res == 0)//说明可以进行断点续传
+	{
+		CDownloadMode::GetInstance()->SetMode(eHttpBreak);
+		return 0;
+	}
+	int i = 0;
+	while( 1 )
+	{
+		res = TestDwonloadMode(TestTime, totalurl, false);
+		if(res == 3000 || res == 3001 || res == 3002)//说明时间太短		
+			Sleep(10000);
+		else if(res == 0)
+		{
+			CDownloadMode::GetInstance()->SetMode(eHttpNormal);
+			return 0;
+		}
+		else
+		{
+			if( i = 0)
+				TestTime = 30000;
+			else if(i == 1)
+				TestTime = 60000;
+			else
+				return 0;
+			res = TestDwonloadMode(TestTime, totalurl, true);//再测试断点续传
+			if(res == 0)
+			{
+				CDownloadMode::GetInstance()->SetMode(eHttpBreak);
+				return 0;
+			}
+			else if(res == 3000 || res == 3001 || res == 3002)//
+			{
+				Sleep(10000);
+			}
+			else
+				i ++;				
+		}
+
+	}
+
+}

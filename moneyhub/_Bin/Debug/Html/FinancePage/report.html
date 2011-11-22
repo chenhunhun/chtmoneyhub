@@ -25,40 +25,38 @@
 <div id="dReportButtons">
 	<ul id="bank_tabs_title" class="nav_ul">
 		<li class="f_l click">收支统计</li>
-		<li class="f_e">资产统计</li>
+		<li>资产统计</li>
+		<li class="f_e">收支趋势</li>
 	</ul>
 </div>
-<div id="headtabs-2">
+<div id="headtabs">
 	<div id="tabs-1">
-		<div id="dLeft">
+		<div class="dLeft">
 			<div class='dMainTab' id="bmonth" onclick="GeneratePies('thismonth', 'pie');">月</div>
 			<div class='dMainTab' id="bseason" onclick="GeneratePies('thisseason', 'pie');">季度</div>
 			<div class='dMainTab' id="byear" onclick="GeneratePies('thisyear', 'pie');">年度</div>
 			<div class='dMainTab' id="ball" onclick="GeneratePies('all', 'pie');">全部</div>
 		</div>
-		<div id="dRight">
+		<div class="dRight">
 			<div id="rv1header" class="rvheader">
-				<div id="dprev" class="dbutton"></div>
-				<div id="headertext"></div>
-				<div id="dnext" class="dbutton"></div>
+				<div class="dbutton dprevb" id="dprev"></div>
+				<div class="headertext" id="headertext"></div>
+				<div class="dbutton dnextb" id="dnext"></div>
 			</div>
 			<div id="rv1charts" class="rvcharts">
 				<div id="rv1chartleft" class="rvchart">
 					<div class="rvtitle">收入：人民币<span id="sRVIncome" class="sRVTitle">800</span>元</div>
-					<div id="in" style="margin: auto; float:left;"></div>
+					<div class="rvcdetail" id="in"></div>
 				</div>
 				<div id="rv1middle">
 					<div id="rv1mline"></div>
 				</div>
 				<div id="rv1chartright" class="rvchart">
 					<div class="rvtitle">支出：人民币<span id="sRVOutcome" class="sRVTitle">800</span>元</div>
-					<div id="out" style="margin: auto; float:left;"></div>
+					<div class="rvcdetail" id="out"></div>
 				</div>
 			</div>
 			<div class="rvbottom">
-				<div id="rv1bottomtitle">
-					收支比例
-				</div>
 				<div class="rvbottombar" id="rv1bottombar">
 					<div class="ionumin" id="rv1numincome"></div>
 					<div class="io1"></div>
@@ -67,6 +65,9 @@
 					<div class="io4" id="rv1baroutcome"></div>
 					<div class="io5"></div>
 					<div class="ionumout" id="rv1numoutcome"></div>
+				</div>
+				<div id="rv1bottomtitle">
+					收支比例
 				</div>
 			</div>
 			<div id="dSpecifyDates" style="display:none;">
@@ -105,7 +106,22 @@
 			资产负债比例
 		</div>
 	</div>
-<div>
+	<div id="tabs-3" style="display:none;">
+		<div class="dLeft">
+			<div class='dMainTab' id="byear" onclick="GeneratePies('thisyear', 'bar');">年度</div>
+			<div class='dMainTab' id="ball" onclick="GeneratePies('all', 'bar');">全部</div>
+		</div>
+		<div class="dRight">
+			<div id="rv1header" class="rvheader">
+				<div class="dbutton dprevb" id="tabs-3-dprev"></div>
+				<div class="headertext" id="tabs-3-headertext"></div>
+				<div class="dbutton dnextb" id="tabs-3-dnext"></div>
+			</div>
+			<div id="rv2charts" class="rvcharts">
+				<div id="bar"></div>
+			</div>
+		</div>
+	</div>
 </div>
 </body>
 </html>

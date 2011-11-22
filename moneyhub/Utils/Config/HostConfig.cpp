@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "HostConfig.h"
-#include "../../ThirdParty/tinyxml/tinyxml.h"
+
 #include "../Encryption/CHKFile/CHK.h"
 #include "ConvertBase.h"
 #include "../ListManager/URLList.h"
@@ -31,6 +31,38 @@ wstring CHostContainer::GetHostName(webconfig host)
 	if(ite != m_host.end())
 		return (*ite).second;
 	return L"";
+}
+
+bool CHostContainer::IsUrlInUrlError(wstring url)
+{
+	if(find(m_urlError.begin(), m_urlError.end(), url) == m_urlError.end())
+		return false;
+	else
+		return true;
+
+}
+
+bool CHostContainer::ReadUrlData(const TiXmlNode *pErrorHtml)
+{
+	const TiXmlNode *pSite = pErrorHtml->FirstChild("site");
+	if( pSite != NULL ) 
+	{
+		wstring id =  AToW(pSite->ToElement()->Attribute("id"));
+		if(id == L"urlerror")
+		{
+			const TiXmlNode *pDomainList = pSite->FirstChild("domains");
+			if (pDomainList)
+			{
+				for (const TiXmlNode *pDomain = pDomainList->FirstChild("domain"); pDomain != NULL; pDomain = pDomainList->IterateChildren("domain", pDomain))
+				{
+					std::wstring strDomain = AToW(pDomain->ToElement()->Attribute("name"));
+					m_urlError.push_back(strDomain);
+				}
+			}
+
+		}
+	}
+	return true;
 }
 std::string CHostContainer::GetFileContent(wstring strPath,bool bCHK)
 {	
@@ -83,7 +115,7 @@ bool CHostContainer::GetAllHostName(VECTORNPBNAME *pVvecNPB )
 
 	wstring path(lpPath);
 
-	path += L"\\Config\\info.chk";
+	path += L"\\Config\\info.mchk";
 
 	string info = GetFileContent(path.c_str(),true);
 	if(info == "")
@@ -124,28 +156,35 @@ bool CHostContainer::GetAllHostName(VECTORNPBNAME *pVvecNPB )
 		}
 
 		const TiXmlNode *pDownload = pType->FirstChild("download");
-		if(pWeb)
+		if(pDownload)
 		{
 			wstring download = AToW(pDownload->FirstChild()->Value());
 			m_host.insert(make_pair(kDownload,download));
 		}
 		const TiXmlNode *pFeedback = pType->FirstChild("feedback");
-		if(pWeb)
+		if(pFeedback)
 		{
 			wstring feedback = AToW(pFeedback->FirstChild()->Value());
 			m_host.insert(make_pair(kFeedback,feedback));
 		}
 		const TiXmlNode *pAdv = pType->FirstChild("adv");
-		if(pWeb)
+		if(pAdv)
 		{
 			wstring adv = AToW(pAdv->FirstChild()->Value());
 			m_host.insert(make_pair(kAdv,adv));
 		}
 		const TiXmlNode *pBenefit = pType->FirstChild("benefit");
-		if(pWeb)
+		if(pBenefit)
 		{
 			wstring benefit = AToW(pBenefit->FirstChild()->Value());
 			m_host.insert(make_pair(kBenefit,benefit));
+		}
+
+		const TiXmlNode *pDwonloadMode = pType->FirstChild("downloadmode");
+		if(pDwonloadMode)
+		{
+			wstring downloadmode = AToW(pDwonloadMode->FirstChild()->Value());
+			m_host.insert(make_pair(kDownloadMode,downloadmode));
 		}
 	}
 
@@ -173,6 +212,14 @@ bool CHostContainer::GetAllHostName(VECTORNPBNAME *pVvecNPB )
 		{
 			CURLList::GetInstance()->ReadData(pURLList);
 		}
+
+		const TiXmlNode *pErrorHtml = pRoot->FirstChild("errorhtml"); 
+		//读取errorhtml处理的配置文件
+		if(pErrorHtml)
+		{
+			ReadUrlData(pErrorHtml);
+		}
+
 	}
 
 	return true;
@@ -186,6 +233,6 @@ void CHostContainer::Init(VECTORNPBNAME *pVvecNPB)
 		m_host.insert(make_pair(kFeedback,L"http://cloud.moneyhub.cn/"));
 		m_host.insert(make_pair(kAdv,L"adv.moneyhub.cn"));
 		m_host.insert(make_pair(kBenefit,L"http://benefit.moneyhub.cn/"));
+		m_host.insert(make_pair(kDownloadMode,L"http://cdn.moneyhub.cn/test.txt"));
 	}
-
 }

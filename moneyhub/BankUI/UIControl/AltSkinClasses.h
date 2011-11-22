@@ -858,7 +858,7 @@ public:
 		TCHAR szClassName[256];
 		if (GetClassName((HWND)lParam, szClassName, _countof(szClassName)))
 		{
-			if (_tcsicmp(szClassName, CStatic::GetWndClassName()) == 0)
+			if ((_tcsicmp(szClassName, CStatic::GetWndClassName()) == 0) || (_tcsicmp(szClassName, CLinkCtrl::GetWndClassName()) == 0))
 			{
 				CDCHandle dc((HDC)wParam);
 				dc.SetTextColor(m_crTextColor);

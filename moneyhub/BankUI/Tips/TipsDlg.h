@@ -25,8 +25,8 @@ public:
 		CHAIN_MSG_MAP(CDialogSkinMixer<CTipsDlg>)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
-		MSG_WM_MOUSEMOVE(OnMouseMove)
-		MSG_WM_LBUTTONDOWN(OnLButtonDown)
+		//MSG_WM_MOUSEMOVE(OnMouseMove)
+		//MSG_WM_LBUTTONDOWN(OnLButtonDown)
 		COMMAND_ID_HANDLER(IDC_PREPAGE, OnPrePage)
 		COMMAND_ID_HANDLER(IDC_NEXTPAGE, OnNextPage)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
@@ -56,20 +56,20 @@ protected:
 	CStatic m_tipsString;
 	CStatic m_titleString;
 	CStatic m_pic;
-	CStatic m_guideString;
+	//CStatic m_guideString;
 
 	CString m_strInfo;
 
-	CTuoImage m_imgCheckBox;	//checkbox的图片
+	//CTuoImage m_imgCheckBox;	//checkbox的图片
 	CTuoImage m_showList[MAX_SHOWPAGE];		//显示的图片
 	std::wstring m_showtitle[MAX_SHOWPAGE];
 	std::wstring m_showstring[MAX_SHOWPAGE];
 	int TOTAL_PAGE;
 
-	bool    m_bChecked;			//记录复选框选中状态
-	CRect	m_rcCheckBox ;		// 复选框图片区域
-	CRect	m_rcCheckBoxRgn ;	// 复选框区域
-	DWORD	m_dwCheckState ;	// 复选框当前状态
+	//bool    m_bChecked;			//记录复选框选中状态
+	//CRect	m_rcCheckBox ;		// 复选框图片区域
+	//CRect	m_rcCheckBoxRgn ;	// 复选框区域
+	//DWORD	m_dwCheckState ;	// 复选框当前状态
 
 	void GetConfig();
 

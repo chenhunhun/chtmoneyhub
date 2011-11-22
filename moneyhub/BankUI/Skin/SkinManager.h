@@ -20,6 +20,8 @@
 #include "UISkin/LoadButtonSkin.h"
 #include "UISkin/LoginButtonSkin.h"
 #include "UISkin/SepButtonSkin.h"
+#include "UISkin/AlarmButtonSkin.h"
+#include "UISkin/SynchroButtonSkin.h"
 
 #include "ResourceSkin/MenuSkin.h"
 #include "ResourceSkin/Common.h"
@@ -59,6 +61,8 @@ public:
 	inline CLogoButtonSkin* LogoButton() { return &m_LogoButtonSkin; }
 	inline CHelpButtonSkin* HelpButton() { return &m_HelpButtonSkin; }
 	inline CLoadButtonSkin* LoadButton() { return &m_LoadButtonSkin; }
+	inline CAlarmButtonSkin* AlarmButton() { return &m_AlarmButtonSkin; }
+	inline CSynchroButtonSkin* SynchroButton() { return &m_SynchroButtonSkin; }
 	inline CLoginButtonSkin* LoginButton() { return &m_LoginButtonSkin; }
 	inline CSepButtonSkin* SepButton() { return &m_SepButtonSkin; }
 	inline CSettingButtonSkin* SettingButton() {return &m_SetButtonSkin;}
@@ -101,6 +105,8 @@ private:
 	CMenuButtonSkin m_MenuButtonSkin;
 	CLogoButtonSkin m_LogoButtonSkin;
 	CLoadButtonSkin m_LoadButtonSkin;
+	CAlarmButtonSkin m_AlarmButtonSkin;
+	CSynchroButtonSkin m_SynchroButtonSkin;
 	CLoginButtonSkin m_LoginButtonSkin;
 	CSepButtonSkin m_SepButtonSkin;
 	CHelpButtonSkin m_HelpButtonSkin;

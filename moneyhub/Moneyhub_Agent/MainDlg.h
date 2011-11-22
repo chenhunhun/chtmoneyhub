@@ -8,6 +8,7 @@
 using namespace std;
 #define WM_SHNOTIFY WM_USER + 0x101f//通知内核进程有设备usb插入
 
+#define WM_FEEDBACK WM_USER + 0x102f //被通知构造反馈包反馈数据
 
 class CMainDlg : public CDialogImpl<CMainDlg>, public CUpdateUI<CMainDlg>,
 	public CMessageFilter, public CIdleHandler
@@ -36,8 +37,8 @@ public:
 		MESSAGE_HANDLER(WM_MOUSELEAVE,OnMouseLeave)
 		MESSAGE_HANDLER(WM_NCPAINT,OnNcPaint)
 		MESSAGE_HANDLER(WM_TIMER, OnTimer)
-		//MESSAGE_HANDLER(WM_MONEYHUB_UAC, OnRunUAC)
 		MESSAGE_HANDLER_EX(WM_DEVICECHANGE, OnDeviceChange)
+		MESSAGE_HANDLER(WM_MONEYHUB_FEEDBACK, OnFeedBack)
 		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
 
@@ -52,6 +53,7 @@ public:
 	LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnMouseLeave(WORD /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled);
+	LRESULT OnFeedBack(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled);
 	
 	LRESULT OnLookUp(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnNoTips(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -66,8 +68,6 @@ public:
 
 	BOOL OnEraseBkgnd(CDCHandle dc);
 
-	LRESULT OnRunUAC(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam/**/, BOOL &/*bHandled*/);
-	void RunUAC(string aid);
 	bool CheckNetState();
 
 protected:
@@ -98,6 +98,7 @@ private:
 	void AutoUpdate();
 	BOOL IsAutoRunUpdate();
 	bool m_delayflag;
+	int PostData2Server(string hid, string sn, wstring file);
 
 	SYSTEMTIME m_lastTime;
 	__int64  TimeDiff(SYSTEMTIME  left,SYSTEMTIME  right);

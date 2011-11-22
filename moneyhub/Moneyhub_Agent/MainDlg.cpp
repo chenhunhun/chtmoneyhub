@@ -8,8 +8,13 @@
 #include "Moneyhub_Agent.h"
 #include "Shlwapi.h"
 #include "atltime.h"
+#include "../Utils/Config/HostConfig.h"
+#include "../Utils/HardwareID/genhwid.h"
+#include "../Utils/sn/SNManager.h"
+#include "../Utils/PostData/UrlCrack.h"
 //#define OWN_DEBUG 
 #include <Wininet.h>
+#include "Zip/zip.h"
 #pragma comment(lib,"Wininet.lib")
 #pragma comment(lib,"Shlwapi.lib")
 #ifdef OWN_DEBUG 
@@ -73,6 +78,193 @@ __int64  CMainDlg::TimeDiff(SYSTEMTIME  left,SYSTEMTIME  right)
 	return  (__int64)sp.GetDays() * 86400  +  (lLMinllis  -  lRMinllis);  //此处返回秒，可用根据自己的格式需要进行转换，如时分秒
 } 
 
+int CMainDlg::PostData2Server(string hid, string sn, wstring file)
+{
+	wstring totalurl = CHostContainer::GetInstance()->GetHostName(kWeb) + L"get_file.php";
+	CUrlCrack url;
+	if (!url.Crack(totalurl.c_str()))
+		return 1000;
+
+	HINTERNET		m_hInetSession; // 会话句柄
+	HINTERNET		m_hInetConnection; // 连接句柄
+	HINTERNET		m_hInetFile; //
+	HANDLE			m_hSendFile;
+
+	m_hInetSession = ::InternetOpen(L"Moneyhub3.0", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+	if (m_hInetSession == NULL)
+	{
+		return 3000;
+	}
+	
+	DWORD dwTimeOut = 60000;
+	InternetSetOptionEx(m_hInetSession, INTERNET_OPTION_CONTROL_RECEIVE_TIMEOUT, &dwTimeOut, sizeof(DWORD), 0);
+	InternetSetOptionEx(m_hInetSession, INTERNET_OPTION_CONTROL_SEND_TIMEOUT, &dwTimeOut, sizeof(DWORD), 0);
+	InternetSetOptionEx(m_hInetSession, INTERNET_OPTION_SEND_TIMEOUT, &dwTimeOut, sizeof(DWORD), 0);
+	InternetSetOptionEx(m_hInetSession, INTERNET_OPTION_RECEIVE_TIMEOUT, &dwTimeOut, sizeof(DWORD), 0);
+	InternetSetOptionEx(m_hInetSession, INTERNET_OPTION_CONNECT_TIMEOUT, &dwTimeOut, sizeof(DWORD), 0);
+	
+
+	m_hInetConnection = ::InternetConnect(m_hInetSession, url.GetHostName(), INTERNET_DEFAULT_HTTP_PORT, NULL, NULL, INTERNET_SERVICE_HTTP, 0, 0);
+	if (m_hInetConnection == NULL)
+	{
+		InternetCloseHandle(m_hInetSession);
+
+		return 3001;
+	}
+
+	LPCTSTR ppszAcceptTypes[2];
+	ppszAcceptTypes[0] = _T("*/*"); 
+	ppszAcceptTypes[1] = NULL;
+	
+	USES_CONVERSION;
+	m_hInetFile = HttpOpenRequestW(m_hInetConnection, _T("POST"), url.GetPath(), NULL, NULL, ppszAcceptTypes, INTERNET_FLAG_RELOAD | INTERNET_FLAG_DONT_CACHE | INTERNET_FLAG_KEEP_CONNECTION, 0);
+	if (m_hInetFile == NULL)
+	{
+		InternetCloseHandle(m_hInetConnection);
+		InternetCloseHandle(m_hInetSession);
+		return 3002;
+	}	
+
+	char *pBoundary = "---------------------170081691720202";//比实际的boundary多两个--！！！
+
+	char cfileinfo[10240] = {0};//--\nformadata和实际数据之间要有2个\r\n，否则有问题
+	sprintf_s(cfileinfo, 10240, "%s\r\nContent-Disposition: form-data; name=\"hid\"\r\n\r\n%s\r\n%s\r\nContent-Disposition: form-data; name=\"sn\"\r\n\r\n%s\r\n%s\r\n\
+Content-Disposition: form-data; name=\"file\"; filename=\"Feedback.zip\"\r\n\r\n",pBoundary, hid.c_str(), pBoundary, sn.c_str(), pBoundary);
+
+	WCHAR szAppDataFileName[MAX_PATH + 1];
+	ExpandEnvironmentStringsW(L"%APPDATA%\\MoneyHub\\Feedback.zip", szAppDataFileName, MAX_PATH);
+
+	m_hSendFile = CreateFile(szAppDataFileName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if(m_hSendFile == INVALID_HANDLE_VALUE)
+	{
+		int err = GetLastError();
+		return err;
+	}
+
+	DWORD dwLength = GetFileSize(m_hSendFile, NULL);
+	unsigned char* lpBuffer = new unsigned char[dwLength + 1];
+
+	if (lpBuffer == NULL)
+	{
+		return false;
+	}
+
+	DWORD dwRead = 0;
+	if (!ReadFile(m_hSendFile, lpBuffer, dwLength, &dwRead, NULL))
+	{
+		delete[] lpBuffer;
+		return false;
+	}
+	CloseHandle(m_hSendFile);
+
+	DWORD dDataSize = dwRead + strlen(cfileinfo) + strlen(pBoundary) + 6;
+	unsigned char* lpData = new unsigned char[dDataSize + 1];
+	if(lpData == NULL)
+	{
+		delete[] lpBuffer;
+		return false;
+	}
+	memset(lpData, 0, dDataSize + 1);
+	unsigned char* lpCur = lpData;
+
+	memcpy(lpData, cfileinfo, strlen(cfileinfo));
+	lpCur = lpData + strlen(cfileinfo);
+	memcpy(lpCur, lpBuffer, dwRead);
+
+	delete[] lpBuffer;
+	lpCur += dwRead;
+	memcpy(lpCur, "\r\n", 2);	
+	lpCur += 2; 
+	memcpy(lpCur, pBoundary, strlen(pBoundary));	
+	lpCur += strlen(pBoundary);
+	memcpy(lpCur, "--\r\n", 4);
+	
+	TCHAR szHeaders[1024];	
+	_stprintf_s(szHeaders, _countof(szHeaders), _T("Content-Type: multipart/form-data;boundary=-------------------170081691720202\r\nContent-Length:%d"), dDataSize);
+	BOOL ret = HttpAddRequestHeaders(m_hInetFile, szHeaders, -1, HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE);
+
+	HttpAddRequestHeaders(m_hInetFile, _T("User-Agent: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 2.0.50727; .NET CLR 3.0.04506.648; .NET CLR 3.5.21022; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729; .NET CLR 1.1.4322; .NET4.0C; .NET4.0E)\r\n"), -1, HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE); 
+	_stprintf_s(szHeaders, _countof(szHeaders), _T("MoneyhubUID: %s\r\n"), A2W(hid.c_str()));
+	ret = HttpAddRequestHeaders(m_hInetFile, szHeaders, -1, HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE);
+	wstring heads = L"Connection:keep-alive\r\nUser-Agent:Moneyhub3.1\r\n";
+	ret = HttpAddRequestHeadersW(m_hInetFile, heads.c_str(), -1, HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE); 
+	BOOL bSend = ::HttpSendRequestW(m_hInetFile, NULL, 0, (LPVOID)lpData, dDataSize);
+	delete[] lpData;
+	if (!bSend)
+	{
+		int err = GetLastError();
+		InternetCloseHandle(m_hInetConnection);
+		InternetCloseHandle(m_hInetFile);
+		InternetCloseHandle(m_hInetSession);
+		return err;
+	}
+	InternetCloseHandle(m_hInetConnection);
+	InternetCloseHandle(m_hInetFile);
+	InternetCloseHandle(m_hInetSession);
+
+	return 0;
+
+}
+LRESULT CMainDlg::OnFeedBack(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
+{
+	//获得HID和SN
+	string sn = CSNManager::GetInstance()->GetSN();
+	string hid = GenHWID2();
+	//组装feedback的文件包
+	WCHAR szAppDataPath[MAX_PATH + 1];
+	ExpandEnvironmentStringsW(L"%APPDATA%\\MoneyHub\\", szAppDataPath, MAX_PATH);
+	wstring dir = szAppDataPath;
+
+	wstring tempzip = dir + L"Feedback.zip";
+
+	HZIP hzip = CreateZip(tempzip.c_str(), NULL);
+
+	std::wstring dirdata = dir;
+	dirdata += L"Data\\*.dat";
+	WIN32_FIND_DATA FindFileData;
+	HANDLE hFind;
+	hFind = FindFirstFileW(dirdata.c_str(), &FindFileData);
+	if(INVALID_HANDLE_VALUE != hFind)
+	{
+		do{
+			std::wstring filename = dir + L"Data\\" + FindFileData.cFileName;
+			ZipAdd(hzip, FindFileData.cFileName, filename.c_str());
+		}while (FindNextFileW(hFind, &FindFileData) != 0);	
+		FindClose(hFind);
+	}
+
+	dirdata = dir + L"*.dmp";
+	hFind = FindFirstFileW(dirdata.c_str(), &FindFileData);
+	if(INVALID_HANDLE_VALUE != hFind)
+	{
+		do{
+			std::wstring filename = dir + FindFileData.cFileName;
+			ZipAdd(hzip, FindFileData.cFileName, filename.c_str());
+		}while (FindNextFileW(hFind, &FindFileData) != 0);	
+		FindClose(hFind);
+	}
+
+	TCHAR szPath[MAX_PATH] = { 0 };
+	::GetModuleFileName(NULL, szPath, _countof(szPath));
+	wstring exepath = szPath;
+	size_t lpos = exepath.find_last_of(L"\\");
+	exepath = exepath.substr(0, lpos + 1);
+
+	exepath += L"syslog.txt";
+	if(PathFileExistsW(exepath.c_str()))
+		ZipAdd(hzip, L"syslog.txt", exepath.c_str());
+
+	wstring file1 = dir + L"Run.log";
+	if(PathFileExistsW(file1.c_str()))
+		ZipAdd(hzip, L"Run.log", file1.c_str());
+
+	CloseZip(hzip);
+	PostData2Server(hid, sn, L"");
+
+	if(PathFileExistsW(tempzip.c_str()))//删除因反馈而生成的临时文件
+		DeleteFile (tempzip.c_str());
+	return 0;
+}
 LRESULT CMainDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
 {
 	if(wParam == MH_STARTDELAYEVENT)
@@ -123,7 +315,7 @@ LRESULT CMainDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandle
 	{
 		if(!bTrackLeave)
 			m_timer ++;
-		if(m_timer >= 6)
+		if(m_timer >= 10)
 		{
 			KillTimer(MH_CHECKEVENT);
 			m_timer = 0;
@@ -133,8 +325,7 @@ LRESULT CMainDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandle
 	}
 	return 0;
 }
-static /*const*/ GUID MYGUID_DEVINTERFACE_USB_DEVICE = 
-{ 0xA5DCBF10L, 0x6530, 0x11D2, {0x90, 0x1F, 0x00, 0xC0, 0x4F, 0xB9, 0x51, 0xED}};
+
 
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
@@ -231,31 +422,10 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 			// "ChangeWindowMessageFilter"函数指针
 			if(lpChangeWindowMessageFilter)	
 			{
-				lpChangeWindowMessageFilter(WM_MONEYHUB_UAC, MSGFLT_ADD);
+				lpChangeWindowMessageFilter(WM_MONEYHUB_FEEDBACK, MSGFLT_ADD);
 			}
 			FreeLibrary(hDLL);
 		}
-
-		//DEV_BROADCAST_DEVICEINTERFACE   broadcastInterface; 
-		//broadcastInterface.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
-		//broadcastInterface.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
-
-		//memcpy( &(broadcastInterface.dbcc_classguid),
-		//	&(MYGUID_DEVINTERFACE_USB_DEVICE),
-		//	sizeof(struct _GUID));
-
-		//m_NotifyDevHandle = RegisterDeviceNotification(m_hWnd,
-		//	&broadcastInterface,
-		//	DEVICE_NOTIFY_WINDOW_HANDLE);
-		//if(m_NotifyDevHandle)
-		//	CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_THREAD_USBKEY_CHECK, L"注册USB提示");
-		//else
-		//{
-		//	int error = GetLastError();
-		//	CRecordProgram::GetInstance()->FeedbackError(MY_PRO_NAME, MY_THREAD_USBKEY_CHECK, CRecordProgram::GetInstance()->GetRecordInfo(L"注册USB提示失败:%d", error));
-		//}
-
-
 	}
 	m_Netstat = CheckNetState();
 
@@ -299,7 +469,7 @@ LRESULT CMainDlg::OnNcPaint(WORD /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 {
 	static int time = 2;
 
-	if(time > 0)
+	if(time > 1)
 	{
 		ShowWindow(SW_HIDE);
 		time --;
@@ -308,7 +478,7 @@ LRESULT CMainDlg::OnNcPaint(WORD /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 }
 void CMainDlg::ShowPop()
 {
-	SetWindowPos(HWND_TOP, 0, 0, 0, 0 ,SWP_NOMOVE | SWP_NOSIZE);
+	SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0 ,SWP_NOMOVE | SWP_NOSIZE);
 	if(m_bShouldShow)//需要再提醒
 		if(m_bTodayShow && m_bShowNow)//今天需要提醒
 		{
@@ -349,7 +519,7 @@ void CMainDlg::ShowPop()
 
 			AnimateWindow(m_hWnd, 2000, AW_BLEND);// 淡入
 
-			SetTimer(MH_CHECKEVENT,CHECK_TIME,NULL);
+		//	SetTimer(MH_CHECKEVENT,CHECK_TIME,NULL);
 			ShowWindow(SW_SHOW);
 			return;
 		}
@@ -504,31 +674,70 @@ void CMainDlg::OnLButtonDown(UINT nFlags, CPoint point)
 }
 LRESULT CMainDlg::OnLookUp(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	ShowWindow(false);
+	OSVERSIONINFOEX OSVerInfo; 
+	OSVerInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX); 
+	if(!GetVersionEx((OSVERSIONINFO *)&OSVerInfo)) 
+	{ 
+		OSVerInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO); 
+		GetVersionEx((OSVERSIONINFO *)&OSVerInfo); 
+	} 
+	//ShowWindow(false);
 	WCHAR szPath[MAX_PATH] ={0};
 	::GetModuleFileName(NULL, szPath, _countof(szPath));
 	::PathRemoveFileSpecW(szPath);
-	
-	wstring path(szPath);
-	path += L"\\MoneyHub.exe -agent";
 
-	STARTUPINFO si;	
-	PROCESS_INFORMATION pi;	
-	ZeroMemory( &pi, sizeof(pi) );	
-	ZeroMemory( &si, sizeof(si) );	
-	si.cb = sizeof(si);	
-	//带参数打开
-	if(CreateProcessW(NULL, (LPWSTR)path.c_str(), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi))
-	{	
-		CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_THREAD_DLG_FUC, L"启动财金汇成功");
-		CloseHandle( pi.hProcess );		
-		CloseHandle( pi.hThread );		
+	wstring path(szPath);
+	path += L"\\MoneyHub.exe";
+
+	if(OSVerInfo.dwMajorVersion >= 6) // Vista 以上 
+	{
+		SHELLEXECUTEINFOW shExecInfo ;    
+		memset(&shExecInfo,0,sizeof(SHELLEXECUTEINFOW));    
+		shExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);    
+		shExecInfo.lpVerb = L"runas";    
+		shExecInfo.lpFile = path.c_str();    
+		shExecInfo.lpParameters = L"-agent";    
+		shExecInfo.nShow = SW_SHOW ;    
+		shExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS ;   
+		shExecInfo.hInstApp = NULL;
+		//::MessageBoxW(NULL, L"ShellExecuteEx", L"财金汇UAC", MB_OK);
+		if(ShellExecuteEx(&shExecInfo)) 
+		{ 
+			CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_THREAD_BANK_UAC, L"Svr启动moneyhub成功");
+			if(shExecInfo.hProcess != 0)
+			{
+				CloseHandle(shExecInfo.hProcess);
+			}	 
+		} 
+		else 
+		{ 
+			CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_THREAD_BANK_UAC, L"Svr启动moneyhub失败");
+		}
+
 	}
 	else
 	{
-		int error = GetLastError();
-		CRecordProgram::GetInstance()->FeedbackError(MY_PRO_NAME, MY_THREAD_DLG_FUC, CRecordProgram::GetInstance()->GetRecordInfo(L"启动财金汇失败:%d", error));
+		path +=  L" -agent";
+		STARTUPINFO si;	
+		PROCESS_INFORMATION pi;	
+		ZeroMemory( &pi, sizeof(pi) );	
+		ZeroMemory( &si, sizeof(si) );	
+		si.cb = sizeof(si);	
+		//带参数打开
+		if(CreateProcessW(NULL, (LPWSTR)path.c_str(), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi))
+		{	
+			CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_THREAD_DLG_FUC, L"启动财金汇成功");
+			CloseHandle( pi.hProcess );		
+			CloseHandle( pi.hThread );		
+		}
+		else
+		{
+			int error = GetLastError();
+			CRecordProgram::GetInstance()->FeedbackError(MY_PRO_NAME, MY_THREAD_DLG_FUC, CRecordProgram::GetInstance()->GetRecordInfo(L"启动财金汇失败:%d", error));
+		}
 	}
+
+	ShowWindow(SW_HIDE);
 
 	return 0;
 }
@@ -609,76 +818,4 @@ BOOL CMainDlg::IsAutoRunUpdate()
 	}
 
 	return bAutoRun;
-}
-
-LRESULT CMainDlg::OnRunUAC(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam/**/, BOOL &/*bHandled*/)
-{
-	CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_THREAD_BANK_UAC, L"RunUAC");
-	char appid[16] = {0};
-	memcpy(appid, (void *)&lParam, sizeof(LPARAM));
-	string aid(appid);
-
-	RunUAC(aid);
-	return 0;
-}
-
-void CMainDlg::RunUAC(string aid)
-{
-	//OSVERSIONINFOEX OSVerInfo; 
-	//OSVerInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX); 
-	//if(!GetVersionEx((OSVERSIONINFO *)&OSVerInfo)) 
-	//{ 
-	//	OSVerInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO); 
-	//	GetVersionEx((OSVERSIONINFO *)&OSVerInfo); 
-	//} 
-
-	//if(OSVerInfo.dwMajorVersion >= 6) // Vista 以上 
-	//{ 
-	//	::SwitchToThisWindow(m_hWnd, true);
-	//	WCHAR szPath[MAX_PATH] ={0};
-	//	::GetModuleFileName(NULL, szPath, _countof(szPath));
-	//	::PathRemoveFileSpecW(szPath);
-
-	//	wstring path(szPath);
-	//	path += L"\\Moneyhub.exe";
-
-	//	SHELLEXECUTEINFOW shExecInfo ;    
-	//	memset(&shExecInfo,0,sizeof(SHELLEXECUTEINFOW));    
-	//	shExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);    
-	//	shExecInfo.lpVerb = L"runas";    
-	//	shExecInfo.lpFile = path.c_str();    
-	//	shExecInfo.lpParameters = L"-uac";    
-	//	shExecInfo.nShow = SW_SHOW ;    
-	//	shExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS ;   
-	//	shExecInfo.hInstApp = NULL;
-	//	//::MessageBoxW(NULL, L"ShellExecuteEx", L"财金汇UAC", MB_OK);
-	//	if(ShellExecuteEx(&shExecInfo)) 
-	//	{ 
-	//		CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_THREAD_BANK_UAC, L"RunUAC 成功");
-	//		if(shExecInfo.hProcess != 0)
-	//		{
-	//			::WaitForSingleObject(shExecInfo.hProcess, 5000);
-	//		}			
-	//		// 启动成功 
-	//	} 
-	//	else 
-	//	{ 
-	//		CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_THREAD_BANK_UAC, L"RunUAC失败");
-	//		// 启动失败，可能UAC没有获得用户许可 
-	//		//::MessageBoxW(NULL, L"取消收藏",L"财金汇", MB_OK);
-	//		HWND hWnd = FindWindow(_T("MONEYHUB_MAINFRAME"), NULL);
-	//		if (hWnd)
-	//		{
-	//			LPARAM lParam = 0;
-	//			memcpy((void *)&lParam, aid.c_str(), sizeof(LPARAM));
-	//			::PostMessageW(hWnd, WM_CANCEL_ADDFAV, 0, lParam);//
-	//		}
-	//	}
-
-	//	HWND hMainFrame = FindWindow(_T("MONEYHUB_MAINFRAME"), NULL);
-	//	if(hMainFrame != NULL)
-	//	{
-	//		::SwitchToThisWindow(hMainFrame, true);
-	//	}
-	//} 
 }

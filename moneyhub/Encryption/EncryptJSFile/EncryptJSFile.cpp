@@ -75,7 +75,7 @@ void TraversalPath(const char* lpszPath,const char * lpszFilePath, FILE *fp)
 
 		if ((strcmp(fn.c_str(), ".") != 0) && (strcmp(fn.c_str(), "..") != 0) && (strcmp(fn.c_str(), ".svn") != 0))
 		{
-			//为每个单独升级模块制作xxx.chk完整性效验文件
+			//为每个单独升级模块制作xxx.mchk完整性效验文件
 			/*if( isSpecial(FindFileData.cFileName) )
 				continue;*/
 
@@ -129,7 +129,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::string strFileList = argv[1];//..Release
 	
 
-    //为各个银行生成相应的info.chk文件
+    //为各个银行生成相应的info.mchk文件
 	std::string strPath = strFileList;
 	strPath += HTMLFILEPATH;
 	

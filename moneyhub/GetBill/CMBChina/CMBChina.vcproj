@@ -226,6 +226,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="uxtheme.lib wininet.lib"
 				LinkIncremental="1"
 				ModuleDefinitionFile="CMBChina.def"
 				GenerateDebugInformation="false"
@@ -308,6 +309,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="uxtheme.lib wininet.lib"
 				LinkIncremental="1"
 				ModuleDefinitionFile="CMBChina.def"
 				GenerateDebugInformation="false"

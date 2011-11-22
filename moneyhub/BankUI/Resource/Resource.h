@@ -2,6 +2,7 @@
 // Microsoft Visual C++ generated include file.
 // Used by BankUI.rc
 //
+#define IDOK2                           2
 #define IDR_MAINFRAME                   100
 #define IDI_ICON_BAIDU                  133
 #define IDI_ICON_GOOGLE                 134
@@ -23,6 +24,8 @@
 #define IDD_DLG_MENU                    158
 #define IDD_DIALOG1                     159
 #define IDD_DLG_BILL_SELECT             159
+#define IDD_SELECT_MONTH                160
+#define IDD_DIALOG_SYNCHRO              161
 #define IDI_ICON_VIDEO                  200
 #define IDC_CHECK_AUTORUN               1163
 #define IDC_CHECK_STRICTFILTER          1164
@@ -98,6 +101,25 @@
 #define IDC_STATIC_CLEANLOAD            1228
 #define IDC_STATIC_QUITLOAD             1229
 #define IDC_BUTTON1                     1230
+#define IDC_BUTTONsyn                   1230
+#define IDC_PROGRESS_SYNCHRO            1231
+#define IDC_DATETIMEPICKER1             1232
+#define IDC_STATICD                     1232
+#define IDC_STATICS                     1232
+#define IDC_DATETIMEPICKER2             1233
+#define IDC_STATIC_UNKNOWNLENGTHS       1233
+#define IDC_SYSLINK1                    1234
+#define IDC_STATIC_FILENAMES            1234
+#define IDC_SYSLINK2                    1235
+#define IDC_STATIC_STATUSS              1235
+#define IDC_SYSLINK3                    1236
+#define IDC_RESOURCE                    1236
+#define IDC_SYSLINK4                    1237
+#define IDC_CALLBACKLIST                1237
+#define IDC_STATIC1                     1238
+#define IDC_SYSLINK5                    1239
+#define IDC_STATIC2                     1240
+#define IDC_BUTTON2                     1240
 #define ID_HELP_ABOUT                   33065
 #define ID_HELP_UPDATE                  33066
 #define ID_HELP_SETTING                 33069
@@ -113,9 +135,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        160
+#define _APS_NEXT_RESOURCE_VALUE        163
 #define _APS_NEXT_COMMAND_VALUE         33081
-#define _APS_NEXT_CONTROL_VALUE         1231
+#define _APS_NEXT_CONTROL_VALUE         1241
 #define _APS_NEXT_SYMED_VALUE           103
 #endif
 #endif

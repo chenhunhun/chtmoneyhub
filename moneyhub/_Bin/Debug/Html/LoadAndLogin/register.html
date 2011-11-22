@@ -1,0 +1,154 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+	<meta http-equiv = "Content-Type" content = "text/html;charset=utf-8"/>
+	<title>注册</title>
+    <link href = "css/style.css" type = "text/css" rel = "stylesheet" />
+	<link href = "css/hub-list.css" type = "text/css" rel = "stylesheet"/>
+</head>
+<body>
+    <div id = "login-wrap" class = "wrap" style = "display: none">
+       <div class = "boxBg">
+	       <div class = "box-blank"></div>
+	       <div class = "box-logo">
+		       <img src = "images/logo.gif"/>
+		   </div>
+		   <div class = "box-form">
+		       <form id = "login_form">
+			        <div class = "dEAItem">
+					    <div style = "height: 5px; overflow: hidden"></div>
+						<div class = "dRDRInput">
+							<input id = "login-mail" type = "text" style = "width: 169px;" value = "请输入邮箱地址"/>
+							<input type = "hidden" value = "1" name = "sb" id = "sb"/>
+							<div id = "registered-icon" class = "iconInput">
+							   <img src = "images/icon.gif"/>
+							</div>   
+						</div>
+						<div id = "login-to-register" class = "form-label" style = "cursor: pointer">立即注册</div>
+					    <div id = "login-mail-validate" class = "dValidation login-validate"></div>
+					</div>
+					<div class = "dEAItem">
+					    <div class = "dRDRInput">
+					       <input  id = "login-password-name" type = "text" value = "请输入密码" psChange = "1"/>
+						   <input  id = "login-password" type = "password" style = "display:none"/>
+					    </div>
+					    <div class = "form-label"><a href = "#">找回密码</a></div>
+						<div id = "login-password-validate" class = "dValidation login-validate"></div>
+					</div>
+				    <div class = "LoginItem">
+					    <div id = "login-checkbox" class = "checkBox">
+					    </div>
+					    <div class = "form-label">自动登录</div>
+						<div class = "login-button">
+						   <img id = "login" src = "images/login1.gif"/>
+						</div>						
+				    </div>
+			   </form>
+		   </div>
+		   <div class = "box-blank">
+		       <div id = "login-msg" class = "loginMsg"></div>
+		   </div>
+	   </div>
+	   <div class = "boxBgButtom">
+	        <div id = "visitors" class = "form-label visitor-ask login-ask" style = "margin-right: 5px; margin-top: ">
+			   <a href = "#">使用访客身份访问</a>
+			</div>
+	   </div>
+   </div>
+   <div id = "register-wrap" class = "wrap">
+       <div class = "boxBg">
+	       <div class = "box-blank register-box-blank"></div>
+		   <div class = "register-blank"></div>
+		   <div class = "box-form box-form-register">
+		       <form id = "register_form">
+					<div class = "dEAItem">
+						<div class = "registerInputLabel">
+							注册邮箱
+						</div>
+						<div class = "dRDRInput">
+							<input id = "register-mail" type = "text" value = "请输入您常用的邮箱地址"/>   
+						</div>
+						<div id = "register-mail-tip" class = "register-tip"></div>
+						<div id = "register-mail-validate" class = "dValidation register-validate" ></div>
+					</div>
+					<div class = "dEAItem">
+						<div class = "registerInputLabel">
+							设置密码
+						</div>
+						<div class = "dRDRInput">
+						   <input  id = "register-password-name" type = "text" value = "6-20字符（数字、字母、符号）" psChange = "1"/>
+						   <input  id = "register-password" type = "password" style = "display:none"/>
+						</div>
+						<div id = "register-password-tip" class = "register-tip"></div>
+						<div id = "register-password-validate" class = "dValidation register-validate" ></div>
+					</div>
+					<div class = "dEAItem">
+						<div class = "registerInputLabel">
+							确认密码
+						</div>
+						<div class = "dRDRInput">
+						   <input  id = "register-password-agname" type = "text" value = "再输入一次密码以确认无误" psChange = "1"/>
+						   <input  id = "register-password-again" type = "password" style = "display:none"/>
+						</div>
+						<div id = "register-password-again-tip" class = "register-tip"></div>
+						<div id = "register-password-again-validate" class = "dValidation register-validate" ></div>					
+					</div>
+					<div class = "dEAItem">
+					    <div class = "registerInputLabel"></div>
+						<div id = "register-checkbox" class = "checkBox" >
+						</div>
+						<div class = "form-label register-label">同意<a href = "#">《财金汇用户服务条款》</a></div>
+					</div>
+					<div class = "dEAItem">
+					    <div class = "registerInputLabel"></div>
+						<div id = "register-msg" class = "registerMsg">
+						</div>
+					</div>
+			   </form>
+		   </div>
+	   </div>
+	   <div class = "boxBgButtom">
+	        <div class = "register-button-blank"></div>
+			<div class = "register-button-area">
+				<div class = "register-button">
+				   <img id = "register" src = "images/register1.gif"/>
+				</div>
+				<div id = "ask-visitors" class = "form-label visitor-ask">
+				   <a>已注册？点此登录</a>
+				</div>
+			</div>
+	   </div>
+   </div>
+   <div id = "register-success" class = "wrap" style = "display: none">
+       <div class = "boxBg">
+	        <div class = "register-success-blank"></div>
+			<div class = "register-success-title">
+			    <div class = "register-success-tip">
+				</div>
+				<div class = "register-success-greet">
+				    恭喜你!成功注册：
+				</div>
+				<div id = "success-mail" class = "register-success-mail">
+				</div>
+			</div>
+			<div class = "register-success-content">
+			    我们已向您的注册邮箱发送了一封验证邮件</br>
+				请及时登录邮箱完成验证
+			</div>
+	   </div>
+	   <div class = "boxBgButtom">
+			<div class = "register-success-area">
+				<div class = "register-success-login">
+				   <img id = "login-mail-immediate" src = "images/login2.gif"/>
+				</div>
+			</div>
+	   </div>
+   </div>
+     
+</body>
+<script type = "text/javascript" src = "script/hub.js"></script>
+<script type = "text/javascript" src = "script/effect.js"></script>
+<script type = "text/javascript" src = "script/register.js"></script>
+<script type = "text/javascript" src = "script/login.js"></script>
+<script type = "text/javascript" src = "script/initRegister.js"></script>
+</html>

@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////////////////////////////////
 #include "..\Utils\SQLite\CppSQLite3.h"
 #include <string>
+#include <atlstr.h>
 #include <vector>
 #include <time.h>
 #pragma once
@@ -163,23 +164,21 @@ public:
 	// 在原有的版本上升级记账所要的一些数据
 	void CreateAccountTables(CppSQLite3DB& db)
 	{
-		db.execDML("CREATE  TABLE IF NOT EXISTS `tbAccount` (\
+		/*db.execDML("CREATE  TABLE IF NOT EXISTS `tbAccount` (\
 				   `id` INTeger  NOT NULL PRIMARY KEY AUTOINCREMENT ,\
 				   `Name` VARCHAR(256) NOT NULL ,\
 				   `tbBank_id` INT(11)  NULL ,\
 				   `tbAccountType_id` INT(11)  NOT NULL ,\
 				   `AccountNumber` VARCHAR(256) NULL ,\
-				   `Comment` VARCHAR(256) NULL );");
-		/*CONSTRAINT `fk_tbAccount_tbBank`\
-		FOREIGN KEY (`tbBank_id` )\
-		REFERENCES `tbBank` (`id` )\
-		ON DELETE SET NULL\
-		ON UPDATE CASCADE,\
-		CONSTRAINT `fk_tbAccount_tbAccountType1`\
-		FOREIGN KEY (`tbAccountType_id` )\
-		REFERENCES `tbAccountType` (`id` )\
-		ON DELETE CASCADE\
-		ON UPDATE CASCADE*/
+				   `Comment` VARCHAR(256) NULL,\
+				   `keyInfo` varchar(255));");
+
+		db.execDML("CREATE TABLE IF NOT EXISTS 'tbAccountGetBillMonth' (\
+			'id' INTEGER  PRIMARY KEY AUTOINCREMENT NOT NULL,\
+			'tbaccount_id' INTEGER  NOT NULL,\
+			'tbmonth' VARCHAR(6)  NOT NULL,\
+			'tbKeyInfo' VARCHAR(100)  NOT NULL\
+			)");
 		db.execDML("CREATE  TABLE IF NOT EXISTS `tbAccountType` (\
 				   `id` INTeger  NOT NULL PRIMARY KEY AUTOINCREMENT ,\
 				   `Name` VARCHAR(256) NULL);");
@@ -198,11 +197,6 @@ public:
 				   `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT ,\
 				   `Name` VARCHAR(256) NULL ,\
 				   `tbCategory1_id` INT(11)  NOT NULL);");
-		/*CONSTRAINT `fk_tbCategory2_tbCategory11`\
-		FOREIGN KEY (`tbCategory1_id` )\
-		REFERENCES `tbCategory1` (`id` )\
-		ON DELETE CASCADE\
-		ON UPDATE CASCADE*/
 		db.execDML("CREATE  TABLE IF NOT EXISTS `tbCurrency` (\
 				   `id` INTEGER NOT NULL PRIMARY KEY,\
 				   `Name` VARCHAR(256) NOT NULL  );");
@@ -225,54 +219,127 @@ public:
 				   `EndDate` DATE NULL ,\
 				   `Comment` VARCHAR(256) NULL ,\
 				   `tbAccountType_id` INT(11) NULL);");
-		/*CONSTRAINT `fk_tbSubAccount_tbAccount1`\
-		FOREIGN KEY (`tbAccount_id` )\
-		REFERENCES `tbAccount` (`id` )\
-		ON DELETE CASCADE\
-		ON UPDATE CASCADE,\
-		CONSTRAINT `fk_tbSubAccount_tbCurrency1`\
-		FOREIGN KEY (`tbCurrency_id` )\
-		REFERENCES `tbCurrency` (`id` )\
-		ON DELETE CASCADE\
-		ON UPDATE CASCADE,\
-		CONSTRAINT `fk_tbSubAccount_tbAccountType1`\
-		FOREIGN KEY (`tbAccountType_id` )\
-		REFERENCES `tbAccountType` (`id` )\
-		ON DELETE CASCADE\
-		ON UPDATE CASCADE*/
 		db.execDML("CREATE  TABLE IF NOT EXISTS `tbTransaction` (\
 				   `id` INTEGER NOT NULL  PRIMARY KEY AUTOINCREMENT ,\
 				   `TransDate` DEFAULT (DATE(CURRENT_TIMESTAMP,'localtime')) ,\
 				   `tbPayee_id` INT(11)  NULL ,\
 				   `tbCategory2_id` INT(11)  NULL ,\
 				   `Amount` FLOAT NOT NULL DEFAULT 0 ,\
-				   `direction` TINYINT NULL DEFAULT 0 ,\
+				   `direction` INT(11) NULL DEFAULT 0 ,\
 				   `tbSubAccount_id` INT(11)  NOT NULL ,\
 				   `tbSubAccount_id1` INT(11)  NULL ,\
 				   `ExchangeRate` FLOAT NULL ,\
 				   `Comment` VARCHAR(256) NULL ,\
-				   `sign` VARCHAR(256) NULL);");
-		/*CONSTRAINT `fk_tbTransaction_tbPayee1`\
-		FOREIGN KEY (`tbPayee_id` )\
-		REFERENCES `tbPayee` (`id` )\
-		ON DELETE CASCADE\
-		ON UPDATE CASCADE,\
-		CONSTRAINT `fk_tbTransaction_tbCategory21`\
-		FOREIGN KEY (`tbCategory2_id` )\
-		REFERENCES `tbCategory2` (`id` )\
-		ON DELETE CASCADE\
-		ON UPDATE CASCADE,\
-		CONSTRAINT `fk_tbTransaction_tbSubAccount1`\
-		FOREIGN KEY (`tbSubAccount_id` )\
-		REFERENCES `tbSubAccount` (`id` )\
-		ON DELETE CASCADE\
-		ON UPDATE CASCADE,\
-		CONSTRAINT `fk_tbTransaction_tbSubAccount2`\
-		FOREIGN KEY (`tbSubAccount_id1` )\
-		REFERENCES `tbSubAccount` (`id` )\
-		ON DELETE CASCADE\
-		ON UPDATE CASCADE*/
+				   `sign` VARCHAR(256) NULL,\
+				   `transactionClasses` tinyint (1)DEFAULT 0 NOT NULL,\
+				   `isEdit` tinyint (1)DEFAULT 0 NOT NULL);");*/
+		db.execDML("CREATE TABLE [tbAccount] ( \
+				   [id] bigint PRIMARY KEY NOT NULL , \
+				   [Name] VARCHAR(256) NOT NULL , \
+				   [tbBank_id] bigint  NULL , \
+				   [tbAccountType_id] INT(11)  NOT NULL , \
+				   [AccountNumber] VARCHAR(256) NULL , \
+				   [Comment] VARCHAR(256) NULL , \
+				   [keyInfo] varchar(255) NULL , \
+				   [status] int(2) default 0, \
+				   [UT] bigint NOT NULL default 0 \
+				   );");
 
+
+		db.execDML("CREATE TABLE [tbAccountGetBillMonth] ( \
+				   [id] bigint PRIMARY KEY NOT NULL, \
+				   [tbaccount_id] bigint  NOT NULL, \
+				   [tbmonth] VARCHAR(6)  NOT NULL, \
+				   [tbKeyInfo] VARCHAR(100)  NOT NULL, \
+				   [status] int(2) NOT NULL default 0, \
+				   [UT] bigint NOT NULL default 0 \
+				   );");
+
+		db.execDML("CREATE TABLE [tbAccountType] ( \
+				   [id] INTEGER  NOT NULL PRIMARY KEY AUTOINCREMENT , \
+				   [Name] VARCHAR(256) NULL \
+				   );");
+
+		db.execDML("CREATE TABLE [tbBank] ( \
+				   [id] bigint  NOT NULL PRIMARY KEY, \
+				   [name] VARCHAR(256)  NOT NULL, \
+				   [classId] INTEGER NOT NULL, \
+				   [BankID] VARCHAR(4)  NULL, \
+				   [Phone] VARCHAR(256)  NULL, \
+				   [Website] vARCHAR(256)  NULL, \
+				   [order] int(4) NOT NULL default 0, \
+				   [status] int(2) NOT NULL default 0, \
+				   [UT] bigint NOT NULL default 0 \
+				   );");
+
+		db.execDML("CREATE TABLE [tbCategory1] ( \
+				   [id] bigint  NOT NULL PRIMARY KEY , \
+				   [Name] VARCHAR(256) NULL , \
+				   [Type] TINYINT NULL, \
+				   [order] int(4) NOT NULL default 0, \
+				   [status] int(2) NOT NULL default 0, \
+				   [UT] bigint NOT NULL default 0 \
+				   );");
+
+		db.execDML("CREATE TABLE [tbCategory2] ( \
+				   [id] bigint NOT NULL PRIMARY KEY , \
+				   [Name] VARCHAR(256) NULL , \
+				   [tbCategory1_id] bigint  NOT NULL, \
+				   [order] int(4) NOT NULL default 0, \
+				   [status] int(2) NOT NULL default 0, \
+				   [UT] bigint NOT NULL default 0 \
+				   );");
+
+		db.execDML("CREATE TABLE [tbCurrency] ( \
+				   [id] INTEGER NOT NULL PRIMARY KEY, \
+				   [Name] VARCHAR(256), \
+				   [order] integer(4) NOT NULL default 0 \
+				   );");
+
+		db.execDML("CREATE TABLE [tbPayee] ( \
+				   [id] bigint NOT NULL PRIMARY KEY, \
+				   [Name] VARCHAR(256) NOT NULL, \
+				   [email] VARCHAR(256), \
+				   [tel] VARCHAR(256), \
+				   [order] int(4) NOT NULL default 0, \
+				   [status] int(2) NOT NULL default 0, \
+				   [UT] bigint NOT NULL default 0 \
+				   );");
+
+		db.execDML("CREATE TABLE [tbSubAccount] ( \
+				   [id] bigint NOT NULL PRIMARY KEY, \
+				   [tbAccount_id] bigint NOT NULL, \
+				   [tbCurrency_id] INT(11) NOT NULL, \
+				   [name] VARCHAR(256) NOT NULL, \
+				   [OpenBalance] FLOAT NOT NULL, \
+				   [Balance] FLOAT NOT NULL , \
+				   [Days] INT(11) NULL, \
+				   [EndDate] DATE NULL, \
+				   [Comment] VARCHAR(256) NULL, \
+				   [tbAccountType_id] INT(11) NULL, \
+				   [order] int(4) NOT NULL default 0, \
+				   [status] int(2) NOT NULL default 0, \
+				   [UT] bigint NOT NULL default 0 \
+				   );");
+
+		db.execDML("CREATE TABLE [tbTransaction] ( \
+				   [id] bigint NOT NULL PRIMARY KEY, \
+				   [TransDate] DEFAULT (DATE(CURRENT_TIMESTAMP,'localtime')) , \
+				   [tbPayee_id] bigint  NULL , \
+				   [tbCategory2_id] bigint  NULL , \
+				   [Amount] FLOAT NOT NULL DEFAULT 0 , \
+				   [direction] bigint NULL DEFAULT 0 , \
+				   [tbSubAccount_id] bigint NOT NULL, \
+				   [tbSubAccount_id1] bingint  NULL , \
+				   [ExchangeRate] FLOAT NULL , \
+				   [Comment] VARCHAR(256) NULL , \
+				   [sign] VARCHAR(256) NULL, \
+				   [transactionClasses] tinyint(1) default 0 not null, \
+				   [isEdit] tinyint(1) default 0 not null, \
+				   [order] int(4) NOT NULL default 0, \
+				   [status] int(2) NOT NULL default 0, \
+				   [UT] bigint NOT NULL default 0 \
+				   );");
 		db.execDML("CREATE INDEX `fk_tbAccount_tbBank` ON `tbAccount` (`tbBank_id` ASC);");
 		db.execDML("CREATE INDEX `fk_tbAccount_tbAccountType1` ON `tbAccount` (`tbAccountType_id` ASC);");
 		db.execDML("CREATE INDEX `fk_tbCategory2_tbCategory11` ON `tbCategory2` (`tbCategory1_id` ASC);");
@@ -283,6 +350,16 @@ public:
 		db.execDML("CREATE INDEX `fk_tbTransaction_tbCategory21` ON `tbTransaction` (`tbCategory2_id` ASC);");
 		db.execDML("CREATE INDEX `fk_tbTransaction_tbSubAccount1` ON `tbTransaction` (`tbSubAccount_id` ASC);");
 		db.execDML("CREATE INDEX `fk_tbTransaction_tbSubAccount2` ON `tbTransaction` (`tbSubAccount_id1` ASC);");
+		db.execDML("CREATE TABLE IF NOT EXISTS 'tbProductChoice' (\
+					   'id' bigint  NOT NULL,\
+					   'interestchoice' varchar(256)  NULL,\
+					   'durationchoice' varchar(256)  NULL,\
+					   'currencychoice' varchar(256)  NULL,\
+					   'bankchoice' varchar(256)  NULL,\
+					   'userId' bigint  NOT NULL,\
+					   'UT' bigint  NOT NULL\
+					   );");
+		db.execDML("insert into tbProductChoice (id, interestchoice,durationchoice,currencychoice,bankchoice,userId,ut) values(0,'1|2|3|4','1|2|3|4|5|6','1|2','1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19',0,0);");
 
 		return;
 	}
@@ -323,6 +400,7 @@ public:
 		//bufSQL.format("INSERT INTO tbToday VALUES(%d);", tToday);
 		//db.execDML(bufSQL);
 
+		//db.execDML("INSERT INTO tbfav (favinfo, status, favorder, deleted) VALUES ('a001', 0, 1, 0);");
 		
 		// 在从系统表中拷贝数据时会将相应表中原有的数据清除，所以新插入的数据应该在拷完之后
 		db.execDML("INSERT INTO tbAccountType (id, Name) VALUES (100, \"活期存款\");");
@@ -339,7 +417,7 @@ public:
 		//db.execDML("INSERT INTO tbSubAccount (id, Name, tbAccount_id, tbCurrency_id, OpenBalance, Balance) VALUES (3, \"美元\", 3, 2, 0, 0);");
 		db.execDML("INSERT INTO tbSubAccount (id, Name, tbAccount_id, tbCurrency_id, OpenBalance, Balance) VALUES (4, \"人民币\", 1, 1, 0, 0);");
 
-		db.execDML("INSERT INTO tbDBInfo (schema_version) VALUES(6);"); //进当前版本为6
+		db.execDML("INSERT INTO tbDBInfo (schema_version) VALUES(7);"); //3.1进当前版本为7
 	}
 
 	// 将数据库的表拷贝到另一个数据库中
@@ -428,9 +506,7 @@ public:
 	}
 
 
-
-	// （可以满足表的结构不同，指定的列名进行拷贝）
-	bool CpyFromDifferentTable(PTBCPYNODE pPath, PTBCPYNODE pTabName, std::vector<PTBCPYNODE>* pColName,  LPSTR lpCondition = NULL)
+	bool CpyTbBankTable(PTBCPYNODE pPath, PTBCPYNODE pTabName, std::vector<PTBCPYNODE>* pColName,  LPSTR lpCondition = NULL)
 	{
 		ATLASSERT (NULL != pPath && NULL != pTabName && NULL != pColName);
 		if (NULL == pPath || NULL == pTabName || NULL == pColName)
@@ -490,6 +566,7 @@ public:
 		std::string strSqlFront = "Insert into ";
 		strSqlFront += pTabName->strDes;
 		strSqlFront += '(';
+		strSqlFront += "id,";
 		strSqlFront += strColsDes;
 		strSqlFront += ") Values ";
 
@@ -500,6 +577,10 @@ public:
 
 			std::string strColVals;
 			strColVals += '(';
+
+			CString strIndex;
+			strIndex.Format(L"%d,", i + 1);
+			strColVals += CW2A(strIndex);
 			for (int j = 0; j < tempTb.numFields(); j ++)
 			{
 				strColVals += '\'';
@@ -554,7 +635,7 @@ public:
 		colVect.push_back(&colNode1);
 		colVect.push_back(&colNode2);
 		colVect.push_back(&colNode3);
-		CpyFromDifferentTable(&path, &tabNode, &colVect, " where classId in(0, 1, 2)");//, " where sysAppType_id = '2'"
+		CpyTbBankTable(&path, &tabNode, &colVect, " where classId in(0, 1, 2)");//, " where sysAppType_id = '2'"
 	}
 
 
@@ -582,12 +663,18 @@ public:
 		db.execDML("CREATE  TABLE IF NOT EXISTS `sysCategory1` (\
 				   `id` INTEGER NOT NULL PRIMARY KEY  AUTOINCREMENT ,\
 				   `Name` VARCHAR(256) NOT NULL,\
-				   `Type` TINYINTNOT NULL);");
+				   `Type` TINYINTNOT NULL, \
+				   `order` int(4) NOT NULL default 0, \
+				   `status` int(2) NOT NULL default 0, \
+				   `UT` bigint NOT NULL default 0);");
 
 		db.execDML("CREATE  TABLE IF NOT EXISTS `sysCategory2` (\
 				   `id` INTEGER NOT NULL PRIMARY KEY  AUTOINCREMENT ,\
 				   `Name` VARCHAR(256) NOT NULL,\
-				   `sysCategory1_id` TINYINTNOT NULL);");
+				   `sysCategory1_id` TINYINTNOT NULL ,\
+				   `order` int(4) NOT NULL default 0, \
+				   `status` int(2) NOT NULL default 0, \
+				   `UT` bigint NOT NULL default 0);");
 
 		db.execDML("CREATE  TABLE IF NOT EXISTS `sysAccountType` (\
 				   `id` INTEGER NOT NULL PRIMARY KEY  AUTOINCREMENT ,\
@@ -595,7 +682,8 @@ public:
 
 		db.execDML("CREATE  TABLE IF NOT EXISTS `sysCurrency` (\
 				   `id` INTEGER NOT NULL PRIMARY KEY  AUTOINCREMENT ,\
-				   `Name` VARCHAR(256) NOT NULL);");
+				   `Name` VARCHAR(256) NOT NULL, \
+				   `order` integer(4) NOT NULL default 0);");
 
 		db.execDML("CREATE  TABLE IF NOT EXISTS `sysDBInfo` (\
 				   `schema_version` INTEGER NOT NULL);");
@@ -650,7 +738,7 @@ public:
 
 		db.execDML("INSERT INTO sysBank (id, Name, classId, ShortName, Position, sysAppType_id) VALUES (\"e001\", \"支付宝\", 2, \"alipay\", 0, 6);");
 		//db.execDML("INSERT INTO sysBank (id, Name, classId, ShortName, Position, sysAppType_id) VALUES (\"e002\", \"首信易支付\", 2, \"payease\", 1, 6);");
-		//db.execDML("INSERT INTO sysBank (id, Name, classId, ShortName, Position, sysAppType_id) VALUES (\"e003\", \"开联\", 2, \"lianxin\", 2, 6);");
+		db.execDML("INSERT INTO sysBank (id, Name, classId, ShortName, Position, sysAppType_id) VALUES (\"e003\", \"开联\", 2, \"openunion\", 2, 6);");
 		db.execDML("INSERT INTO sysBank (id, Name, classId, ShortName, Position, sysAppType_id) VALUES (\"e004\", \"易宝\", 2, \"yeepay\", 3, 6);");
 		db.execDML("INSERT INTO sysBank (id, Name, classId, ShortName, Position, sysAppType_id) VALUES (\"e005\", \"财付通\", 2, \"tenpay\", 4, 6);");
 		db.execDML("INSERT INTO sysBank (id, Name, classId, ShortName, Position, sysAppType_id) VALUES (\"e006\", \"快钱\", 2, \"99bill\", 5, 6);");
@@ -720,7 +808,8 @@ public:
 		db.execDML("INSERT INTO sysSubLink (sysBank_id, URL, URLText, LinkOrder) VALUES (\"d009\", \"http://www.bosera.com/\", \"首页\", 0);");
 		db.execDML("INSERT INTO sysSubLink (sysBank_id, URL, URLText, LinkOrder) VALUES (\"e001\", \"http://www.alipay.com/\", \"首页\", 0);");	
 		//db.execDML("INSERT INTO sysSubLink (sysBank_id, URL, URLText, LinkOrder) VALUES (\"e002\", \"http://www.beijing.com.cn/\", \"首页\", 0);");
-		//db.execDML("INSERT INTO sysSubLink (sysBank_id, URL, URLText, LinkOrder) VALUES (\"e003\", \"http://www.openunion.cn/\", \"首页\", 0);");
+		db.execDML("INSERT INTO sysSubLink (sysBank_id, URL, URLText, LinkOrder) VALUES (\"e003\", \"http://www.openunion.cn/\", \"首页\", 0);");
+		db.execDML("INSERT INTO sysSubLink (sysBank_id, URL, URLText, LinkOrder) VALUES (\"e003\", \"http://card.openunion.cn/\", \"连心卡\", 0);");
 		db.execDML("INSERT INTO sysSubLink (sysBank_id, URL, URLText, LinkOrder) VALUES (\"e004\", \"http://www.yeepay.com/\", \"首页\", 0);");
 		db.execDML("INSERT INTO sysSubLink (sysBank_id, URL, URLText, LinkOrder) VALUES (\"e005\", \"http://www.tenpay.com/\", \"首页\", 0);");
 		db.execDML("INSERT INTO sysSubLink (sysBank_id, URL, URLText, LinkOrder) VALUES (\"e006\", \"http://www.99bill.com/\", \"首页\", 0);");
@@ -775,6 +864,8 @@ public:
 		db.execDML("INSERT INTO sysCategory1 (id, Name, Type) VALUES (10021, \"信用卡支出\", 0);");
 		db.execDML("INSERT INTO sysCategory1 (id, Name, Type) VALUES (10023, \"未定义支出\", 0);");
 		db.execDML("INSERT INTO sysCategory1 (id, Name, Type) VALUES (10024, \"未定义收入\", 1);");
+		db.execDML("INSERT INTO sysCategory1 (id, Name, Type) VALUES (10025, \"余额调整\", 0);");// 张京要求9-19
+
 
 		db.execDML("INSERT INTO sysCategory2 (id, Name, sysCategory1_id) VALUES (1, \"食品\", 1);");
 		db.execDML("INSERT INTO sysCategory2 (id, Name, sysCategory1_id) VALUES (2, \"水果零食\", 1);");
@@ -859,14 +950,15 @@ public:
 		db.execDML("INSERT INTO sysCategory2 (id, Name, sysCategory1_id) VALUES (81, \"获得赠与\", 14);");
 		db.execDML("INSERT INTO sysCategory2 (id, Name, sysCategory1_id) VALUES (82, \"意外来钱\", 14);");
 		db.execDML("INSERT INTO sysCategory2 (id, Name, sysCategory1_id) VALUES (83, \"其它\", 14);");
-		db.execDML("INSERT INTO sysCategory2 (id, Name, sysCategory1_id) VALUES (10059, \"转账支出\", 10018);");
-		db.execDML("INSERT INTO sysCategory2 (id, Name, sysCategory1_id) VALUES (10060, \"转账收入\", 10019);");
+		db.execDML("INSERT INTO sysCategory2 (id, Name, sysCategory1_id) VALUES (10059, \"CATA420\", 10018);");//bug 2063
+		db.execDML("INSERT INTO sysCategory2 (id, Name, sysCategory1_id) VALUES (10060, \"CATA420\", 10019);");
 		db.execDML("INSERT INTO sysCategory2 (id, Name, sysCategory1_id) VALUES (10061, \"信用卡收入\", 10020);");
 		db.execDML("INSERT INTO sysCategory2 (id, Name, sysCategory1_id) VALUES (10062, \"信用卡支出\", 10021);");
 	//	db.execDML("INSERT INTO sysCategory2 (id, Name, sysCategory1_id) VALUES (10063, \"其它\", 17);");
 	//	db.execDML("INSERT INTO sysCategory2 (id, Name, sysCategory1_id) VALUES (10064, \"其它\", 22);");
-		db.execDML("INSERT INTO sysCategory2 (id, Name, sysCategory1_id) VALUES (10065, \"未定义支出\", 10023);");
-		db.execDML("INSERT INTO sysCategory2 (id, Name, sysCategory1_id) VALUES (10066, \"未定义收入\", 10024);");
+		db.execDML("INSERT INTO sysCategory2 (id, Name, sysCategory1_id) VALUES (10065, \"CATA420\", 10023);");
+		db.execDML("INSERT INTO sysCategory2 (id, Name, sysCategory1_id) VALUES (10066, \"CATA420\", 10024);");
+		db.execDML("INSERT INTO sysCategory2 (id, Name, sysCategory1_id) VALUES (10067, \"CATA420\", 10025)"); // 张京要求9-19
 
 		/*db.execDML("INSERT INTO sysCategory1 (id, Name, Type) VALUES (1, \"保险费\", 0);");
 		db.execDML("INSERT INTO sysCategory1 (id, Name, Type) VALUES (2, \"待报销\", 0);");

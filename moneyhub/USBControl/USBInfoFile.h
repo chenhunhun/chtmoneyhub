@@ -4,7 +4,7 @@
 #include "../Utils/CloudCheck/CloudFileSelector.h"
 #include <list>
 using namespace std;
-#define USB_INFO_FILE_NAME L"\\Config\\usbkeyinfo.chk"
+#define USB_INFO_FILE_NAME L"\\Config\\usbkeyinfo.mchk"
 
 class CUSBInfoFileManager
 {

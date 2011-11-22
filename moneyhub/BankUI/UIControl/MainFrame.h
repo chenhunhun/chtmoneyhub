@@ -23,17 +23,29 @@
 #include "LoadButton.h"
 #include "LoginButton.h"
 #include "SepButton.h"
+#include "TextButton.h"
+#include "AlarmButton.h"
+#include "SynchroButton.h"
 
 #include "SettingButton.h"
 #include <Message.h>
 #include "MenuDlg.h"
+#include "UserLoadInfoDlg.h"
 
 
 
 extern const UINT WM_BROADCAST_QUIT;
 extern const UINT WM_UPDATERETRY;
 extern const UINT WM_SWITCHTOPPAGE;
-#define SHOW_INFO_LENGTH	40
+#define SHOW_INFO_LENGTH	60
+
+enum USER_LOAD_STATE
+{
+	emNotLoad, // 未登录
+	emLoading, // 正在登录
+	emNetLoaded, // 网络登录
+	emLanLoaded, // 本地登录
+};
 
 class CMainFrame : public CMainFrameBorder<CMainFrame>, public CSizingBorder<CMainFrame>, public CFSMUtil
 {
@@ -53,6 +65,7 @@ private:
 	// message
 
 	BEGIN_MSG_MAP_EX(CMainFrame)
+		HANDLE_TUO_SETTEXT()
 		HANDLE_TUO_COPYDATA()
 
 		CHAIN_MSG_MAP(CMainFrameBorder<CMainFrame>)
@@ -68,8 +81,6 @@ private:
 		MESSAGE_HANDLER(WM_MULTI_PROCESS_NOTIFY_AXUI_CREATED, OnNotifyAxUICreated)
 		MESSAGE_HANDLER(WM_SHOWHELPMENU, OnShowHelpMenu)
 
-		MESSAGE_HANDLER(WM_GETTING_BILL, OnGetBill)
-
 		MESSAGE_HANDLER(WM_CLOUDALARM ,OnShowCloudMessage)
 		MESSAGE_HANDLER(WM_CLOUDCLEAR ,OnClearCloudMessage)
 		MESSAGE_HANDLER(WM_CLOUDCHECK ,OnShowCloudStatus)
@@ -77,6 +88,14 @@ private:
 		MESSAGE_HANDLER(WM_CLOUDNDESTORY ,OnCloudDestory)
 		MESSAGE_HANDLER(WM_MY_MENU_CLICKED, OnMyMenuClicked)
 //		MESSAGE_HANDLER(WM_FAV_BANK_CHANGE, OnFavBankChange)
+		MESSAGE_HANDLER(WM_FINIHS_AUTO_LOAD, OnFinishAutoLoad)
+		MESSAGE_HANDLER(WM_AUTO_USER_DLG, OnAutoUserDlg)
+		MESSAGE_HANDLER(WM_SHOW_USER_DLG, OnShowUserDlg)
+		MESSAGE_HANDLER(WM_UPDATE_USER_STATUS, UpdateUserLoadStatus)
+		MESSAGE_HANDLER(WM_CHANGE_USER_DLG_NAME, ChangeUserDlgName)
+		MESSAGE_HANDLER(WM_USER_INFO_CLICKED, UserInfoBtnClicked)
+		MESSAGE_HANDLER(WM_SHOW_USER_CLICKED_MENU, OnShowUserMenu)
+		MESSAGE_HANDLER(WM_USER_INFO_MENU_CLICKED, OnUserMenuClick)
 
 		MESSAGE_HANDLER(WM_CANCEL_ADDFAV, OnCancelAddFav)
 
@@ -105,8 +124,13 @@ private:
 
 	bool LoadFromFile(LPCTSTR lpPath);
 
+	LRESULT ChangeUserDlgName(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL &/*bHandled*/);
+	LRESULT UpdateUserLoadStatus(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL &/*bHandled*/); // 更新用户登录状态
+	LRESULT UserInfoBtnClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL &/*bHandled*/); // 红色叹号点击事件
+	LRESULT OnShowUserMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL &/*bHandled*/); // 弹出用户登录后的菜单
+	LRESULT OnUserMenuClick(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL &/*bHandled*/); // 用户登录后的菜单的响应事件
+
 	LRESULT OnClose(UINT /* uMsg */, WPARAM wParam, LPARAM lParam);
-	LRESULT OnGetBill(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled);
 	LRESULT OnNotifyAxUICreated(UINT /* uMsg */, WPARAM wParam, LPARAM lParam, BOOL &bHandled);
 	LRESULT OnShowHelpMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL &/*bHandled*/);
 
@@ -119,7 +143,10 @@ private:
 	LRESULT OnShowCheckMessage(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL &/*bHandled*/);
 	LRESULT OnMyMenuClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL &/*bHandled*/);
 
+	LRESULT OnAutoUserDlg(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL &/*bHandled*/);
+	LRESULT OnShowUserDlg(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL &/*bHandled*/);
 	LRESULT OnCancelAddFav(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL &/*bHandled*/);
+	LRESULT OnFinishAutoLoad(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL &/*bHandled*/);
 
 	LRESULT OnBroadcastQuit(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL &/*bHandled*/);
 	LRESULT OnUpdateRetry(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL &/*bHandled*/);
@@ -136,6 +163,7 @@ private:
 	//void RunUAC();
 	
 	HWND GetFrameWnd(){ return m_hWnd; }
+	BOOL UserAutoLoad();
 
 private:
 	FrameStorageStruct m_tsm;
@@ -163,13 +191,28 @@ private:
 	CHelpButton m_HelpButton;
 
 	// 登陆按钮
-	//CLoadButton m_LoadButton;
+	CLoadButton m_LoadButton;
 	
 	// 注册按钮
-	//CLoginButton m_LoginButton;
+	CLoginButton m_LoginButton;
+
+	// 显示用户名称按钮
+	CTextButton* m_pTextButton;
+
+	// 红色叹号按钮
+	CSepButton* m_pUserInfoBtn;
+
+	// 同步按钮
+	CSynchroButton m_SynchroButton;
+
+	// 提醒按钮
+	CAlarmButton m_AlarmButton;
 
 	// 分隔线
-	//CSepButton m_SepButton;
+	CSepButton m_SepButton;
+
+	// 显示“正在登陆”按钮
+	CTextButton* m_pLoadingButton;
 
 	// 设置按钮
 //	CSettingButton m_SettingButton;
@@ -177,8 +220,15 @@ private:
 	// 下面
 	CMDIClient m_wndMDIClient;
 
-	CMenuDlg* m_MenuDlg;
+	CMenuDlg* m_MenuDlg; // 关闭按钮旁边的右键菜单
 
+	CMenuDlg* m_UserMenuDlg; // 登录后点击用户名弹出的菜单
+
+	CWindow* m_pShowDlg; // 登录或注册对话框的框架
+
+	CUserLoadInfoDlg* m_InfoDlg; // 红色叹号右键弹出的提示框
+
+	USER_LOAD_STATE	m_emLoad; // 是否登录
 
 
 private:
@@ -188,5 +238,6 @@ private:
 	bool m_IsShowCloudMessage;
 	bool m_IsShowCloudStatus;
 	CFont m_TextFont;
+public:
 	HWND m_IeWnd;
 };

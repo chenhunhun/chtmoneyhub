@@ -46,11 +46,20 @@ public:
 		MESSAGE_HANDLER(WM_AX_FRAME_SETALARM, OnFrameSetAlarm)
 		MESSAGE_HANDLER(WM_AX_FRAME_CHANGE_PROGRESS, OnFrameChangeProgress)
 		MESSAGE_HANDLER(WM_AX_TOOLS_CHANGE, OnToolsChange)
-		MESSAGE_HANDLER(WM_AX_COUPON_CHANGE, OnCouponChange)
+		//MESSAGE_HANDLER(WM_AX_COUPON_CHANGE, OnCouponChange)
 		MESSAGE_HANDLER(WM_AX_FRAME_ADDFAV, OnFrameAddFav)
 		MESSAGE_HANDLER(WM_AX_FRAME_DELETEFAV, OnFrameDelFav)
+
 		MESSAGE_HANDLER(WM_AX_GET_BILL, OnGetBill)
-		MESSAGE_HANDLER(WM_AX_CLOSE_GET_BILL, CloseBillList)
+
+		MESSAGE_HANDLER(WM_CHANGE_FIRST_PAGE_SHOW, OnChangeFirtsPageShow)
+		MESSAGE_HANDLER(WM_AX_SHOW_INFO_DLG, OnShowInfoDlg)
+		MESSAGE_HANDLER(WM_AX_END_INFO_DLG, OnEndInfoDlg)
+		MESSAGE_HANDLER(WM_AX_GET_ALL_BILL, OnGetAllBill)//获得了所有账单
+
+		MESSAGE_HANDLER(WM_AX_ACCOUNT_SELECT, OnAccountSelect)
+		MESSAGE_HANDLER(WM_AX_CALL_JS_TABACTIVE, OnCallJSTabActive)
+		MESSAGE_HANDLER(WM_TIMER, OnTimer)
 
 		MESSAGE_HANDLER(WM_AX_NAVIGATE, OnNavigate)
 		MESSAGE_HANDLER(WM_AX_GOBACK, OnGoBack)
@@ -59,6 +68,7 @@ public:
 		MESSAGE_HANDLER(WM_AX_SSLSTATUS, OnSSLStatus)
 		MESSAGE_HANDLER(WM_AX_GET_WEBBROWSER2_CROSS_THREAD, OnGetMarshalWebBrowser2CrossThread)
 	END_MSG_MAP()
+
 
 	void OnShowWindow(BOOL bShowing, int nReason);
 	void OnDestroy();
@@ -78,6 +88,13 @@ public:
 	LRESULT OnToolsChange(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnCouponChange(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnFrameDelFav(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnShowInfoDlg(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled); // 导出账单时弹出的提示对话框
+	LRESULT OnEndInfoDlg(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnChangeFirtsPageShow(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnAccountSelect(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnGetAllBill(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnCallJSTabActive(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	LRESULT CloseBillList(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnGetBill(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -94,4 +111,5 @@ private:
 	bool m_isGetBill;// 判断是否是记账功能下的处理
 	wstring m_url;
 	int m_time;
+
 };

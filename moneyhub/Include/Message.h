@@ -1,5 +1,4 @@
 #pragma once
-
 #define WM_MULTI_PROCESS_CREATE_NEW_PAGE			(WM_USER + 0x4000)
 
 #define WM_GLOBAL_CREATE_NEW_WEB_PAGE				(WM_USER + 0x4001)
@@ -7,9 +6,11 @@
 #define WM_FAV_BANK_CHANGE							(WM_USER + 0x400A) // gao 当用户收藏银行时
 #define WM_FAV_BANK_DOWNLOAD						(WM_USER + 0x400B) // gao 用户对收藏银行控件进行下载
 #define WM_MY_MENU_CLICKED							(WM_USER + 0x400C) // gao 用户点击了自定义菜单
+#define WM_USER_INFO_MENU_CLICKED					(WM_USER + 0x400D) // 登录后点击用户名的点击事件
+#define WM_SHOW_USER_CLICKED_MENU					(WM_USER + 0x400E)
 #define WM_GLOBAL_GET_EXIST_WEB_PAGE				(WM_USER + 0x4014)
 
-#define WM_MAINFRAME_CLOSE							(WM_USER + 0x4020)
+#define WM_MAINFRAME_CLOSE							(WM_USER + 0x4015)
 
 #define WM_ITEM_NOTIFY_CREATED						(WM_USER + 0x4003)
 #define WM_ITEM_SET_MAIN_TOOLBAR					(WM_USER + 0x4004)
@@ -33,6 +34,21 @@
 // 结束获取账单
 #define WM_FINISH_GET_BILL							(WM_USER + 0x4023)
 #define WM_SET_DISPLAYHWND							(WM_USER + 0x4024)
+#define WM_AX_ACCOUNT_SELECT						(WM_USER + 0x4025) // 显示选择账单界面
+#define WM_AX_GET_ALL_BILL							(WM_USER + 0x4026) // 将获得的账单交给js
+#define WM_AX_SHOW_INFO_DLG							(WM_USER + 0x4027) // 导出账单的中间提示对话框
+#define WM_AX_END_INFO_DLG							(WM_USER + 0x4028)
+#define WM_AX_CANCEL_GETBILL						(WM_USER + 0x4029) // 取消用这个
+#define WM_AX_EXCEED_GETBILL_TIME					(WM_USER + 0x4030) // 超时用这个
+#define WM_RE_GETBILL								(WM_USER + 0x4031) // 导入账单重新打开首页
+#define WM_AUTO_USER_DLG							(WM_USER + 0x4032) // 打开或关闭（用户注册、登陆）对话框
+#define WM_UPDATE_USER_STATUS						(WM_USER + 0x4033) // 更新用户状态
+#define WM_USER_INFO_CLICKED						(WM_USER + 0x4034) // 红色叹号点击事件
+#define	WM_SHOW_USER_DLG							(WM_USER + 0x4035) // 显示用户注册登陆等等对话框
+#define WM_CHANGE_USER_DLG_NAME						(WM_USER + 0x4036) // 更改框架名称（JS调用）
+#define WM_AX_LOAD_USER_QUIT						(WM_USER + 0x4037) // 用户退出登录
+#define WM_CHANGE_FIRST_PAGE_SHOW					(WM_USER + 0x4038) // 根据用户是否登录，在首页显示不同内容
+
 
 #define WM_AX_NAVIGATE								(WM_USER + 0x5000)
 #define WM_AX_GET_WEBBROWSER2_CROSS_THREAD			(WM_USER + 0x5001)
@@ -47,8 +63,11 @@
 #define WM_AX_FRAME_ADDFAV							(WM_USER + 0x5007) // 添加收藏
 #define WM_AX_FRAME_CHANGE_PROGRESS					(WM_USER + 0x5008) // 更新进度
 #define WM_AX_TOOLS_CHANGE							(WM_USER + 0x5009) // 更新事件
-#define WM_AX_COUPON_CHANGE							(WM_USER + 0x5010) // 更新优惠券
+#define WM_AX_MONTH_SELECT_DLG						(WM_USER + 0x500A) // 弹出先择对话框
+#define WM_AX_CALL_JS_TABACTIVE						(WM_USER + 0x500B) // 调用JS TabActivated函数
 #define WM_AX_FRAME_DELETEFAV						(WM_USER + 0x5011) // 取消收藏
+#define WM_AX_USER_AUTO_LOAD						(WM_USER + 0x5012) // 用户自动登录
+#define WM_FINIHS_AUTO_LOAD							(WM_USER + 0x5013) // 自动登录检测完成
 
 #define WM_CLOUDALARM								(WM_USER + 0x2100)
 #define WM_CLOUDCLEAR								(WM_USER + 0x2101)
@@ -64,5 +83,19 @@
 #define WM_USB_ADD_FAV								(WM_USER + 0x2200)
 #define WM_USB_CHANGE								(WM_USER + 0x2201)
 #define WM_MONEYHUB_UAC								(WM_USER + 0x2204)
+#define WM_MONEYHUB_FEEDBACK						(WM_USER + 0x2210)//财金汇反馈
 
 #define WM_MYDANGEROUS                              (WM_USER + 0x2202)//检测到危险，显示提示
+
+
+// 跨进程间的一些常量定义
+#define MY_TAG_LOAD_DLG									1 // 表示登录对话框
+#define MY_TAG_REGISTER_DLG								2 // 表示注册对话框
+#define MY_TAG_SETTING_DLG								3 // 表示注册对话框
+#define MY_TAG_REGISTER_GUIDE							4 // 表示注册向导对话框
+
+#define MY_STATUE_USER_LAODED							1 // 用户处于登录状态
+#define MY_STATUE_USER_NOTLOAD							2 // 用户处于未登录状态
+
+#define WY_STATUE_SHOW_DLG								1 // 显示窗口
+#define MY_STATUE_CLOSE_DLG								2 // 关闭窗口

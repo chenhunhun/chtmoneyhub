@@ -60,11 +60,52 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	}
 
 	CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_COMMON_PROCESS, L"读取了硬件ID");
+	//判断gid的长度，如果不为32位，则补充为32位长度
+	g_AppBranch.CheckHID();
 
 	// 检测访问自身进程权限的句柄，如果限制访问，退出
 	if(!g_AppBranch.CheckToken())
 	{
 		CRecordProgram::GetInstance()->FeedbackError(MY_PRO_NAME, MY_COMMON_ERROR, L"CheckToken错误");
+		return 0;
+	}
+	if(wcslen(lpstrCmdLine) > 0)
+	{
+		WCHAR sLine[256] = {0};
+		swprintf(sLine, 256, L"输入参数%s",lpstrCmdLine);
+		CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_COMMON_PROCESS, sLine);
+	}
+
+	if(_tcsncmp(lpstrCmdLine, _T("-renamechk"), 10) == 0)
+	{
+		g_AppBranch.RenameChk();
+		return 0;
+	}
+
+	if (_tcsncmp(lpstrCmdLine, _T("-ifeedback"), 10) == 0)
+	{
+		// 如果本地没有SN，生成一个SN并写入注册表，否则返回原有的SN
+		CSNManager::GetInstance()->GetSN();
+
+		//CUserBehavior::GetInstance()->BeginFeedBack();//!!!!!这个放在这里，创建反馈线程，否则有些消息反馈不回去
+		CUserBehavior::GetInstance()->Action_Install(1);
+
+		CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_COMMON_PROCESS, L"安装反馈");
+		//g_AppBranch.Install();
+		//CUserBehavior::GetInstance()->CloseFeedBack();
+
+		// 安装并启动驱动
+		return 0;
+	}
+	else if (_tcsncmp(lpstrCmdLine, _T("-dfeedback"), 10) == 0)
+	{
+		// 发送卸载程序的数据到服务器
+		CUserBehavior::GetInstance()->Action_Uninstall(1);
+		//CUserBehavior::GetInstance()->BeginFeedBack();
+		CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_COMMON_PROCESS, L"卸载驱动");
+		// 卸载驱动
+		//g_AppBranch.UnInstall();
+		//CUserBehavior::GetInstance()->CloseFeedBack();
 		return 0;
 	}
 
@@ -103,24 +144,44 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	else if (_tcsncmp(lpstrCmdLine, _T("-! "), 3) == 0)
 	{
 		// 启动内核进程
+		CUserBehavior::GetInstance()->BeginFeedBack();//!!!!!这个放在这里，创建反馈线程，否则有些消息反馈不回去
 		CHostContainer::GetInstance()->GetHostName(kFeedback);
 		g_AppBranch.RunIECoreProcess(lpstrCmdLine);
 		return 0;
 	}
 
-	
+	if (_tcsncmp(lpstrCmdLine, _T("-updb"), 5) == 0)
+	{
+		// 如果本地没有SN，生成一个SN并写入注册表，否则返回原有的SN
+		CBankData::GetInstance()->InstallUpdateDB();//升级数据库
+
+		// 安装并启动驱动
+		return 0;
+	}
 	// 安装驱动
 	if (_tcsncmp(lpstrCmdLine, _T("-i"), 2) == 0)
 	{
 		// 如果本地没有SN，生成一个SN并写入注册表，否则返回原有的SN
 		CSNManager::GetInstance()->GetSN();
 
-		// 发送安装的反馈数据给服务器
-		CUserBehavior::GetInstance()->Action_Install();
-		//CBankData::GetInstance()->UpdateDB();//新版本的安装要升级旧版本的数据库
+		//CUserBehavior::GetInstance()->Action_Install();
+		//CUserBehavior::GetInstance()->BeginFeedBack();//!!!!!这个放在这里，创建反馈线程，否则有些消息反馈不回去
 
 		CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_COMMON_PROCESS, L"安装驱动");
+		g_AppBranch.Install();
+		//CUserBehavior::GetInstance()->CloseFeedBack();
 
+		// 安装并启动驱动
+		return 0;
+	}
+	else if (_tcsncmp(lpstrCmdLine, _T("-upi"), 4) == 0)
+	{
+		// 如果本地没有SN，生成一个SN并写入注册表，否则返回原有的SN
+		CSNManager::GetInstance()->GetSN();
+
+		//CBankData::GetInstance()->UpdateDB();//新版本的安装要升级旧版本的数据库
+
+		CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_COMMON_PROCESS, L"升级安装驱动");
 		// 安装并启动驱动
 		return g_AppBranch.Install();
 	}
@@ -129,8 +190,16 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	{
 		// 发送卸载程序的数据到服务器
 		CUserBehavior::GetInstance()->Action_Uninstall();
-
+		CUserBehavior::GetInstance()->BeginFeedBack();
 		CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_COMMON_PROCESS, L"卸载驱动");
+		// 卸载驱动
+		g_AppBranch.UnInstall();
+		CUserBehavior::GetInstance()->CloseFeedBack();
+		return 0;
+	}
+	else if (_tcsncmp(lpstrCmdLine, _T("-upd"), 4) == 0)
+	{
+		CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_COMMON_PROCESS, L"升级卸载驱动");
 		// 卸载驱动
 		return g_AppBranch.UnInstall();
 	}
@@ -172,7 +241,9 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	}
 
 	if (g_AppBranch.IsAlreadyRunning())
+	{
 		return 0;
+	}
 
 	if (_tcsncmp(lpstrCmdLine, _T("-ncheck"), 7) != 0)
 	{
@@ -208,6 +279,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 			g_AppBranch.CloseHandle();
 			return  g_AppBranch.InstallCheck();
 		}
+
+		
 		//////////////////////////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////////////////////
 		// gao 2010-12-16 将listmanager读取内核和UI数据分开
@@ -269,7 +342,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 		CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_COMMON_PROCESS, L"通过安全检查");
 
 #endif
-
+		CUserBehavior::GetInstance()->BeginFeedBack();//!!!!!这个放在这里，创建反馈线程，否则有些消息反馈不回去
 		//////////////////////////////////////////////////////////////////////////
 		// 用户行为反馈(启动)
 		if (_tcsncmp(lpstrCmdLine, _T(""), 1) == 0)
@@ -302,6 +375,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 		// 创建亲显示UI框架
 		CMainFrame *pFrame = new CMainFrame();
+		dwMax = 1;//启动最大化
 		HWND hFrame = pFrame->Create(NULL, rcWnd, _T("财金汇"), (dwMax ? WS_MAXIMIZE : 0) | WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN);
 
 		CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_COMMON_PROCESS, L"财金汇界面启动");
@@ -319,7 +393,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
  		HOOKKEY::addNPB();
 
 		//控制显示向导
-		g_AppBranch.CheckGuide(hFrame);
+		//g_AppBranch.CheckGuide(hFrame);去掉该显示功能
 
 		CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_COMMON_PROCESS, L"财金汇界面消息");
 
@@ -348,6 +422,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 
 		CUserBehavior::GetInstance()->Action_ProgramExit();
+		CUserBehavior::GetInstance()->CloseFeedBack();//关闭反馈线程
 		// 在本地记录错误日志
 		// 反馈过滤名单
 		//////////////////////////////////////////////////////////////////////////

@@ -22,6 +22,8 @@ CBankData::CBankData()
 {
 	InitializeCriticalSection(&m_cs);
 	InitSysDbTempFile();
+	if(m_UserIDMap.size() != 0)
+         m_UserIDMap.clear();
 }
 
 CBankData::~CBankData()
@@ -74,102 +76,6 @@ void CBankData::split(std::string& s, std::string& delim,std::vector< std::strin
 		ret->push_back(s.substr(last,index-last));
 	}
 } 
-bool CBankData::InsertGetBillData(BILLRECORD& TRecord)
-{
-	if(!CheckUserDB())
-		return false;
-
-	if(TRecord.accountid == 0)
-		return true;
-	ObjectLock lock(this);
-	try
-	{
-		CppSQLite3Binary blob;
-
-		CppSQLite3Buffer bufSQL1, bufSQL2,bufSQL3;
-		bufSQL1.format("select a.id as aid, b.id as bid, b.name as bname \
-			from tbAccount a, tbSubaccount b \
-		where a.id = b.tbAccount_id and a.id=%d group by b.id;", TRecord.accountid);
-		CppSQLite3Query q = m_dbUser.execQuery(bufSQL1);
-
-		string type = (TRecord.type==RMB)?"人民币":"美元";
-		int currency = (TRecord.type==RMB) ? 1:2;//货币类型
-		int subid = 0;
-		if(TRecord.TranList.size() > 0)
-		{
-			for (int i = 1; !q.eof (); i ++, q.nextRow ())
-			{
-				string bname = q.getStringField("bname");
-				if(bname == type)//该账户为rmb账户
-				{
-					subid = q.getIntField("bid") ;
-				}				
-			}
-			// 创建子账号
-			if(subid == 0)
-			{
-				// 取币种名称
-				bufSQL2.format("insert into tbSubAccount(tbAccount_id, tbCurrency_id, Balance, OpenBalance, name) values (%d , %d, 0, 0, '%s')", TRecord.accountid, currency, type.c_str());
-				m_dbUser.execDML(bufSQL2);
-
-				bufSQL2.format("select id from tbSubAccount where tbAccount_id=%d and tbCurrency_id=%d", TRecord.accountid, currency);
-				CppSQLite3Query q = m_dbUser.execQuery(bufSQL2);
-				
-				if(!q.eof())
-					subid = q.getIntField("id");
-				bufSQL2.format("update tbSubAccount set balance=0 where id=%d", subid);
-				m_dbUser.execDML(bufSQL2);
-			}
-			if(subid != 0)
-			{
-				list<LPTRANRECORD>::iterator ite = TRecord.TranList.begin();
-				float tAmount = 0;
-				int tCount = 0;
-				for(;ite != TRecord.TranList.end(); ite ++)
-				{
-					tCount ++;
-					char sTran[20] = {0};
-					
-					sprintf_s(sTran, 20, "%s%03d", TRecord.month, tCount);
-
-					bufSQL3.format("Select tbSubAccount_id from tbTransaction where sign='%s' and tbSubAccount_id=%d",sTran,subid);
-					CppSQLite3Query q2 = m_dbUser.execQuery(bufSQL3);
-					if(!q2.eof())
-					{
-						q2.finalize();
-						continue;
-					}
-					q2.finalize();
-
-					tAmount +=  (*ite)->Amount;
-					string Transdate((*ite)->PostDate);
-					if((*ite)->Amount > 0)
-						bufSQL2.format("insert into tbTransaction (tbCategory2_id, Transdate,amount,comment,tbSubAccount_id,sign) values (10066,'%s',%.2f,'%s',%d,'%s')", Transdate.c_str(),(*ite)->Amount,(*ite)->Description,subid, sTran);
-					else
-						bufSQL2.format("insert into tbTransaction (tbCategory2_id, Transdate,amount,comment,tbSubAccount_id,sign) values (10065,'%s',%.2f,'%s',%d,'%s')", Transdate.c_str(),-((*ite)->Amount),(*ite)->Description,subid, sTran);
-					m_dbUser.execDML(bufSQL2);
-				}
-
-				bufSQL2.format("update tbsubAccount set balance=balance+%.2f where id=%d", tAmount,subid);
-				m_dbUser.execDML(bufSQL2);
-			}
-		}
-
-		q.finalize();
-
-		
-		return true;
-
-	}
-	catch (CppSQLite3Exception& ex)
-	{
-		CRecordProgram::GetInstance()->FeedbackError(MY_BANK_NAME, MY_ERROR_SQL_ERROR, CRecordProgram::GetInstance()->GetRecordInfo(L"ChangeOrder1 error:%d", ex.errorCode()));
-		if(ex.errorMessage() != NULL)
-			CRecordProgram::GetInstance()->FeedbackError(MY_BANK_NAME, MY_ERROR_SQL_ERROR,AToW(ex.errorMessage()));
-		return false;
-	}
-
-}
 
 bool CBankData::ReOpenDB(std::string strUsID)
 {
@@ -337,9 +243,66 @@ bool CBankData::ChangeOrder(const char* pBankID, int nTo, int nFrom)
 	}
 }
 
+bool CBankData::CreateNewUserDB(LPSTR lpstrUserDBName, LPSTR lpPassword, int nLen)
+{
+	string strFilePath = m_strUtfDataPath + lpstrUserDBName;
+
+	wstring strPath = m_strDataPath;
+	strPath += CA2W(lpstrUserDBName);
+	// 从系统数据库中拷贝
+	CopyFile(m_strGuestTemplete.c_str(), strPath.c_str(), false);
+
+	// 设置数据库密码
+	CppSQLite3DB tempDB;
+	tempDB.InitDbPassword(strFilePath.c_str(), lpPassword, nLen);
+	tempDB.close();
+
+	return true;
+}
+
+bool CBankData::SetCurrentUserDB(LPSTR lpstrUserDBName, LPSTR lpPassword, int nLen)
+{
+	ATLASSERT(NULL != lpstrUserDBName);
+	if (NULL == lpstrUserDBName)
+		return false;
+
+	try
+	{
+		m_dbUser.close();
+		wstring strPath = m_strDataPath;
+		strPath += CA2W(lpstrUserDBName);
+		if (!IsFileExist((LPWSTR)strPath.c_str())) // 如果当前用户数据库不存在
+		{
+			CreateNewUserDB(lpstrUserDBName, lpPassword, nLen);
+		}
+
+		string strFilePath = m_strUtfDataPath + lpstrUserDBName;
+		m_dbUser.open(strFilePath.c_str(), lpPassword, nLen);
+		//m_dbUser.ChangePassword("1", 1, lpPassword, nLen);
+		return true;
+	}
+	catch (CppSQLite3Exception& ex)
+	{
+		CRecordProgram::GetInstance()->FeedbackError(MY_BANK_NAME, MY_ERROR_SQL_ERROR, CRecordProgram::GetInstance()->GetRecordInfo(L"OpenDb error:%d", ex.errorCode()));
+		if(ex.errorMessage() != NULL)
+			CRecordProgram::GetInstance()->FeedbackError(MY_BANK_NAME, MY_ERROR_SQL_ERROR,AToW(ex.errorMessage()));
+		return false;
+	}
+}
+
+// 修改当前用户密码
+bool CBankData::ChangeCurUserDBPwd(const char* pOldPwd, const int nOldLen, const char* pNewPwd, const int nNewLen)
+{
+	ATLASSERT(NULL != pOldPwd && NULL != pNewPwd);
+	if (NULL == pOldPwd && NULL == pNewPwd)
+		return false;
+
+	m_dbUser.ChangePassword(pOldPwd, nOldLen, pNewPwd, nNewLen);
+}
+
 void CBankData::InitSysDbTempFile(void) // 初始化系统数据库临时文件
 {
-	if (m_strSysDbPath.empty())
+	if (m_strUtfSysDbPath.empty())
 	{
 		CString strTemp;
 		if (0 == GetModuleFileName(NULL, strTemp.GetBuffer(1024), 1023))
@@ -352,8 +315,8 @@ void CBankData::InitSysDbTempFile(void) // 初始化系统数据库临时文件
 		strTemp = strTemp.Left (strTemp.ReverseFind ('\\'));
 		std::string strCurrentPath = CW2A(strTemp);
 
-		m_strSysDbPath = strCurrentPath + "\\config\\SysDB.dat";
-		m_strGuestTemplete = strCurrentPath + "\\config\\Guest.dat";
+		m_strGuestTemplete = strTemp + L"\\config\\Guest.dat";
+		m_strSysDbPath = strTemp + L"\\config\\SysDB.dat";
 
 		//::WideCharToMultiByte(CP_UTF8, 0, strTemp, strTemp.GetLength(), szDbPath, 1024, NULL,FALSE);
 
@@ -361,28 +324,41 @@ void CBankData::InitSysDbTempFile(void) // 初始化系统数据库临时文件
 		SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, tempPath);
 		wcscat_s(tempPath, L"\\MoneyHub");
 		::CreateDirectoryW(tempPath, NULL);
+
+		m_strDataDbPath = tempPath;
+		m_strDataDbPath += L"\\DataDB.dat";
 	
 		char szDbPath[1024] = { 0 };
-		int srcCount = wcslen(tempPath);
+		int srcCount = wcslen(m_strDataDbPath.c_str());
 		srcCount = (srcCount > MAX_PATH) ? MAX_PATH : srcCount;
-		::WideCharToMultiByte(CP_UTF8, 0, tempPath, srcCount, szDbPath, 1024, NULL,FALSE);
+		::WideCharToMultiByte(CP_UTF8, 0, m_strDataDbPath.c_str(), srcCount, szDbPath, 1024, NULL,FALSE);
 
-		m_strDataDbPath = szDbPath;
-		m_strDataDbPath += "\\DataDB.dat"; // DataDB.dat文件放置在Moneyhub目录下
+		m_strUtfDataDbPath = szDbPath;
 
+		memset(szDbPath, 0, 256);
+		srcCount = wcslen(m_strSysDbPath.c_str());
+		srcCount = (srcCount > MAX_PATH) ? MAX_PATH : srcCount;
+		::WideCharToMultiByte(CP_UTF8, 0, m_strSysDbPath.c_str(), srcCount, szDbPath, 1024, NULL,FALSE);
+
+		m_strUtfSysDbPath = szDbPath;
 
 		// 如果正式数据库不存在
-		if (!IsFileExist((LPSTR)m_strSysDbPath.c_str()))
+		if (!IsFileExist((LPWSTR)m_strSysDbPath.c_str()))
 		{
 			CRecordProgram::GetInstance()->FeedbackError(MY_BANK_NAME, MY_ERROR_SQL_ERROR, L"SysDB is not exist, exit progrma.");
 			exit(0);
 		}
 		
 
-		if (!IsFileExist ((LPSTR)m_strDataDbPath.c_str()))
+		if (!IsFileExist ((LPWSTR)m_strDataDbPath.c_str()))
 		{
+			HANDLE hFile = CreateFileW(m_strDataDbPath.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, 0, NULL);
+			if (INVALID_HANDLE_VALUE == hFile)
+				return;
+
+			CloseHandle(hFile);
 			// 没有就创建一个
-			CreateDataDBFile((LPSTR)m_strDataDbPath.c_str());
+			CreateDataDBFile((LPSTR)m_strUtfDataDbPath.c_str());
 		}
 	}
 }
@@ -406,61 +382,39 @@ bool CBankData::CopyDataFromOldVersoion(CppSQLite3DB& dbSour, CppSQLite3DB& dbDe
 	}
 	return true;
 }
-
-const char* CBankData::GetDbPath(std::string strUsID)
+bool CBankData::InstallUpdateDB()
 {
-	if (strUsID == "SysDB")
-		return m_strSysDbPath.c_str();
-
-	if (strUsID == "DataDB")
-	{
-		if (!m_strDataDbPath.empty())
-			return m_strDataDbPath.c_str();
-	}
-
-	// 返回用户数据库路径
-	if (strUsID.empty())
-	{
-		if (!m_strUserDbPath.empty())
-			return m_strUserDbPath.c_str();
-
-		if (m_strUserDbPath.empty())
-			strUsID = "Guest";
-	}
-
+	CRecordProgram::GetInstance()->RecordCommonInfo(L"BankData", 1000, L"开始升级数据库");
+	GetDbPath();
 	WCHAR tempPath[MAX_PATH] = { 0 };
-	
+
 	SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, tempPath);
 	wcscat_s(tempPath, L"\\MoneyHub");
 	::CreateDirectoryW(tempPath, NULL);
 	wcscat_s(tempPath, L"\\Data\\");
 	::CreateDirectoryW(tempPath, NULL);
 
+	std::wstring wstrPath = tempPath;
+
 	char szDbPath[1024] = { 0 };
 	int srcCount = wcslen(tempPath);
 	srcCount = (srcCount > MAX_PATH) ? MAX_PATH : srcCount;
 	::WideCharToMultiByte(CP_UTF8, 0, tempPath, srcCount, szDbPath, 1024, NULL,FALSE);
 
-	std::string strPath = szDbPath;
+	std::string utfstrPath = szDbPath;
 
-	m_strUserDbPath = strPath + strUsID + ".dat"; // 记录下当前用户数据库路径
-
-	if (!IsFileExist ((LPSTR)m_strUserDbPath.c_str()))
-	{
-		// 从系统数据库中拷贝
-		CopyFileA(m_strGuestTemplete.c_str(), m_strUserDbPath.c_str(), false);
-	}
-
-	std::string strMoneyhub = strPath + "moneyhub.dat"; // 记录下当前用户数据库路径
+	std::string strutfMoneyhub = utfstrPath + "moneyhub.dat"; // 记录下当前用户数据库路径
+	std::wstring strMoneyhub = wstrPath + L"moneyhub.dat";//utf-8转换有问题
 	// 在4和5两个版本中，数据库名称为moneyhub.dat
-	if (IsFileExist((LPSTR)strMoneyhub.c_str()))
+	if (IsFileExist((LPWSTR)strMoneyhub.c_str()))
 	{
 		try{
+			CRecordProgram::GetInstance()->RecordCommonInfo(L"BankData", 1000, L"开始升级数据库moneyhub.dat");
 			CppSQLite3DB dbSour;
-			dbSour.openWithNoKey(strMoneyhub.c_str());
+			dbSour.openWithNoKey(strutfMoneyhub.c_str());
 
 			CppSQLite3DB dbDesc;
-			dbDesc.open(m_strUserDbPath.c_str());
+			dbDesc.open(m_strUtfUserDbPath.c_str());
 
 			// 看看是不是4和5两个版本的数据库
 			int nVer = GetDBVersion(dbSour);
@@ -474,16 +428,17 @@ const char* CBankData::GetDbPath(std::string strUsID)
 				CopyDataFromOldVersoion(dbSour, dbDesc);
 
 				CppSQLite3DB dbDataDB;
-				dbDataDB.open(m_strDataDbPath.c_str());
+				dbDataDB.open(m_strUtfDataDbPath.c_str());
 				// 将usbnfo中的数据拷贝到DataDB中
 				CpyDbTb2OtherDbTb(dbSour, dbDataDB,"tbUSBInfo", "datUSBKeyInfo"); 
 				dbDataDB.close();
 			}
-		
+
 			dbSour.close();
 			dbDesc.close();
 			// 删除掉以前版本的数据库
-			DeleteFileA(strMoneyhub.c_str());
+			DeleteFileW(strMoneyhub.c_str());//不能用utf8名称
+			CRecordProgram::GetInstance()->RecordCommonInfo(L"BankData", 1000, L"完毕升级数据库moneyhub.dat");
 		}
 		catch(CppSQLite3Exception& ex)
 		{
@@ -491,8 +446,228 @@ const char* CBankData::GetDbPath(std::string strUsID)
 			if(ex.errorMessage() != NULL)
 				CRecordProgram::GetInstance()->FeedbackError(MY_BANK_NAME, MY_ERROR_SQL_ERROR,AToW(ex.errorMessage()));
 		}
-		
+
 	}
+	std::string strutfGuestDB = utfstrPath + "Guest.dat"; // 从6升级到7版本数据库的操作
+	std::wstring strGuestDB = wstrPath + L"Guest.dat"; // 从6升级到7版本数据库的操作
+	// 在6两个版本中，数据库名称为moneyhub.dat
+	if (IsFileExist((LPWSTR)strGuestDB.c_str()))
+	{
+		try{
+			CRecordProgram::GetInstance()->RecordCommonInfo(L"BankData", 1000, L"开始升级数据库Guest.dat");
+			CppSQLite3DB dbDesc;
+			dbDesc.open(strutfGuestDB.c_str());
+
+			// 看看是不是4和5两个版本的数据库
+			int nVer = GetDBVersion(dbDesc);
+			if (nVer == 6)
+			{
+				CRecordProgram::GetInstance()->RecordCommonInfo(L"BankData", 1000,  L"开始升级数据库6");
+				// BUG 2361
+				dbDesc.execDML("INSERT INTO tbCategory1(id, Name, Type) VALUES(10025, \"余额调整\", 0);");
+				dbDesc.execDML("INSERT INTO tbCategory2(id, Name, tbCategory1_id) VALUES(10067, \"CATA420\", 10025);");
+				dbDesc.execDML("UPDATE tbCategory2 SET Name=\"CATA420\" WHERE id=10065;");
+				dbDesc.execDML("UPDATE tbCategory2 SET Name=\"CATA420\" WHERE id=10066;");
+
+				dbDesc.execDML("UPDATE tbCategory2 SET Name=\"CATA420\" Where id=10059;");//bug 2063
+				dbDesc.execDML("UPDATE tbCategory2 SET Name=\"CATA420\" Where id=10060;");
+				dbDesc.execDML("CREATE TABLE IF NOT EXISTS 'tbAccountGetBillMonth' (\
+							   'id' INTEGER  PRIMARY KEY AUTOINCREMENT NOT NULL,\
+							   'tbaccount_id' INTEGER  NOT NULL,\
+							   'tbmonth' VARCHAR(6)  NOT NULL,\
+							   'tbKeyInfo' VARCHAR(100)  NOT NULL\
+							   );");
+				dbDesc.execDML("CREATE TABLE IF NOT EXISTS 'tbProductChoice' (\
+							   'id' bigint  NOT NULL,\
+							   'interestchoice' varchar(256)  NULL,\
+							   'durationchoice' varchar(256)  NULL,\
+							   'currencychoice' varchar(256)  NULL,\
+							   'bankchoice' varchar(256)  NULL,\
+							   'userId' bigint  NOT NULL,\
+							   'UT' bigint  NOT NULL\
+							   );");
+				dbDesc.execDML("insert into tbProductChoice (id, interestchoice,durationchoice,currencychoice,bankchoice,userId,ut) values(0,'1|2|3|4','1|2|3|4|5|6','1|2','1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19',0,0);");
+				dbDesc.execDML("ALTER TABLE tbTransaction ADD COLUMN `transactionClasses` tinyint (1)DEFAULT 0 NOT NULL;");
+				dbDesc.execDML("ALTER TABLE tbTransaction ADD COLUMN `isEdit` tinyint (1)DEFAULT 0 NOT NULL;");//3.1版本新创建的字段
+				dbDesc.execDML("ALTER TABLE tbAccount ADD `keyInfo` varchar(255);");
+				dbDesc.execDML("UPDATE tbSubAccount SET tbAccountType_id=201 WHERE tbAccountType_id=0;"); // BUG2351
+				dbDesc.execDML("UPDATE tbDBInfo SET schema_version=7;");
+				CRecordProgram::GetInstance()->RecordCommonInfo(L"BankData", 1000,  L"完毕升级数据库6");
+			}
+
+			/*CppSQLite3Buffer bufSQL;
+			bufSQL.format("select count(id) as num from tbtransaction where tbcategory2_id = 10067");
+			CppSQLite3Query q2 = dbDesc.execQuery(bufSQL);
+
+			int nres = 0;
+			if(!q2.eof())
+			{
+				nres = q2.getIntField(0);				
+			}
+			q2.finalize();*/
+
+
+			//nres > 0// 说明是3.1版本，账户中最少有一条初始余额不为0
+			CppSQLite3Buffer bufSQL;
+			bufSQL.format("select a.id as aid,date(min(transdate),'-1 day') as handleDate,openbalance from tbsubaccount a left join tbtransaction b on a.id = b.tbsubaccount_id group by a.id;");
+			/*
+			bufSQL.format("select a.id as aid,date(min(transdate),'-1 day') as handleDate,openbalance, \
+						  num as num from tbsubaccount a left join tbtransaction b on a.id = b.tbsubaccount_id left join (select count(a.id) as num, \
+						  b.id as sid from tbsubaccount b left join tbtransaction a on a.tbsubaccount_id = b.id \
+						  where tbcategory2_id = 10067 group by b.id) c on a.id = c.sid group by a.id;");
+			*/
+			CppSQLite3Query q = dbDesc.execQuery(bufSQL);
+			while(!q.eof())
+			{
+				int iaid = q.getIntField(0);
+				char* handleDate = (char *)q.getStringField(1);
+				int iopenbalance = q.getIntField(2);
+
+				bool bTag = false;
+				bufSQL.format("select amount from tbtransaction a, tbsubaccount b where a.tbsubaccount_id = b.id and b.id = %d and a.tbcategory2_id = 10067 order by a.transdate,a.id asc limit 0, 1", iaid);
+				CppSQLite3Query q2 = dbDesc.execQuery(bufSQL);
+
+				if(!q2.eof())
+				{
+					int iamount = q2.getIntField(0);
+					if( iamount == iopenbalance) bTag = true;
+				}
+				q2.finalize();
+
+				if(iopenbalance != 0 && (!bTag))
+				{
+					if(handleDate != NULL && strlen(handleDate) > 0)
+					{
+						bufSQL.format("INSERT INTO tbTransaction(transdate, tbPayee_id, tbCategory2_id, amount, direction, tbSubaccount_id, exchangerate, comment, tbSubaccount_id1,transactionClasses ) values \
+							('%s', 0, 10067, %d, 0, %d, 0, '', 0, 0);", handleDate, iopenbalance, iaid);
+						dbDesc.execDML(bufSQL);
+					}
+					bufSQL.format("update tbsubaccount set openbalance=0 where id=%d; ", iaid);
+					dbDesc.execDML(bufSQL);
+				}
+				else
+				{
+					bufSQL.format("update tbsubaccount set openbalance=0 where id=%d; ", iaid);
+					dbDesc.execDML(bufSQL);
+				}
+				//调整子账户余额
+				int changeBalanceClasses = 10067;
+				//bufSQL.format("SELECT id, date(transdate,'0 day'), Amount FROM tbtransaction WHERE tbsubaccount_id=%d AND tbcategory2_id=10067 ORDER BY transdate DESC, id DESC LIMIT 1;", iaid);
+				bufSQL.format("SELECT id, strftime('%s',TransDate) AS Date, Amount FROM tbtransaction WHERE tbsubaccount_id=%d AND tbcategory2_id=10067 ORDER BY transdate DESC, id DESC LIMIT 1;", "%Y-%m-%d",iaid);
+				CppSQLite3Query q3 = dbDesc.execQuery(bufSQL);
+
+				int lastBalanceId = 0;
+				string  lastBalanceDate = "1900-01-01";
+				float lastBalanceAmount = 0;
+				if(!q3.eof()){
+					lastBalanceId = q3.getIntField(0);
+					lastBalanceDate = (char *)q3.getStringField(1);
+					lastBalanceAmount = q3.getFloatField(2);
+				}
+				q3.finalize();				
+
+				bufSQL.format("SELECT Type, SUM(Amount) sumamount FROM tbtransaction t, tbcategory2, tbcategory1 \
+					WHERE tbsubaccount_id=%d AND tbcategory2_id=tbcategory2.id AND tbcategory1_id=tbcategory1.id \
+					AND ((t.transdate>'%s') OR ((t.transdate='%s') AND (t.id>%d))) AND tbcategory2_id<>10067 GROUP BY Type", 
+					iaid, lastBalanceDate.c_str(), lastBalanceDate.c_str() , lastBalanceId);
+
+				CppSQLite3Query q4 = dbDesc.execQuery(bufSQL);
+				
+				float totalSpend = 0;
+				float totalIncome = 0;
+				while(!q4.eof())
+				{
+					int q4res = q4.getIntField(0);
+
+					if( q4res == 0)
+						totalSpend = q4.getFloatField(1);
+					else if( q4res == 1)
+						totalIncome = q4.getFloatField(1);
+
+					q4.nextRow();
+				}
+				q4.finalize();
+
+				lastBalanceAmount += totalIncome - totalSpend;
+
+				bufSQL.format("UPDATE tbSubAccount SET balance=%.2f WHERE id=%d",lastBalanceAmount, iaid);
+				dbDesc.execDML(bufSQL);				
+				q.nextRow();
+			}
+
+			q.finalize();
+
+
+
+			dbDesc.close();
+		}
+		catch(CppSQLite3Exception& ex)
+		{
+			CRecordProgram::GetInstance()->FeedbackError(MY_BANK_NAME, MY_ERROR_SQL_ERROR, CRecordProgram::GetInstance()->GetRecordInfo(L"Guest.dat升级失败 error:%d", ex.errorCode()));
+			if(ex.errorMessage() != NULL)
+				CRecordProgram::GetInstance()->FeedbackError(MY_BANK_NAME, MY_ERROR_SQL_ERROR,AToW(ex.errorMessage()));
+		}
+
+	}
+	CRecordProgram::GetInstance()->RecordCommonInfo(L"BankData", 1000, L"升级数据库完毕");
+	return true;
+}
+
+const char* CBankData::GetDbPath(std::string strUsID)
+{
+	if (strUsID == "SysDB")
+		return m_strUtfSysDbPath.c_str();
+
+	if (strUsID == "DataDB")
+	{
+		if (!m_strUtfDataDbPath.empty())
+			return m_strUtfDataDbPath.c_str();
+	}
+
+	// 返回用户数据库路径
+	if (strUsID.empty())
+	{
+		if (!m_strUtfUserDbPath.empty())
+			return m_strUtfUserDbPath.c_str();
+
+		if (m_strUtfUserDbPath.empty())
+			strUsID = "Guest";
+	}
+
+	WCHAR tempPath[MAX_PATH] = { 0 };
+	
+	SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, tempPath);
+	wcscat_s(tempPath, L"\\MoneyHub");
+	::CreateDirectoryW(tempPath, NULL);
+	wcscat_s(tempPath, L"\\Data\\");
+	::CreateDirectoryW(tempPath, NULL);
+	USES_CONVERSION;
+	std::wstring wstrUsID = A2W(strUsID.c_str());
+
+	m_strUserDbPath = tempPath + wstrUsID + L".dat"; // 记录下当前用户数据库路径
+
+	char szDbPath[1024] = { 0 };
+	int srcCount = wcslen(m_strUserDbPath.c_str());
+	srcCount = (srcCount > MAX_PATH) ? MAX_PATH : srcCount;
+	::WideCharToMultiByte(CP_UTF8, 0, m_strUserDbPath.c_str(), srcCount, szDbPath, 1024, NULL,FALSE);
+
+	m_strUtfUserDbPath = szDbPath; //为了sqlite3，存储utf8名称
+
+	m_strDataPath = tempPath; // 记录用户数据库的路径
+
+	memset(szDbPath, 0, 1024);
+	srcCount = wcslen(m_strDataPath.c_str());
+	srcCount = (srcCount > MAX_PATH) ? MAX_PATH : srcCount;
+	::WideCharToMultiByte(CP_UTF8, 0, m_strDataPath.c_str(), srcCount, szDbPath, 1024, NULL,FALSE);
+	m_strUtfDataPath = szDbPath;
+
+	if (!IsFileExist ((LPWSTR)m_strUserDbPath.c_str()))
+	{
+		// 从系统数据库中拷贝
+		CopyFileW(m_strGuestTemplete.c_str(), m_strUserDbPath.c_str(), false);//！！！这里面不能用utf8
+	}
+
+	
 
 
 	//CppSQLite3DB db;
@@ -590,15 +765,15 @@ const char* CBankData::GetDbPath(std::string strUsID)
 	//		CreateAccountTables(db);
 	//		if (!m_strSysDbPath.empty())
 	//		{
-	//			CpyDbTb2OtherDbTb((LPSTR)m_strSysDbPath.c_str(), "sysAccountType", (LPSTR)m_strUserDbPath.c_str(), "tbAccountType");
-	//			CpyDbTb2OtherDbTb((LPSTR)m_strSysDbPath.c_str(), "sysCurrency", (LPSTR)m_strUserDbPath.c_str(), "tbCurrency");
-	//			CpyDbTb2OtherDbTb((LPSTR)m_strSysDbPath.c_str(), "sysCategory1", (LPSTR)m_strUserDbPath.c_str(), "tbCategory1");
-	//			CpyDbTb2OtherDbTb((LPSTR)m_strSysDbPath.c_str(), "sysCategory2", (LPSTR)m_strUserDbPath.c_str(), "tbCategory2");
+	//			CpyDbTb2OtherDbTb((LPSTR)m_strSysDbPath.c_str(), "sysAccountType", (LPSTR)m_strUtfUserDbPath.c_str(), "tbAccountType");
+	//			CpyDbTb2OtherDbTb((LPSTR)m_strSysDbPath.c_str(), "sysCurrency", (LPSTR)m_strUtfUserDbPath.c_str(), "tbCurrency");
+	//			CpyDbTb2OtherDbTb((LPSTR)m_strSysDbPath.c_str(), "sysCategory1", (LPSTR)m_strUtfUserDbPath.c_str(), "tbCategory1");
+	//			CpyDbTb2OtherDbTb((LPSTR)m_strSysDbPath.c_str(), "sysCategory2", (LPSTR)m_strUtfUserDbPath.c_str(), "tbCategory2");
 
 	//			////
 	//			TBCPYNODE path;
 	//			path.strSour = m_strSysDbPath;
-	//			path.strDes = m_strUserDbPath;
+	//			path.strDes = m_strUtfUserDbPath;
 	//			TBCPYNODE tabNode;
 	//			tabNode.strSour = "sysBank";
 	//			tabNode.strDes = "tbBank";
@@ -637,7 +812,7 @@ const char* CBankData::GetDbPath(std::string strUsID)
 	//	}
 	//}
 
-	return m_strUserDbPath.c_str();
+	return m_strUtfUserDbPath.c_str();
 }
 
 const char* CBankData::GetCouponPath()
@@ -2345,10 +2520,10 @@ std::string CBankData::QuerySQL(std::string strSQL, std::string strDBName)
 	return InternalQuerySQL(strSQL, strDBName);
 }
 
-int CBankData::ExecuteSQL(std::string strSQL)
+int CBankData::ExecuteSQL(std::string strSQL, std::string strDBName)
 {
 	ObjectLock lock(this);
-	return InternalExecuteSQL(strSQL);
+	return InternalExecuteSQL(strSQL, strDBName);
 }
 
 std::string CBankData::GetXMLData(const std::string& strStartDate, const std::string& strEndDate, const std::string& dataseries, const std::string& charttype)
@@ -2375,7 +2550,8 @@ void CBankData::CreateAccountTables(CppSQLite3DB& db)
 				   `tbBank_id` INT(11)  NULL ,\
 				   `tbAccountType_id` INT(11)  NOT NULL ,\
 				   `AccountNumber` VARCHAR(256) NULL ,\
-				   `Comment` VARCHAR(256) NULL );");
+				   `Comment` VARCHAR(256) NULL,\
+				   `keyInfo` varchar(255));");
 		/*CONSTRAINT `fk_tbAccount_tbBank`\
 		FOREIGN KEY (`tbBank_id` )\
 		REFERENCES `tbBank` (`id` )\
@@ -2452,12 +2628,14 @@ void CBankData::CreateAccountTables(CppSQLite3DB& db)
 				   `tbPayee_id` INT(11)  NULL ,\
 				   `tbCategory2_id` INT(11)  NULL ,\
 				   `Amount` FLOAT NOT NULL DEFAULT 0 ,\
-				   `direction` TINYINT NULL DEFAULT 0 ,\
+				   `direction` INT(11) NULL DEFAULT 0 ,\
 				   `tbSubAccount_id` INT(11)  NOT NULL ,\
 				   `tbSubAccount_id1` INT(11)  NULL ,\
 				   `ExchangeRate` FLOAT NULL ,\
 				   `Comment` VARCHAR(256) NULL ,\
-				   `sign` VARCHAR(256) NULL);");
+				   `sign` VARCHAR(256) NULL,\
+				   `transactionClasses` tinyint (1)DEFAULT 0 NOT NULL,\
+				   `isEdit` tinyint (1)DEFAULT 0 NOT NULL);");
 		/*CONSTRAINT `fk_tbTransaction_tbPayee1`\
 		FOREIGN KEY (`tbPayee_id` )\
 		REFERENCES `tbPayee` (`id` )\
@@ -2534,10 +2712,13 @@ std::string CBankData::InternalQuerySQL(std::string strSQL, std::string strDBNam
 				char szVal[1024];
 				switch (q.fieldDataType(i)) {
 					case 1:
-						//整数型
-						sprintf_s(szVal, sizeof(szVal), "\"%s\":%d,", q.fieldName(i), q.getIntField(q.fieldName(i)));
-						strSQLRec += szVal;
-						break;
+						{
+							__int64 i64Val = q.getInt64Field(q.fieldName(i));
+							//整数型
+							sprintf_s(szVal, sizeof(szVal), "\"%s\":%I64d,", q.fieldName(i), i64Val);
+							strSQLRec += szVal;
+							break;
+						}
 
 					case 2:
 						//浮点型
@@ -2581,13 +2762,33 @@ std::string CBankData::InternalQuerySQL(std::string strSQL, std::string strDBNam
 	return strSQLRec;
 }
 
-int CBankData::InternalExecuteSQL(std::string strSQL)
+int CBankData::InternalExecuteSQL(std::string strSQL, std::string strDBName)
 {
 	std::string strSQLRec = "";
 
 	// 转换成大写
 	std::string strTp = strSQL;
 	transform(strTp.begin(), strTp.end(), strTp.begin(), towupper);
+
+	CppSQLite3DB* pdb = NULL;
+	if(strDBName == "DataDB")
+	{
+		pdb = GetDataDbObject();
+	}
+	else if(strDBName == "SysDB")
+	{
+		pdb = GetSysDbObject();
+	}
+	else
+	{
+		if(!CheckUserDB())
+			return -1;
+		pdb = &m_dbUser;
+	}
+
+	if(pdb == NULL)
+		return -1;
+
 	
 	if(!CheckUserDB())
 		return false;
@@ -2595,13 +2796,13 @@ int CBankData::InternalExecuteSQL(std::string strSQL)
 	try
 	{
 		// 执行SQL语句
-		m_dbUser.execDML(strSQL.c_str());
+		pdb->execDML(strSQL.c_str());
 		if (strTp.find("INSERT", 0) != string::npos)
 		{
 			//如果是INSERT语句，则取出最新插入的主键值并返回。
 			CppSQLite3Buffer bufSQL;
 			bufSQL.format("SELECT last_insert_rowid();");
-			CppSQLite3Query q = m_dbUser.execQuery(bufSQL);
+			CppSQLite3Query q = pdb->execQuery(bufSQL);
 			int iNewId = 0;
 			if (!q.eof())
 			{
@@ -2626,19 +2827,30 @@ int CBankData::InternalExecuteSQL(std::string strSQL)
 	}
 }
 
-bool CBankData::IsFileExist(LPSTR lpPath)
+bool CBankData::IsFileExist(LPWSTR lpPath)
 {
 	ATLASSERT(NULL != lpPath);
 	if (NULL == lpPath)
 		return false;
 
-	HANDLE hFile = CreateFileA(lpPath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+	HANDLE hFile = CreateFileW(lpPath, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
 	if (INVALID_HANDLE_VALUE == hFile)
 	{
 		DWORD dwErr = GetLastError();
 		// 2表示访问的文件不存在
 		if(2 == dwErr)
 			return false;
+	}
+	else
+	{
+		DWORD dwLength = GetFileSize(hFile, NULL);
+		if(dwLength < 10)
+		{
+			CloseHandle(hFile);
+			DeleteFileW(lpPath);
+			return false;
+		}
+			
 	}
 
 	CloseHandle(hFile);
@@ -2731,9 +2943,9 @@ std::string CBankData::InternalGetBarXMLData(const std::string& strStartDate, co
 							end )), 2) AS SumAmount FROM tbtransaction AS t, tbcategory2 AS c2, \
 							tbcategory1 AS c1, tbsubAccount  d\
 							WHERE t.tbcategory2_id=c2.id AND c2.tbcategory1_id=c1.id  \
-							and t.tbsubaccount_id= d.id\
-							GROUP BY c1.id ORDER BY c1.id,Date ) as temp group by Date,Type, myID;", strFormat.c_str(), strExPart.c_str());
-		else // 按周分的SQL语句
+							and t.tbsubaccount_id= d.id and tbCategory1_id not in (10018,10019, 10025) and t.TransDate >= '%s' and t.TransDate <= '%s' \
+							GROUP BY c1.id,Date ORDER BY c1.id,Date ) as temp group by Date,Type, myID;", strFormat.c_str(), strExPart.c_str(), strStartDate.c_str(), strEndDate.c_str());
+		else // 按季分的SQL语句
 			bufSQL.format("select sum(SumAmount),Date,Type, Name from (SELECT \
 							(case  substr(transdate,6,2)\
 							when '01'  then substr(transdate,0,5)||'年1季' when '02' then substr(transdate,0,5)||'年1季' when '03' \
@@ -2749,8 +2961,8 @@ std::string CBankData::InternalGetBarXMLData(const std::string& strStartDate, co
 							end )), 2) AS SumAmount FROM tbtransaction AS t, tbcategory2 AS c2, \
 							tbcategory1 AS c1, tbsubAccount  d\
 							WHERE t.tbcategory2_id=c2.id AND c2.tbcategory1_id=c1.id  \
-							and t.tbsubaccount_id= d.id\
-							GROUP BY c1.id ORDER BY c1.id,Date ) as temp group by Date,Type, myID;", strExPart.c_str());
+							and t.tbsubaccount_id= d.id and tbCategory1_id not in (10018,10019,10025) and t.TransDate >= '%s' and t.TransDate <= '%s' \
+							GROUP BY c1.id, Date ORDER BY c1.id,Date ) as temp group by Date,Type, myID;", strExPart.c_str(), strStartDate.c_str(), strEndDate.c_str());
 
 		// 检验数据库的连接状况
 		if(!CheckUserDB())
@@ -2847,7 +3059,7 @@ std::string CBankData::InternalGetBarXMLData(const std::string& strStartDate, co
 		{
 			TiXmlElement *pSet = new TiXmlElement("category");
 			
-			pSet->SetAttribute("label", (*myMapIt).first.c_str());
+			pSet->SetAttribute("Name", (*myMapIt).first.c_str());
 			pCategories->LinkEndChild(pSet);
 
 			
@@ -3133,13 +3345,13 @@ std::string CBankData::InternalGetPieXMLData(std::string strStartDate, std::stri
 		{
 			bufSQL.format("SELECT c1.Type AS Type,c1.name AS Name, round(SUM((case d.tbcurrency_id %s  end ) \
 							), 2) AS SumAmount FROM tbtransaction AS t, tbcategory2 AS c2, tbcategory1 AS c1, tbsubAccount  d \
-							WHERE t.tbcategory2_id not in (10059,10060) and t.tbcategory2_id=c2.id AND c2.tbcategory1_id=c1.id and t.tbsubaccount_id= d.id GROUP BY c1.id ORDER BY c1.id ;", strExPart.c_str());
+							WHERE t.tbcategory2_id not in (10059,10060,10067) and t.tbcategory2_id=c2.id AND c2.tbcategory1_id=c1.id and t.tbsubaccount_id= d.id GROUP BY c1.id ORDER BY c1.id ;", strExPart.c_str());
 		}
 		else
 		{
 			bufSQL.format("SELECT c1.Type AS Type,c1.name AS Name, round(SUM((case d.tbcurrency_id %s end ) \
 							), 2) AS SumAmount FROM tbtransaction AS t, tbcategory2 AS c2, tbcategory1 AS c1, tbsubAccount  d \
-							WHERE t.tbcategory2_id not in (10059,10060) and t.tbcategory2_id=c2.id AND c2.tbcategory1_id=c1.id AND TransDate>='%s' AND TransDate<='%s' and t.tbsubaccount_id= d.id GROUP BY c1.id ORDER BY c1.id ;", strExPart.c_str(), strStartDate.c_str(), strEndDate.c_str());
+							WHERE t.tbcategory2_id not in (10059,10060,10067) and t.tbcategory2_id=c2.id AND c2.tbcategory1_id=c1.id AND TransDate>='%s' AND TransDate<='%s' and t.tbsubaccount_id= d.id GROUP BY c1.id ORDER BY c1.id ;", strExPart.c_str(), strStartDate.c_str(), strEndDate.c_str());
 		}
 		
 		CppSQLite3Query q = m_dbUser.execQuery(bufSQL);
@@ -3514,7 +3726,7 @@ bool CBankData::ReadCurrencyByID(int nID, int nID2, double& dValue)
 	if (m_strSysDbPath.empty())
 		return false;
 	CppSQLite3DB db;
-	db.open(m_strSysDbPath.c_str());
+	db.open(m_strUtfSysDbPath.c_str());
 
 	CppSQLite3Buffer bufSQL;
 	bufSQL.format("SELECT ExchageRate FROM tbFav WHERE sysCurrency_id=%d AND sysCurrency_id1=%d;", nID, nID2);
@@ -3530,17 +3742,6 @@ bool CBankData::ReadCurrencyByID(int nID, int nID2, double& dValue)
 
 bool CBankData::CreateDataDBFile(LPSTR lpPath)
 {
-	ATLASSERT(NULL != lpPath);
-	if (NULL == lpPath)
-		return false;
-
-	HANDLE hFile = CreateFileA(lpPath, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, 0, NULL);
-	if (INVALID_HANDLE_VALUE == hFile)
-		return false;
-
-	CloseHandle(hFile);
-
-	
 	CppSQLite3DB db;
 	db.open(lpPath);
 
@@ -3552,7 +3753,7 @@ bool CBankData::CreateDataDBFile(LPSTR lpPath)
 
 	// 只是测试
 	db.execDML("INSERT INTO datExchangeRate (sysCurrency_id, sysCurrency_id1, ExchangeRate) VALUES (1, 1, 100.00);");
-	db.execDML("INSERT INTO datExchangeRate (sysCurrency_id, sysCurrency_id1, ExchangeRate) VALUES (1, 2, 647.90);");
+	db.execDML("INSERT INTO datExchangeRate (sysCurrency_id, sysCurrency_id1, ExchangeRate) VALUES (1, 2, 637.90);");
 	db.execDML("INSERT INTO datExchangeRate (sysCurrency_id, sysCurrency_id1, ExchangeRate) VALUES (1, 3, 916.69);");
 	db.execDML("INSERT INTO datExchangeRate (sysCurrency_id, sysCurrency_id1, ExchangeRate) VALUES (1, 4, 7.88);");
 	db.execDML("INSERT INTO datExchangeRate (sysCurrency_id, sysCurrency_id1, ExchangeRate) VALUES (1, 5, 1053.90);");
@@ -3561,6 +3762,18 @@ bool CBankData::CreateDataDBFile(LPSTR lpPath)
 	db.execDML("INSERT INTO datExchangeRate (sysCurrency_id, sysCurrency_id1, ExchangeRate) VALUES (1, 8, 685.01);");
 	db.execDML("INSERT INTO datExchangeRate (sysCurrency_id, sysCurrency_id1, ExchangeRate) VALUES (1, 9, 742.88);");
 	db.execDML("INSERT INTO datExchangeRate (sysCurrency_id, sysCurrency_id1, ExchangeRate) VALUES (1, 10, 502.15);");
+
+
+	
+	db.execDML("CREATE  TABLE IF NOT EXISTS `datUserInfo` (\
+			   `userid` CHAR(32) NOT NULL  PRIMARY KEY,\
+			   `mail` CHAR(256),\
+			   `edek` CHAR(256), \
+			   `stoken` CHAR(256), \
+			   `autoload` int default(0), \
+			   `autoinfo` int default(0), \
+			   `autoremb` int default(0));");
+
 
 	db.execDML("CREATE  TABLE IF NOT EXISTS `datUSBKeyInfo` (\
 			   `vid` INTEGER NOT NULL,\
@@ -3581,7 +3794,7 @@ CppSQLite3DB* CBankData::GetDataDbObject()
 	}
 	catch(...)
 	{
-		m_dbDataDB.open(m_strDataDbPath.c_str());
+		m_dbDataDB.open(m_strUtfDataDbPath.c_str());
 	}
 	return &m_dbDataDB;
 }
@@ -3594,7 +3807,345 @@ CppSQLite3DB* CBankData::GetSysDbObject()
 	}
 	catch(...)
 	{
-		m_dbSysDB.open(m_strSysDbPath.c_str());
+		m_dbSysDB.open(m_strUtfSysDbPath.c_str());
 	}
 	return &m_dbSysDB;
+}
+
+bool CBankData::IsMonthImport(const char* pKeyInfo, const char* pMonth, int nAccountID)
+{
+	if (NULL == pKeyInfo || nAccountID <= 0 || pMonth == NULL)
+		return false;
+
+	if(!CheckUserDB())
+		return false;
+
+	CppSQLite3Buffer bufSQL;
+
+	string strMonth = pMonth;
+	strMonth = FilterStringNumber(strMonth);
+	if(strMonth.size() > 8)
+		strMonth = strMonth.substr(0, 6);
+
+	bufSQL.format("SELECT tbmonth from tbAccountGetBillMonth where tbKeyInfo = '%s' and tbmonth = '%s'and tbaccount_id = %d;", pKeyInfo, strMonth.c_str(), nAccountID);
+
+
+
+	CppSQLite3Query q = m_dbUser.execQuery(bufSQL);
+
+	bool bBack = false;
+	if(!q.eof())
+	{
+		bBack = true;
+	}
+
+	q.finalize ();
+
+	return bBack;
+}
+
+std::string CBankData::strDBVer()
+{
+	ObjectLock lock(this);
+	std::string strDBVer = "";
+	try
+	{
+			CppSQLite3DB dbDesc;
+			dbDesc.open(m_strUtfUserDbPath.c_str());
+			int nVer = GetDBVersion(dbDesc);
+			CStringA ddd;
+			ddd.Format("%d" , nVer);
+			std::string strDB(ddd.GetBuffer());
+			ddd.ReleaseBuffer();
+	        strDBVer = strDB;
+			dbDesc.close();
+	}
+	catch (CppSQLite3Exception& ex)
+	{
+		CRecordProgram::GetInstance()->FeedbackError(MY_BANK_NAME, MY_ERROR_SQL_ERROR, CRecordProgram::GetInstance()->GetRecordInfo(L"GetstrDBVer error:%d", ex.errorCode()));
+		if(ex.errorMessage() != NULL)
+			CRecordProgram::GetInstance()->FeedbackError(MY_BANK_NAME, MY_ERROR_SQL_ERROR,AToW(ex.errorMessage()));
+	}
+	return strDBVer;
+}
+
+int  CBankData::TableStr(std::string &strtable)
+{
+	if(strtable == "1")
+		strtable = "tbBank";
+	else if(strtable == "2")
+		strtable = "tbAccount";
+	else if(strtable == "3")
+		strtable = "tbsubAccount";
+	else if(strtable == "4")
+		strtable = "tbCategory1";
+	else if(strtable == "5")
+		strtable = "tbCategory2";
+	else if(strtable == "6")
+		strtable = "tbPayee";
+	else if(strtable == "7")
+		strtable = "tbEvent";
+	else if(strtable == "8")
+		strtable = "tbFav";
+	else if(strtable == "9")
+		strtable = "tbTransaction";
+	else if(strtable == "10")
+		strtable = "tbProductChoice";
+	return 1;
+}
+
+string  CBankData::itostr(int hhh)
+{
+	CStringA ddd;
+	ddd.Format("%d" , hhh);
+	std::string strtb(ddd.GetBuffer());
+	ddd.ReleaseBuffer();
+	return strtb;
+}
+
+string CBankData::Filterchar(string scr)
+{
+	//scr = "3,3'33＃，‘#";
+	string result;
+	for(int i = 0;i < scr.size();i ++)
+	{		
+		size_t dpos = 0;
+		dpos = scr.find(",");
+		if(dpos != std::string::npos)
+		    scr.replace(dpos ,1, "，");
+		else
+			break;
+	}
+	for(int i = 0;i < scr.size();i ++)
+	{		
+		size_t dpos = 0;
+		dpos = scr.find("'");
+		if(dpos != std::string::npos)
+		    scr.replace(dpos ,1, "‘");
+		else
+			break;
+	}
+	for(int i = 0;i < scr.size();i ++)
+	{		
+		size_t dpos = 0;
+		dpos = scr.find("#");
+		if(dpos != std::string::npos)
+		    scr.replace(dpos ,1, "＃");
+		else
+			break;
+	}
+	result = scr;
+	return result;
+}
+
+void  CBankData::GfieldName ()
+{
+	// 将所有列名组成SQL语的插入时所需的样子
+	std::string strColNames = "";
+	ObjectLock lock(this);
+	if(!CheckUserDB())
+		return ;
+
+	for(int i =1 ; i< 11 ; i++)
+	{
+		std::string strtb = itostr( i);
+		std::string strtable = strtb;
+		TableStr(strtable);
+		std::string  strd1 = "SELECT  * FROM ";
+		strd1 += strtable;  	strd1 += " LIMIT 1;";
+		try
+		{
+			CppSQLite3Query q = m_dbUser.execQuery(strd1.c_str());
+			int kk = q.numFields();
+			//strd1 = itostr( kk);
+			tfield utf ;
+			utf.ifieldNum = kk;
+         	for(int j = 0 ; j< kk ; j++)
+			{
+		    	strd1 = q.fieldName(j);
+				utf.m_field.insert(std::make_pair( j , strd1));
+			}
+			GetTablefield()->insert(std::make_pair(strtb, utf));
+		}
+		catch (CppSQLite3Exception& ex)
+		{
+			CRecordProgram::GetInstance()->FeedbackError(MY_BANK_NAME, MY_ERROR_SQL_ERROR, CRecordProgram::GetInstance()->GetRecordInfo(L"InternalAddEvent error:%d", ex.errorCode()));
+			if(ex.errorMessage() != NULL)
+				CRecordProgram::GetInstance()->FeedbackError(MY_BANK_NAME, MY_ERROR_SQL_ERROR,AToW(ex.errorMessage()));
+			return ;
+		}
+	}
+}
+
+
+
+int CBankData::GetList(std::string strBig30) // 
+{
+	ObjectLock lock(this);
+	if(!CheckUserDB())
+		return 0;
+
+	int isynnum =0;
+	for(int i =1 ; i< 11 ; i++)
+	{
+		std::string strtb = itostr( i);
+		std::string strtable = strtb;
+		TableStr(strtable);
+		std::string  strd1 = "SELECT  * FROM ";
+		strd1 += strtable;  	strd1 += ";";
+			try
+			{
+				//CppSQLite3Binary blob;
+				CppSQLite3Query q;
+				//string strtable = "SELECT * FROM tbBank;";
+				q = m_dbUser.execQuery(strd1.c_str());
+				while (!q.eof()) 
+				{
+					TableField::iterator Tfmap = GetTablefield()->find(strtb);
+					UserIDMap::iterator Uidmap = GetUserIDMap()->find(q.getStringField("id"));
+					_int64 i64id = _atoi64(q.getStringField("id"));
+					if(i64id > 1234567890123)   //
+					{
+						if (Uidmap != GetUserIDMap()->end())
+						{
+							_int64 isut = _atoi64(Uidmap->second.lUT.c_str());
+			           		_int64 icut = _atoi64(q.getStringField("UT"));
+							if(icut > isut)
+							{
+								isynnum++;
+								Uidmap->second.iupdown = 1;
+								Uidmap->second.iTableNum = strtb;
+								if(strBig30 != "")
+								{
+    								Uidmap->second.lUT = strBig30;
+									CppSQLite3Buffer bufSQL;
+									bufSQL.format("UPDATE %s SET UT='%s' WHERE id='%s';",strtable ,strBig30, q.getStringField("id"));
+									m_dbUser.execDML(bufSQL);
+								}
+								else
+    								Uidmap->second.lUT = q.getStringField("UT");
+								Uidmap->second.idbver = strDBVer();
+								Uidmap->second.imark = q.getStringField("status") ;
+								Uidmap->second.strdata = "" ;	strd1 = "";
+								for(int k = 1 ;k < Tfmap->second.ifieldNum-2 ; k++)
+								{
+									strd1 += Filterchar(q.getStringField(k));
+									if( k == Tfmap->second.ifieldNum-3)			       				    strd1 += ",";
+									else					    			strd1 += ",";
+								}
+								Uidmap->second.strdata += strd1 ;
+							}
+							else if(icut < isut)
+							{
+								isynnum++;
+								Uidmap->second.iupdown = 2;
+							}
+							else
+								Uidmap->second.iupdown = 3;
+						}
+						else //本地有,server无 4    本地无,server有 0
+						{
+								isynnum++;
+							//UserIDMap::iterator Uidmap = GetUserIDMap()->begin();
+								//Uidmap->second.iupdown = 4;  //client have
+								strtable = "" ;      strd1 = "";
+								for(int k = 1 ;k < Tfmap->second.ifieldNum-2 ; k++)
+								{
+									strd1 += Filterchar(q.getStringField(k));
+									if( k == Tfmap->second.ifieldNum-3)		    				    strd1 += ",";
+									else					    									strd1 += ",";
+								}
+								strtable += strd1;
+								std::string strUT;
+								if(strBig30 != "")
+								{
+    								strUT = strBig30;
+									CppSQLite3Buffer bufSQL;
+									bufSQL.format("UPDATE %s SET UT='%s' WHERE id='%s';",strtable , strBig30, q.getStringField("id"));
+									m_dbUser.execDML(bufSQL);
+								}
+								else
+    								//strUT = "44543";
+    								strUT = q.getStringField("UT");
+								UDData uddata ={ strtb ,strUT ,strDBVer(),q.getStringField("status") ,4 ,strtable};
+								//UDData uddata ={ strtb ,strUT ,strDBVer(),"66" ,7 ,strtable};
+			    				m_UserIDMap.insert(std::make_pair(q.getStringField("id"), uddata));
+						}
+					}
+					q.nextRow();
+				}
+				q.finalize();
+			}
+			catch (CppSQLite3Exception& ex)
+			{
+				CRecordProgram::GetInstance()->FeedbackError(MY_BANK_NAME, MY_ERROR_SQL_ERROR, CRecordProgram::GetInstance()->GetRecordInfo(L"GettList error:%d", ex.errorCode()));
+				if(ex.errorMessage() != NULL)
+					CRecordProgram::GetInstance()->FeedbackError(MY_BANK_NAME, MY_ERROR_SQL_ERROR,AToW(ex.errorMessage()));
+				//return 0;
+			}
+	}
+	return isynnum;		
+
+}
+
+
+string CBankData::FilterStringNumber(string& scr)
+{
+	string result;
+	char *p = (char*)scr.c_str();
+	char temp[2] = { 0 };
+	for(unsigned char i = 0;i < scr.size();i ++)
+	{		
+		if((((*p) >= '0')&&((*p) <= '9'))) 
+		{
+			memcpy(&temp[0], p, 1);
+			result += temp; 
+		}
+		p ++;
+	}
+	return result;
+}
+
+bool CBankData::ReadNeedAutoLoadUser(string& strUserID, string& strMail, string& strStoken)
+{
+	strUserID.clear();
+	strMail.clear();
+	strStoken.clear();
+
+	//if(!m_dbDataDB.checkDB())
+	//	return false;
+
+	try
+	{
+		m_dbDataDB.checkDB();
+	}
+	catch(...)
+	{		
+		m_dbDataDB.open(GetDbPath("DataDB"));
+	}
+
+
+	CppSQLite3Buffer bufSQL;
+	bufSQL.format("SELECT userid, mail, stoken from datUserInfo where autoload = 1");
+
+	try
+	{
+		CppSQLite3Query q = m_dbDataDB.execQuery(bufSQL);
+
+		if(!q.eof())
+		{
+			strUserID = ToSQLUnsafeString(q.getStringField("userid"));
+			strMail = ToSQLUnsafeString(q.getStringField("mail"));
+			strStoken = ToSQLUnsafeString(q.getStringField("stoken"));
+		}
+
+		q.finalize ();
+	}
+	catch(...)
+	{
+		CRecordProgram::GetInstance()->FeedbackError(MY_BANK_NAME, MY_ERROR_SQL_ERROR, L"读取自动登录数据失败！");
+		return false;
+	}
+
+	return true;
 }

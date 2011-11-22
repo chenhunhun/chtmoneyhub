@@ -20,4 +20,5 @@ void CLoginButtonSkin::DrawButton(CDCHandle dc, const RECT &rc, UINT uButtonStat
 	UINT uYPos = 0;
 	RECT rcDest = { rc.left, uYPos, rc.left + m_bitmap.GetWidth() /4, uYPos + m_bitmap.GetHeight() };
 	CSkinManager::DrawImagePart(dc, rcDest, m_bitmap, btnStatus, 4);
+	
 }

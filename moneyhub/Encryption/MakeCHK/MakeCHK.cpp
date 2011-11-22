@@ -12,7 +12,7 @@
 #include "../SHA1/sha.h"
 #include "../CHKFile/CHK.h"
 
-char g_szSpecialName[][255]={ "BankInfo","Thumbs.db","Config","Html",  "bank.chk","MoneyHub.chk","config.chk","html.chk","usbkeyinfo.xml","syslog.txt","end", "BillUrl.xml"};
+char g_szSpecialName[][255]={ "BankInfo","Thumbs.db","Config","Html",  "bank.mchk","MoneyHub.mchk","config.mchk","html.mchk","usbkeyinfo.xml","syslog.txt","end", "BillUrl.xml"};
 
 // std::string  getAppDataBank()
 // {	
@@ -62,7 +62,7 @@ void TraversalPath(const char* lpszPath,const char * lpszFilePath, FILE *fp)
 		if ((_tcscmp(fn.c_str(), ".") != 0) && (_tcscmp(fn.c_str(), "..") != 0) && (_tcsicmp(fn.c_str(), ".svn") != 0) && (_tcsicmp(fn.c_str(), "BillUrl.xml") != 0)
 			&& (_tcsicmp(fn.c_str(), "info.xml") != 0) && (_tcsicmp(fn.c_str(), "syslist.txt") != 0) && (_tcsicmp(fn.c_str(), "CloudCheck.ini") != 0) && (_tcsicmp(fn.c_str(), "BlackList.txt") != 0))
 		{
-			//为每个单独升级模块制作xxx.chk完整性效验文件
+			//为每个单独升级模块制作xxx.mchk完整性效验文件
 			if( isSpecial(FindFileData.cFileName) )
 				continue;
 
@@ -250,7 +250,7 @@ void MakeFileCHK(const char* lpszFile,const char* lpszCHKFile)
 }
 
 /**
-*            为每个银行单独制作相应info.chk
+*            为每个银行单独制作相应info.mchk
 *
 */
 #define  BANKINFOPATH        "BankInfo\\banks\\*.*"
@@ -318,7 +318,7 @@ void makeBankChk(LPSTR strP,LPSTR strParentP = NULL)
 							strPath = buf;
 
 							std::string bankList = strPath + "\\info.xml";
-							std::string bankListCHK = strPath + "\\info.chk";
+							std::string bankListCHK = strPath + "\\info.mchk";
 
 							MakeFileCHK(bankList.c_str(),bankListCHK.c_str());
 						}
@@ -361,7 +361,7 @@ void makeCheckChk(LPSTR filePath,  LPSTR stroreFileName , LPSTR chkName)
 }
 
 /**
-*  为每个银行生成完整性效验信息  bank.chk
+*  为每个银行生成完整性效验信息  bank.mchk
 */
 void makeBankCheckChk(LPSTR filePath,LPSTR path,LPSTR parentPath, FILE* p = NULL)
 {
@@ -388,7 +388,7 @@ void makeBankCheckChk(LPSTR filePath,LPSTR path,LPSTR parentPath, FILE* p = NULL
 				strPath += '\\';
 				strPath += FindFileData.cFileName;
 
-				makeCheckChk((LPSTR)strPath.c_str(), filePath, "bank.chk");
+				makeCheckChk((LPSTR)strPath.c_str(), filePath, "bank.mchk");
 			}
 		}
 	}while (FindNextFile(hFind, &FindFileData) != 0);
@@ -412,13 +412,13 @@ int _tmain(int argc, char* argv[])
 	//unsigned char * buffer; //gao
 	//int ret; //gao
 
-    //为各个银行生成相应的info.chk文件
+    //为各个银行生成相应的info.mchk文件
 	std::string dir = strFileList;
 	dir += "\\";
 	dir += BANKINFOPATH;
 	makeBankChk((LPSTR)dir.c_str());
 	
-	//为Html和Config生成相应的info.chk文件
+	//为Html和Config生成相应的info.mchk文件
 	dir = strFileList;
 	dir += "\\Html\\*.*";
 	makeBankChk((LPSTR)dir.c_str());
@@ -432,29 +432,29 @@ int _tmain(int argc, char* argv[])
 	GetModuleFileName(NULL, szRootDir, MAX_PATH);
 	*(strrchr(szRootDir, '\\') + 1) = '\0';
 			
-	// 生成syslist.chk
+	// 生成syslist.mchk
 	std::string strSyslist2 = strFileList + "\\Config\\syslist.txt";
-	std::string strSyslistCHK2 = strFileList + "\\Config\\syslist.chk";
+	std::string strSyslistCHK2 = strFileList + "\\Config\\syslist.mchk";
 
 	MakeFileCHK(strSyslist2.c_str(),strSyslistCHK2.c_str());
 
 	std::string strCloudlist2 = strFileList + "\\Config\\CloudCheck.ini";
-	std::string strCloudlistCHK2 = strFileList + "\\Config\\CloudCheck.chk";
+	std::string strCloudlistCHK2 = strFileList + "\\Config\\CloudCheck.mchk";
 
 	MakeFileCHK(strCloudlist2.c_str(),strCloudlistCHK2.c_str());
 
 	std::string strBlackListlist2 = strFileList + "\\Config\\BlackList.txt";
-	std::string strBlackListlCHK2 = strFileList + "\\Config\\BlackList.chk";
+	std::string strBlackListlCHK2 = strFileList + "\\Config\\BlackList.mchk";
 
 	MakeFileCHK(strBlackListlist2.c_str(),strBlackListlCHK2.c_str());
 
 	std::string strusbkeyinfoxml = strFileList + "\\Config\\usbkeyinfo.xml";
-	std::string strusbkeyinfoCHK = strFileList + "\\Config\\usbkeyinfo.chk";
+	std::string strusbkeyinfoCHK = strFileList + "\\Config\\usbkeyinfo.mchk";
 
 	MakeFileCHK(strusbkeyinfoxml.c_str(),strusbkeyinfoCHK.c_str());
 
 	std::string strBillUrlxml = strFileList + "\\Config\\BillUrl.xml";
-	std::string strBillUrlCHK = strFileList + "\\Config\\BillUrl.chk";
+	std::string strBillUrlCHK = strFileList + "\\Config\\BillUrl.mchk";
 
 	MakeFileCHK(strBillUrlxml.c_str(),strBillUrlCHK.c_str());
 	// 生成列表
@@ -462,7 +462,7 @@ int _tmain(int argc, char* argv[])
 	strcpy_s(szFileList, szRootDir);
 	strcat_s(szFileList, "MoneyHubList.txt");
 
-	makeCheckChk((LPSTR)strFileList.c_str(),szFileList,"MoneyHub.chk");
+	makeCheckChk((LPSTR)strFileList.c_str(),szFileList,"MoneyHub.mchk");
 
 
 	//为各个银行生成完整性效验
@@ -474,9 +474,9 @@ int _tmain(int argc, char* argv[])
 	//为Html和Config生成效验文件
 	strMakeCHk =   strFileList;
 	strMakeCHk +=  "\\Html";
-	makeCheckChk((LPSTR)strMakeCHk.c_str(),szFileList,"html.chk");
+	makeCheckChk((LPSTR)strMakeCHk.c_str(),szFileList,"html.mchk");
 
 	strMakeCHk =   strFileList;
 	strMakeCHk +=  "\\Config";
-	makeCheckChk((LPSTR)strMakeCHk.c_str(),szFileList,"config.chk");
+	makeCheckChk((LPSTR)strMakeCHk.c_str(),szFileList,"config.mchk");
 }

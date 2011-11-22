@@ -22,11 +22,17 @@
 #include "../Utils/UserBehavior/UserBehavior.h"
 #include "BankData/USBMonitor.h"
 #include "../Utils/ListManager/ListManager.h"
+#include "../Utils/HardwareID/genhwid.h" // 读取硬件ID
+#include "../Utils/SN/SNManager.h" // 读取SN
+#include "../Utils/SecurityCache/comm.h"
 #include <vector>
 #include <algorithm>
 using namespace std;
 
-CAxUI::CAxUI() :m_hTag(NULL)
+extern HWND g_hMainFrame;
+#define  MH_SENDSTARTDELAYEVENT (0xfe02)
+
+CAxUI::CAxUI() :m_hTag(NULL), m_pbilldata(NULL)
 {
 	Create(HWND_MESSAGE); // call WM_CREATE
 }
@@ -36,6 +42,7 @@ CAxUI::CAxUI() :m_hTag(NULL)
 
 int CAxUI::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
+	CExternalDispatchImpl::m_hAxui = m_hWnd;
 	DWORD dwThreadID;
 	CloseHandle(CreateThread(NULL, 0, _threadInit, this, 0, &dwThreadID));
 	return 0;
@@ -86,10 +93,7 @@ LRESULT CAxUI::OnCreateNewPage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 LRESULT CAxUI::OnExit(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	CleanHistory();
-	CUserBehavior::GetInstance ()->Action_SendDataToServerWhenExit (); // 发送数据到服务器端
-
-	
-	//CBankData::GetInstance()->ExitWriteCurUserTpFile2Db();
+	//CUserBehavior::GetInstance ()->Action_SendDataToServerWhenExit (); // 发送数据到服务器端//防止服务器处理慢导致退出缓慢
 
 	::TerminateProcess(::GetCurrentProcess(), 0);
 
@@ -120,6 +124,123 @@ LRESULT CAxUI::OnCancelAddFav(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		uacPopVec.erase(ite);
 	return 0;
 }
+
+LRESULT CAxUI::UserAutoLoad(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	string strUserID, strMail, strStoken;
+	CBankData::GetInstance()->ReadNeedAutoLoadUser(strUserID, strMail, strStoken);
+
+	string strParam = "xml=" + strUserID + MY_PARAM_END_TAG;
+
+
+	string strHWID = GenHWID2();
+	wstring wstrHWID = CA2W(strHWID.c_str());
+	string strSN = CSNManager::GetInstance()->GetSN();
+
+	strParam += strSN;
+	strParam += MY_PARAM_END_TAG;
+
+	strParam += strHWID;
+	strParam += MY_PARAM_END_TAG;
+
+	
+	strParam += strStoken;
+	strParam += MY_PARAM_END_TAG;
+
+	CDownloadThread downloadThread;
+	downloadThread.DownLoadInit(wstrHWID.c_str(), L"http://moneyhub.ft.com/server/auto_log_on.php", (LPSTR)strParam.c_str());
+	char chTemp[1024] = {0};
+	DWORD dwRead = 0;
+	if (ERR_SUCCESS != downloadThread.ReadDataFromSever(chTemp, 1024, &dwRead))
+	{
+		CRecordProgram::GetInstance()->FeedbackError(MY_PRO_NAME, MY_THREAD_IE_EXTERNEL, L"自动登陆失败");
+
+		// 登录失败，发送一个空的账号
+		::SendMessage(g_hMainFrame, WM_SETTEXT, WM_FINIHS_AUTO_LOAD, (LPARAM)L"");
+
+		// 设置登录失败的状态
+		return 0;
+	}
+
+	// 取出返回结果，KEK，EDEK
+	string strRead = chTemp;
+	string strSub = strRead.substr(0, strRead.find(MY_PARAM_END_TAG));
+
+#define MY_AUTO_LAOD_SUCC			 "61"
+	int nParam = -1;
+	if (strSub.find(MY_AUTO_LAOD_SUCC) != string::npos)
+	{
+		// 读取KEK
+		string strTag = MY_PARAM_END_TAG;
+		strRead = strRead.substr(strRead.find(MY_PARAM_END_TAG) + strTag.length(), strRead.length());
+		string strKEK = strRead.substr(0, strRead.find(MY_PARAM_END_TAG));
+
+		// 读取EDEK
+		strRead = strRead.substr(strRead.find(MY_PARAM_END_TAG) + strTag.length(), strRead.length());
+		string strEDEK = strRead.substr(0, strRead.find(MY_PARAM_END_TAG));
+
+		// 将KEK EDEKl转换成实际值
+		char kekVal[33] = {0};
+		char edekVal[33] = {0};
+		char keyVal[33] = {0};
+		int nBack = 0;
+		FormatDecVal(strKEK.c_str(), kekVal, nBack);
+		FormatDecVal(strEDEK.c_str(), edekVal, nBack);
+
+		UserEdekUnPack((unsigned char*)edekVal, 32, (unsigned char*)kekVal, (unsigned char*)keyVal);
+
+		// 使用USERID命名数据库
+		string strData = strUserID;
+		strData += ".dat";
+
+		// 将该用户的库设置成当前数据库,并用密码打开
+		CBankData::GetInstance()->SetCurrentUserDB((LPSTR)strData.c_str(), keyVal, 32);
+
+		// 更改当前用户信息
+		CBankData::GetInstance()->m_CurUserInfo.strstoken = strStoken;
+		CBankData::GetInstance()->m_CurUserInfo.strmail = strMail;
+		CBankData::GetInstance()->m_CurUserInfo.struserid = strUserID;
+	}
+	else
+	{
+		// 清空MAIL，发送消息时表示登录失败
+		strMail.clear();
+	}
+
+	CString cstrMail = CA2W(strMail.c_str());
+	::SendMessage(g_hMainFrame, WM_SETTEXT, WM_FINIHS_AUTO_LOAD, (LPARAM)(LPCTSTR)cstrMail);
+	return 0;
+}
+
+LRESULT CAxUI::OnLoadUserQuit(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	string strPw;
+	int nLen = 0;
+
+// 发布版本，用以下密码解密
+#ifdef OFFICIAL_VERSION
+	strPw = "NCrFT2RIeD0NY2wHOI8W";
+	nLen = 20;
+#endif
+	// 将数据库转移至访客数据库
+	CBankData::GetInstance()->SetCurrentUserDB("Guest.dat", (LPSTR)strPw.c_str(), nLen);
+
+	// 更改当前用户信息
+	CBankData::GetInstance()->m_CurUserInfo.strstoken.clear();
+	CBankData::GetInstance()->m_CurUserInfo.strmail.clear();
+	CBankData::GetInstance()->m_CurUserInfo.struserid = "Guest";
+
+	::SendMessage(g_hMainFrame, WM_SETTEXT, WM_UPDATE_USER_STATUS, (LPARAM)L"");
+	return 0;
+}
+
+//LRESULT CAxUI::OnShowUserDlg(UINT uMsg, WPARAM wParam, LPARAM lParam)
+//{
+//	if(CExternalDispatchImpl::m_hFrame[0])
+//		::PostMessageW(CExternalDispatchImpl::m_hFrame[0], WM_AX_SHOW_USER_DLG, 0, lParam);
+//	OutputDebugStringA("send message ksksk");
+//	return 0;
+//}
 
 //LRESULT CAxUI::OnDownLoadBankInfo (UINT uMsg, WPARAM wParam, LPARAM lParam)
 //{
@@ -197,4 +318,65 @@ LRESULT CAxUI::OnCancelAddFav(UINT uMsg, WPARAM wParam, LPARAM lParam)
 //	}
 //
 //	return 0;
-//}
+//} wParam, LPARAM lParam)
+
+LRESULT CAxUI::OnGetAllBill(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	char *pInfo = (char*)lParam;
+	if(pInfo == NULL)
+		return 0;
+
+	m_pbilldata = pInfo;
+	return 0;
+}
+
+LRESULT CAxUI::OnSendToBillPage(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	if(m_pbilldata != NULL)
+		SetTimer(MH_SENDSTARTDELAYEVENT, 1 * 1000 ,NULL);	
+	return 0;
+}
+
+LRESULT CAxUI::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	if(wParam == MH_SENDSTARTDELAYEVENT)
+	{
+		KillTimer(MH_SENDSTARTDELAYEVENT);
+		::PostMessageW(CExternalDispatchImpl::m_hFrame[2], WM_AX_GET_ALL_BILL, NULL, (LPARAM)&m_pbilldata);
+	}
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

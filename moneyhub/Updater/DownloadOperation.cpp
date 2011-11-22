@@ -14,9 +14,9 @@ CDownloadOperation::CDownloadOperation(void)
 	m_vecSpecialDName.push_back(L"Config.cab");
 
 	//ºÚ°×Ãûµ¥
-	m_vecWBFileName.push_back(L"BlackList.chk");
-	m_vecWBFileName.push_back(L"CloudCheck.chk");
-	m_vecWBFileName.push_back(L"syslist.chk");
+	m_vecWBFileName.push_back(L"BlackList.mchk");
+	m_vecWBFileName.push_back(L"CloudCheck.mchk");
+	m_vecWBFileName.push_back(L"syslist.mchk");
 }
 
 CDownloadOperation::~CDownloadOperation(void)

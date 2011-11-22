@@ -281,7 +281,12 @@ jQuery.validator.addMethod("ipv6", function(value, element, param) {
 
 jQuery.validator.addMethod("unique", function(value, element, param) {
 	//添加‘替换
-	return checkUnique(replaceSQLStr($(element).attr("id")), value, $(element).next().val());
+	if ($(element).attr("name") == "BankName") {
+		result = checkUnique(replaceSQLStr($(element).attr("name")), value, $(element).next().val(), $(element).parents(".addBox").find("#banktype").val());
+	} else {
+		result = checkUnique(replaceSQLStr($(element).attr("name")), value, $(element).next().val(), $(element).next().next().val());
+	}
+	return result;
 }, jQuery.validator.format("{0}已存在"));
 
 jQuery.validator.addMethod("Different", function(value, element, param) {
@@ -308,4 +313,13 @@ jQuery.validator.addMethod("notNeg", function(value, element, param) {
 	} else {
 		return (fResult >= 0);
 	}
-},jQuery.validator.format("数字不能是负数")); 
+},jQuery.validator.format("数字不能是负数"));
+
+jQuery.validator.addMethod("dayNumber", function(value, element, param) {
+	var fResult = parseFloat(value);
+	if (isNaN(fResult)) {
+		return true;
+	} else {
+		return (fResult >= 1 && fResult <= 31);
+	}
+},jQuery.validator.format("数字只能在1--31之间")); 

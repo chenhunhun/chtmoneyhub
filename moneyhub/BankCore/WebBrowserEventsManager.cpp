@@ -12,18 +12,23 @@
 #include "../BankUI/Util/Util.h"
 #include "../BankUI/UIControl/CoolMessageBox.h"
 #include "../Utils/UserBehavior/UserBehavior.h"
+#include "..\BankUI\UIControl\SelectMonthDlg.h"
 #include "GetBill/BillUrlManager.h"
 #include "ExternalDispatchImpl.h"
 #include "BankData\BkInfoDownload.h"
 #include "MyError.h"
+#include "../BankUI/UIControl/MonthSelectDlg.h"
 
 #define MODE_UNDEFINED                     ((DWORD)0)
 #define MODE_HANDINPUT                     ((DWORD)1)
 #define MODE_SELECTDROPLIST                ((DWORD)2)
 #define MODE_OTHERS                        ((DWORD)500)
 
-#define  BEGIN_GET_BILL_STEP	2
-#define  FINISH_GET_BILL_STEP	99
+#define  BEGIN_GET_BILL_STEPcmbchina	2
+#define  BEGIN_GET_BILL_STEPecitic	6
+
+
+
 BOOL CWebBrowserEventsManager::AdviseBrowserEvents(IWebBrowser2* pWebBrowser2)
 {
 	m_pWebBrowser2 = pWebBrowser2 ;
@@ -45,11 +50,13 @@ BOOL CWebBrowserEventsManager::UnadviseBrowserEvents()
 
 CWebBrowserEventsManager::CWebBrowserEventsManager(CAxControl *pAxControl): m_pAxControl(pAxControl)
 {
+	m_notifyWnd = 0;
 	m_error = false;
 	m_pBillData = NULL;
 	m_isGetBill = false;
 	m_step = 1;
-	m_hmid = 0;
+	m_iCancelState = 0;
+	m_bCanClose = true;
 
 	m_dwCookie = 0 ;
 	m_pCustomSite = NULL ;
@@ -75,6 +82,7 @@ CWebBrowserEventsManager::CWebBrowserEventsManager(CAxControl *pAxControl): m_pA
 	m_bPostDataInAnyFrame = FALSE ;
 	m_bFormCheck = FALSE ;
 	m_adv = CHostContainer::GetInstance()->GetHostName(kAdv);
+
 }
 
 CWebBrowserEventsManager::~CWebBrowserEventsManager()
@@ -328,6 +336,11 @@ HRESULT CWebBrowserEventsManager::OnNewWindow(LPCTSTR lpszUrl, LPCTSTR lpszRefer
 		*Cancel = TRUE;
 		return S_OK;
 	}
+	if(_tcsnicmp(lpszUrl, _T("about:blank"), 11) == 0)
+	{
+		if(lpszReferer != NULL)//对于采用windows.open(url,"_blank")这种打开新网页的处理，例如中国银行
+			lpszUrl = lpszReferer;
+	}
 
 	//广告抛到我们自己的页面		
 	std::wstring  url(lpszUrl);
@@ -523,7 +536,6 @@ HRESULT CWebBrowserEventsManager::OnTitleChange(REFIID riid, LCID lcid, WORD wFl
 	return S_OK ;
 }
 
-
 HRESULT CWebBrowserEventsManager::OnBeforeNavigate2(REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS* pDispParams, VARIANT* pVarResult, EXCEPINFO* pExcepInfo, UINT* puArgErr)
 {
 	m_error = false;
@@ -534,31 +546,60 @@ HRESULT CWebBrowserEventsManager::OnBeforeNavigate2(REFIID riid, LCID lcid, WORD
 	// 在该处处理导入账单页面开始进行和中间关键步骤的起始处理
 	if(m_isGetBill)
 	{
-		map<int, wstring>* purlmap =  CBillUrlManager::GetInstance()->GetUrlMap(m_pBillData->aid, m_pBillData->type);
+		LPURLLIST pUrlList = CBillUrlManager::GetInstance()->GetUrlMap(m_pBillData->aid, m_pBillData->type);
+		if(pUrlList == NULL)
+			return S_OK;
+		map<int, wstring>* purlmap =  &(pUrlList->url);
+		wstring strSour = pDispParams->rgvarg[5].pvarVal->bstrVal;
+		std::map<int, wstring>::iterator ite= purlmap->begin();
 
-		if( purlmap!= NULL)
+		if( CBillUrlManager::GetInstance()->Getmode(m_pBillData->aid) )
 		{
-			map<int, wstring>::iterator ite= purlmap->begin();
+			for(;ite != purlmap->end(); ite ++)
+			{
+					wstring url = ite->second;
+					CString   strtmpqq;
+       				CString   strtmp = (CString)pDispParams->rgvarg[5].pvarVal->bstrVal;
+					strtmpqq = strtmp.Mid(0,url.size());
+					if( find(pUrlList->m_beginstep.begin(), pUrlList->m_beginstep.end(), ite->first) != pUrlList->m_beginstep.end())//
+						strtmpqq = strtmp;
+					if(strtmpqq == url.c_str() && m_stepTime.size() == 0 && ite->first == 2)
+					{
+     					m_stepTime.push_back(ite->first);
+						NotifyGettingBill();
+						ShowNotifyWnd(dLoginDlg); //显示正在登陆
+					}
+
+			}
+
+		}
+		else
+		{
 			for(;ite != purlmap->end(); ite ++)
 			{
 				wstring url = ite->second;
-				if(url.size() > 0)
-					if(wcsncmp(url.c_str(), pDispParams->rgvarg[5].pvarVal->bstrVal, url.size()) == 0)
-					{
-						CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_THREAD_GET_BILL, CRecordProgram::GetInstance()->GetRecordInfo(L"导入账单进入关键页面%d:%s", m_step, url.c_str()));
-						if(ite->first > m_step)
-							m_step = ite->first;
-						else
-							if(ite->first > 1)
-								m_step ++;
-						// 锁定当前Tab页面
-						if(m_step == BEGIN_GET_BILL_STEP)
-							::PostMessage(m_pAxControl->m_hChildFrame,WM_GETTING_BILL, 0, 0);
 
-						return S_OK;
-					}
+				if(url.size() > 0 && wcsncmp(url.c_str(), strSour.c_str(), url.size()) == 0)
+				{
+					CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_THREAD_GET_BILL, CRecordProgram::GetInstance()->GetRecordInfo(L"导入账单进入关键页面%d:%s:%s", m_step, url.c_str(), strSour.c_str()));
+					if(find(m_stepTime.begin(), m_stepTime.end(), ite->first) == m_stepTime.end())//只处理第一次出现的问题
+					{
+						m_stepTime.push_back(ite->first);
+						if(ite->first > m_step)
+						{
+							m_step = ite->first;//起始步骤的处理在这里
+						}
+
+						if( find(pUrlList->m_beginstep.begin(), pUrlList->m_beginstep.end(), m_step) != pUrlList->m_beginstep.end())//多入口进入的问题
+						{
+							NotifyGettingBill();
+							ShowNotifyWnd(dLoginDlg);//显示正在登陆
+						}
+					}						
+				}
 			}
 		}
+
 	}
 	//////////////////////////////////////////////////////////////////////////
 	// Download Catch
@@ -731,13 +772,8 @@ HRESULT CWebBrowserEventsManager::OnNavigateComplete2(REFIID riid, LCID lcid, WO
 
 	if (IsToppestWindowOfBrowser2(pDispParams->rgvarg[1].pdispVal))
 	{
-		if (!wcsncmp(L"javascript:", pDispParams->rgvarg[0].pvarVal->bstrVal, 11)   ||
-			!wcsncmp(L"vbscript:", pDispParams->rgvarg[0].pvarVal->bstrVal, 9)      ||
-			!wcsncmp(L"mailto:", pDispParams->rgvarg[0].pvarVal->bstrVal, 7)        ||
-			!wcsncmp(L"about:", pDispParams->rgvarg[0].pvarVal->bstrVal, 6)          )
-		{
+		if(FileterNormalUrl( pDispParams->rgvarg[0].pvarVal->bstrVal))
 			return S_OK ;
-		}
 
 		if (0 == m_cstrConnectedUrl.GetLength() || -1 == m_cstrConnectedUrl.Find(L"http://"))
 		{
@@ -794,6 +830,7 @@ HRESULT CWebBrowserEventsManager::OnNavigateComplete2(REFIID riid, LCID lcid, WO
 			}
 		}		
 
+
 		m_cstrLastUrl = pDispParams->rgvarg[0].pvarVal->bstrVal ;
 
 		::SendMessage(m_pAxControl->m_hChildFrame, WM_SETTEXT, WM_ITEM_SET_TAB_URL, (LPARAM)pDispParams->rgvarg[0].pvarVal->bstrVal);
@@ -833,18 +870,85 @@ HRESULT CWebBrowserEventsManager::OnDocumentComplete(REFIID riid, LCID lcid, WOR
 	int state = 0;
 	if(m_isGetBill)
 	{
+		LPURLLIST pUrlList = CBillUrlManager::GetInstance()->GetUrlMap(m_pBillData->aid, m_pBillData->type);
+		map<int, wstring>* purlmap =  &(pUrlList->url);
 		//////////////////////////////////////////////////////////////////////////
 		IWebBrowser2 *thisBrowser	= NULL;
 		IDispatch *docDisp			= NULL;
 		HRESULT hr = S_OK;
 
 		IDispatch* pBrowser = pDispParams->rgvarg[1].pdispVal;
-		
 		hr = pBrowser->QueryInterface(IID_IWebBrowser2, reinterpret_cast<void **>(&thisBrowser));
-		if (SUCCEEDED(hr) && thisBrowser != NULL) 
+
+		int maxnum = 0; 
+		if( CBillUrlManager::GetInstance()->Getmode(m_pBillData->aid) )
+		{
+			CString   strtmpqq;
+       		CString   strtmp = (CString)pDispParams->rgvarg[0].pvarVal->bstrVal;
+			map<int, wstring>::iterator ite;
+			for(ite = purlmap->begin(); ite != purlmap->end(); ite ++)
+			{
+				if(ite->first > 2)
+				{
+					wstring url = ite->second;   
+					strtmpqq = strtmp.Mid(0,url.size());
+					if( find(pUrlList->m_beginstep.begin(), pUrlList->m_beginstep.end(), ite->first) != pUrlList->m_beginstep.end())//
+						strtmpqq = strtmp;
+					if(strtmpqq == url.c_str())
+					{
+						m_step = ite->first;
+    					maxnum = BILL_BROWSER_GO;
+					}
+				}
+			}
+
+	        if (SUCCEEDED(hr) && thisBrowser != NULL) 
+			{	
+				// 判断是否是当前页面加载完成，这里用状态和browser对象来得到完成加载的数据
+				if(/*m_pWebBrowser2 == thisBrowser ||*/ maxnum == BILL_BROWSER_GO )
+				{
+					READYSTATE rstate;
+					hr = thisBrowser->get_ReadyState(&rstate);
+					if(hr == S_OK && rstate == READYSTATE_COMPLETE)
+					{
+						//开始判断该线程是否是记账功能的相关线程
+						if(m_pBillData)
+						{
+							READYSTATE rstate;
+							hr = thisBrowser->get_ReadyState(&rstate);
+							if(hr == S_OK && rstate == READYSTATE_COMPLETE)
+							{
+								//开始判断该线程是否是记账功能的相关线程
+								if(m_pBillData)
+								{
+									//if(m_pWebBrowser2 == thisBrowser && m_step < BILL_LOGIN_SUCC && CBillUrlManager::GetInstance()->Getislogin(m_pBillData->aid) == BILL_LOGIN_SUCC)
+									//	m_step = BILL_LOGIN_SUCC;
+									CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_THREAD_GET_BILL, CRecordProgram::GetInstance()->GetRecordInfo(L"导入账单处理%d", m_step));
+									m_bCanClose = false;
+									state = CBillUrlManager::GetInstance()->GetBill(m_pWebBrowser2,thisBrowser, m_pBillData, m_step, m_pAxControl->m_hWnd);
+									m_bCanClose = true;
+
+									bool needRestart = false;
+									ShowUserGetBillState(state, needRestart);
+									if(needRestart == true )
+									{
+										m_bCanClose = false;
+										state = CBillUrlManager::GetInstance()->GetBill(m_pWebBrowser2, thisBrowser, m_pBillData, m_step, m_pAxControl->m_hWnd);
+										m_bCanClose = true;
+									}
+								}
+							}
+						}
+					}
+					maxnum = 0;
+				}
+       		}	
+
+		}
+		else if (SUCCEEDED(hr) && thisBrowser != NULL) 
 		{	
 			// 判断是否是当前页面加载完成，这里用状态和browser对象来得到完成加载的数据
-			if(m_pWebBrowser2 == thisBrowser)
+			if(m_pWebBrowser2 == thisBrowser|| m_step > 1)
 			{
 				READYSTATE rstate;
 				hr = thisBrowser->get_ReadyState(&rstate);
@@ -853,11 +957,23 @@ HRESULT CWebBrowserEventsManager::OnDocumentComplete(REFIID riid, LCID lcid, WOR
 					//开始判断该线程是否是记账功能的相关线程
 					if(m_pBillData)
 					{
-						CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_THREAD_GET_BILL, CRecordProgram::GetInstance()->GetRecordInfo(L"导入账单处理%d", m_step));
-						state = CBillUrlManager::GetInstance()->GetBill(thisBrowser, m_pBillData, m_step);
+						bool needRestart = false;
+						while( true )
+						{
+							m_bCanClose = false;
+							state = CBillUrlManager::GetInstance()->GetBill(m_pWebBrowser2, thisBrowser,  m_pBillData, m_step, m_pAxControl->m_hWnd);
+							m_bCanClose = true;
+							ShowUserGetBillState(state, needRestart);
+
+							if(false == needRestart)
+								break;
+							else
+							{
+								m_step ++;
+							}
+						}
 					}
 				}
-
 			}
 		}	
 		if (thisBrowser) { thisBrowser->Release(); thisBrowser = NULL; }
@@ -893,28 +1009,229 @@ cleanup:
 */
 	//////////////////////////////////////////////////////////////////////////
 	//
-
-	if (IsToppestWindowOfBrowser2(pDispParams->rgvarg[1].pdispVal))
+	
+	if(state == 0)
 	{
-		if (!wcsncmp(L"javascript:", pDispParams->rgvarg[0].pvarVal->bstrVal, 11)   ||
-			!wcsncmp(L"vbscript:", pDispParams->rgvarg[0].pvarVal->bstrVal, 9)      ||
-			!wcsncmp(L"mailto:", pDispParams->rgvarg[0].pvarVal->bstrVal, 7)        ||
-			!wcsncmp(L"about:", pDispParams->rgvarg[0].pvarVal->bstrVal, 6)          )
+		if (IsToppestWindowOfBrowser2(pDispParams->rgvarg[1].pdispVal))
 		{
-			return S_OK ;
+			if(FileterNormalUrl( pDispParams->rgvarg[0].pvarVal->bstrVal))
+				return S_OK ;
+			::SendMessage(m_pAxControl->m_hChildFrame, WM_SETTEXT, WM_ITEM_SET_TAB_URL, (LPARAM)pDispParams->rgvarg[0].pvarVal->bstrVal);
 		}
-		::SendMessage(m_pAxControl->m_hChildFrame, WM_SETTEXT, WM_ITEM_SET_TAB_URL, (LPARAM)pDispParams->rgvarg[0].pvarVal->bstrVal);
 	}
+	if(BILL_CANCEL_GET_BILL == m_iCancelState || BILL_EXCEED_MAX_TIME == m_iCancelState)//取消和超时的话这么做
+		state = m_iCancelState;
 
-
-	if(state == FINISH_GET_BILL_STEP)
+	if(state >= BILL_COM_ERROR && state <= BILL_COM_ERROR + 100)//错误
+	{
+		HWND hMainFrame = FindWindow(_T("MONEYHUB_MAINFRAME"), NULL);
+		//需要改
+		CBillUrlManager::GetInstance()->FreeDll();
+		CloseNotifyWnd();
+		if(BILL_COM_ERROR == state)
+			MessageBox(hMainFrame, L"导入账单失败，可能是您的网络状况不佳，或是银行系统升级\r\n您可以尝试重新导入或是升级财金汇", L"账单导入", MB_OK);
+		else if(BILL_GET_ACCOUNT_ERROR == state)
+			MessageBox(hMainFrame, L"获取账号失败，可能是您的网络状况不佳，或是银行系统升级\r\n财金汇无法进行账单导入后续功能，您可以尝试重新导入或是升级财金汇", L"账单导入", MB_OK);
+		FinishGettingBill();
+	}
+	else if(state == BILL_ALL_FINISH || state == BILL_CANCEL_GET_BILL)//正常关闭和取消导入的处理方式相同
 	{
 		CBillUrlManager::GetInstance()->FreeDll();
-		::SendMessage(m_pAxControl->m_hChildFrame, WM_FINISH_GET_BILL, 0, 0);
-		::PostMessage(CExternalDispatchImpl::m_hFrame[2], WM_AX_CLOSE_GET_BILL, 0 , 0);								
+		FinishGettingBill();
 	}
+
+	else if(state == BILL_EXCEED_MAX_TIME)//超时导入
+	{
+		HWND hMainFrame = FindWindow(_T("MONEYHUB_MAINFRAME"), NULL);
+		CBillUrlManager::GetInstance()->FreeDll();
+		
+		MessageBox(hMainFrame, L"账单导入失败，请重新进行账单导入", L"财金汇", MB_OK);
+		
+		FinishGettingBill();//关闭页面
+	}
+
+	else if(state == BILL_INNER_CANCEL)
+	{
+		CBillUrlManager::GetInstance()->FreeDll();
+		CloseNotifyWnd();
+		FinishGettingBill();
+	}
+
 	return S_OK ;
 }
+void CWebBrowserEventsManager::SetNotifyWnd(HWND nHwnd)
+{
+	m_notifyWnd = nHwnd;
+	CBillUrlManager::GetInstance()->SetNotifyWnd(nHwnd);
+}
+void CWebBrowserEventsManager::CancelGetBill()
+{
+	m_iCancelState = BILL_CANCEL_GET_BILL;
+	CBillUrlManager::GetInstance()->SetGetBillState(bSCancel);
+	if(m_bCanClose)
+	{
+		CBillUrlManager::GetInstance()->FreeDll();
+		FinishGettingBill();
+	}
+
+}
+void CWebBrowserEventsManager::GetBillExceedTime()
+{
+	CBillUrlManager::GetInstance()->SetGetBillState(bSExceedTime);
+}
+//以下这4个函数为控制显示的函数
+void CWebBrowserEventsManager::CloseNotifyWnd() //关闭正在登陆或导入账单对话框
+{
+	m_notifyWnd = 0;
+	::SendMessage(m_pAxControl->m_hWnd, WM_AX_END_INFO_DLG, 0, 0);
+}
+void CWebBrowserEventsManager::ShowNotifyWnd(InfoDlgType type)//弹出正在登陆或导入账单对话框
+{
+	if(type == dLoginDlg)
+		::SendMessage(m_pAxControl->m_hWnd, WM_AX_SHOW_INFO_DLG, 0, 0);
+	else if(type == dGettingDlg)
+	{
+		::SendMessage(m_pAxControl->m_hWnd, WM_AX_SHOW_INFO_DLG, 1, 0);
+	}
+	int i = 0;
+	while((i < 10) && (m_notifyWnd == 0))
+	{
+		i ++;
+		Sleep(200);
+	}
+}
+void CWebBrowserEventsManager::NotifyGettingBill() //开始导入账单
+{
+	::SendMessage(m_pAxControl->m_hChildFrame, WM_GETTING_BILL, BILL_LOAD_DLG, 0);
+}
+void CWebBrowserEventsManager::FinishGettingBill()//完成导入账单，关闭该整个Tab
+{
+	::SendMessage(m_pAxControl->m_hChildFrame, WM_FINISH_GET_BILL, BILL_FINISH_STATE, 0);//关闭页面
+}
+void CWebBrowserEventsManager::RebeginGetBill()//完成导入账单，关闭该整个Tab
+{
+	::SendMessage(m_pAxControl->m_hChildFrame, WM_RE_GETBILL, BILL_FINISH_STATE, 0);//关闭页面
+}
+
+int CWebBrowserEventsManager::ShowUserGetBillState( int& state, bool& needRestart)
+{
+	needRestart = false;
+	int nBack = 0;
+	bool bNoBreak = false;
+	switch(state)
+	{
+	case BLII_NEED_RESTART:
+		{
+			CloseNotifyWnd();//关闭窗口
+	     	CBillUrlManager::GetInstance()->InitDll();
+			m_bCanClose = true;
+			
+			m_stepTime.clear();
+			m_iCancelState = 0;
+			m_step = 0;
+			CComVariant var;
+			bool isBeginStep;
+			wstring url = CBillUrlManager::GetInstance()->GetBillUrl(m_pBillData->aid, m_pBillData->type, 1, isBeginStep);
+			m_pWebBrowser2->Navigate((BSTR)url.c_str(), &var, &var, &var, &var);
+			RebeginGetBill();
+		break;
+		}
+
+	case BILL_SELECT_ACCOUNT_MONTH2: // 选择账户和月份一块弹出
+			bNoBreak = true;
+	case BILL_SELECT_ACCOUNT:// 显示选择账户界面
+		{
+			CloseNotifyWnd();//关闭窗口
+
+			// 弹出账户选择界面
+			if(::SendMessage(m_pAxControl->m_hWnd, WM_AX_ACCOUNT_SELECT, 1, (LPARAM)&(CBillUrlManager::GetInstance()->GetBillRecords()->m_mapBack)) != IDCANCEL) // 将list的指针通过lParam传入, wParam = 1显示选择账户界面
+			{
+				//state = BILL_CANCEL_GET_BILL; // 取消账单导出
+				needRestart = true;
+			}
+			else
+			{
+				state = BILL_CANCEL_GET_BILL; // 取消账单导出
+				needRestart = false;
+			}
+			
+		}
+		if (!bNoBreak)
+			break;
+	case BILL_SELECT_MONTH2:
+		{
+			CloseNotifyWnd();//关闭提示窗口
+			USES_CONVERSION;
+			wstring begintime = A2W(m_pBillData->select);
+
+			CSelectMonthDlg dlg;
+			HWND hMainFrame = FindWindow(_T("MONEYHUB_MAINFRAME"), NULL);
+			dlg.SetBeginTime(begintime);
+			if(dlg.DoModal(hMainFrame) == IDOK)
+			{
+				string btime,etime;
+				dlg.GetSelectTime(btime, etime);
+				btime += etime;
+				memset(m_pBillData->select, 0, sizeof(m_pBillData->select));
+				strcpy_s(m_pBillData->select, 256, btime.c_str());
+				needRestart = true;
+				// 新建弹出正在导入账单界面
+				ShowNotifyWnd(dGettingDlg);
+			}
+			else
+			{
+				state = BILL_CANCEL_GET_BILL; // 取消账单导出
+				needRestart = false;				
+			}
+
+			Sleep(20);
+		
+			break;
+		}
+	case BILL_DOWNLOAD_DLG:// 显示正在导入账单界面
+		::PostMessage(m_pAxControl->m_hChildFrame,WM_GETTING_BILL, 0, 0);
+		break;
+	case BILL_SELECT_MONTH:// 显示月份选择界面
+		{
+			CloseNotifyWnd();//关闭窗口
+
+			list<SELECTINFONODE>::iterator cstIt = CBillUrlManager::GetInstance()->GetBillRecords()->m_mapBack.begin();
+			for (; cstIt != CBillUrlManager::GetInstance()->GetBillRecords()->m_mapBack.end(); cstIt ++)
+			{
+				// 标记已导入项
+				if (CBankData::GetInstance()->IsMonthImport(CBillUrlManager::GetInstance()->GetBillRecords()->tag, cstIt->szNodeInfo, m_pBillData->accountid))
+					(*cstIt).dwVal |= CHECKBOX_SHOW_CHECKED_BEFORE;
+				else
+					(*cstIt).dwVal = CHECKBOX_SHOW_CHECKED;//默认全选
+					
+			}
+
+			//弹出月份选择界面
+			if(::SendMessage(m_pAxControl->m_hWnd, WM_AX_ACCOUNT_SELECT, 0, (LPARAM)&(CBillUrlManager::GetInstance()->GetBillRecords()->m_mapBack)) != IDCANCEL)
+			{				
+				needRestart = true;				
+				ShowNotifyWnd(dGettingDlg);
+			}
+			else
+			{
+				state = BILL_CANCEL_GET_BILL; // 结束账单导出
+			}
+			break;
+		}
+	case BILL_BROWSER_LOOP:
+		{
+			needRestart = true;
+		}
+		break;
+
+	default:
+		break;
+	}
+
+	return nBack;
+}
+
+
 
 HRESULT CWebBrowserEventsManager::OnProgressChange(REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS* pDispParams, VARIANT* pVarResult, EXCEPINFO* pExcepInfo, UINT* puArgErr)
 {
@@ -966,18 +1283,13 @@ HRESULT CWebBrowserEventsManager::OnQuit(REFIID riid, LCID lcid, WORD wFlags, DI
 
 HRESULT CWebBrowserEventsManager::OnNavigateError(REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS* pDispParams, VARIANT* pVarResult, EXCEPINFO* pExcepInfo, UINT* puArgErr)
 {
-	if (!wcsncmp(L"javascript:", pDispParams->rgvarg[3].pvarVal->bstrVal, 11)   ||
-		!wcsncmp(L"vbscript:", pDispParams->rgvarg[3].pvarVal->bstrVal, 9)      ||
-		!wcsncmp(L"mailto:", pDispParams->rgvarg[3].pvarVal->bstrVal, 7)        ||
-		!wcsncmp(L"about:", pDispParams->rgvarg[3].pvarVal->bstrVal, 6)          )
-	{
+	if(FileterNormalUrl( pDispParams->rgvarg[3].pvarVal->bstrVal))
 		return S_OK ;
-	}
 
-	m_cstrErrUrl = pDispParams->rgvarg[3].pvarVal->bstrVal ;
-	wchar_t* strbom = L"http://www.bankcomm.com/BankCommSite/uploadFiles";
-	if(!wcsncmp(strbom, pDispParams->rgvarg[3].pvarVal->bstrVal, wcslen(strbom)))
-		return S_OK;
+	wstring  strFileter = pDispParams->rgvarg[3].pvarVal->bstrVal;
+	if(CHostContainer::GetInstance()->IsUrlInUrlError( strFileter ))
+		return S_OK ;
+
 	IDispatch* pDisp = pDispParams->rgvarg[4].pdispVal ;
 	if (pDisp == NULL)
 		return S_OK;
@@ -996,6 +1308,9 @@ HRESULT CWebBrowserEventsManager::OnNavigateError(REFIID riid, LCID lcid, WORD w
 	if(m_isGetBill)
 		if(m_step > 1)
 			return S_OK;
+
+	if((int)pDispParams->rgvarg[1].pvarVal->uiVal == 403)
+		return S_OK;
 
 	// [TuotuoXP] 更改错误页面
 	CComPtr<IWebBrowser2> spWebBrowser2;
@@ -1025,13 +1340,7 @@ HRESULT CWebBrowserEventsManager::OnNavigateError(REFIID riid, LCID lcid, WORD w
 					{
 						std::stringstream ssnum;
 						ssnum << (int)pDispParams->rgvarg[1].pvarVal->uiVal;
-						std::wstring url(pDispParams->rgvarg[3].pvarVal->bstrVal);
-						std::string bkinfo;
-						bkinfo = "URL:" + ws2s(url) + ";";
-						bkinfo += "Error:" + ssnum.str() + ";";
-						bkinfo += "Filter:" + GetFilterFile() + ";";
-
-						CRecordProgram::GetInstance()->FeedbackError(MY_PRO_NAME, MY_THREAD_IE_STATE, CRecordProgram::GetInstance()->GetRecordInfo(L"NavigateError:%s",bkinfo.c_str()));
+						CRecordProgram::GetInstance()->FeedbackError(MY_PRO_NAME, MY_THREAD_IE_STATE, CRecordProgram::GetInstance()->GetRecordInfo(L"NavigateError:%s:%d",strFileter.c_str(),(int)pDispParams->rgvarg[1].pvarVal->uiVal));
 						strContent = strContent.replace(n, 10, ssnum.str());
 					}
 
@@ -1067,44 +1376,43 @@ std::string CWebBrowserEventsManager::GetFilterFile()
 	TCHAR szPath[MAX_PATH] = { 0 };
 
 	::GetModuleFileName(NULL, szPath, _countof(szPath));
-	TCHAR *p = _tcsrchr(szPath, '\\');
-	if (p)
-		*p = 0;
+	PathRemoveFileSpecW(szPath);
 
 	std::wstring wcsPath(szPath);
 	wcsPath += L"\\syslog.txt";
 	std::string info;
-	DWORD dwReadNum;
+	//DWORD dwReadNum;
 	HANDLE hFile;
 
 	if( hFile = CreateFileW(wcsPath.c_str(),GENERIC_READ,FILE_SHARE_WRITE,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_READONLY,NULL))
 	{
-		if(hFile == INVALID_HANDLE_VALUE)
-			return info;
+		//if(hFile == INVALID_HANDLE_VALUE)
+		//	return info;
 
-		const int bufsize = 2 * 1024 * 1024;
-		wchar_t* buf = new wchar_t[bufsize];
-		if(buf == NULL)
-			return info;
-		DWORD fsize = bufsize * sizeof(wchar_t);
+		//const int bufsize = 2 * 1024 * 1024;
+		//wchar_t* buf = new wchar_t[bufsize];
+		//if(buf == NULL)
+		//	return info;
+		//DWORD fsize = bufsize * sizeof(wchar_t);
 
-		if(ReadFile(hFile,buf,fsize,&dwReadNum,NULL))
-		{
-			wchar_t *p = buf;
-			p = wcsstr(buf,L"Fileter Module :");//寻找第一个
-			while(p)
-			{
-				wchar_t *q = wcsstr(p,L"\r\n");
+		//if(ReadFile(hFile,buf,fsize,&dwReadNum,NULL))
+		//{
+		//	wchar_t *p = buf;
+		//	wstring info(p);			
+		//	p = wcsstr(buf,L"Fileter Module :");//寻找第一个
+		//	while(p)
+		//	{
+		//		wchar_t *q = wcsstr(p,L"\r\n");
 
-				wchar_t allstr[255] = {0};
-				memcpy(allstr,p,(q - p)*2);
-				std::wstring tmp(allstr);
+		//		wchar_t allstr[255] = {0};
+		//		memcpy(allstr,p,(q - p)*2);
+		//		std::wstring tmp(allstr);
 
-				info += "  " + ws2s(tmp);
-				p = wcsstr(q,L"Fileter Module :");
-			}
-		}
-		delete[] buf;
+		//		info += "  " + ws2s(tmp);
+		//		p = wcsstr(q,L"Fileter Module :");
+		//	}
+		//}
+		//delete[] buf;
 
 		::CloseHandle(hFile);
 	}
@@ -1235,4 +1543,16 @@ BOOL CWebBrowserEventsManager::IsValidHttpUrl(const BSTR bstrUrl)
 	}
 
 	return FALSE;
+}
+
+BOOL CWebBrowserEventsManager::FileterNormalUrl(BSTR bstrUrl)
+{
+	if (!wcsncmp(L"javascript:", bstrUrl, 11)   ||
+		!wcsncmp(L"vbscript:", bstrUrl, 9)      ||
+		!wcsncmp(L"mailto:", bstrUrl, 7)        ||
+		!wcsncmp(L"about:", bstrUrl, 6)          )
+	{
+		return TRUE ;
+	}
+	return FALSE ;
 }

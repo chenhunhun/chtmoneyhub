@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "CoolMessageBox.h"
 #include "SaveFavProgress.h"
+#include "ShowInfoBar.h"
 DWORD WINAPI _threadShowMessage(LPVOID lp);
 
 DWORD WINAPI  _threadShowWaitDLG(LPVOID lp)
@@ -37,6 +38,84 @@ DWORD WINAPI  _threadShowWaitDLG(LPVOID lp)
 
 	ThreadCacheDC::DestroyThreadCacheDC();
 	return 1;
+}
+
+CShowInfoDlg* g_hWndInfoDlg = NULL;
+DWORD WINAPI  _threadShowInfoDLG(LPVOID lp)
+{
+	if(g_hWndInfoDlg != NULL)
+		return 0;
+	ThreadCacheDC::CreateThreadCacheDC();
+
+	LPBILLSHOWINFO pInfo = (LPBILLSHOWINFO)lp;
+	LPCTSTR lpText = pInfo->info.c_str();
+
+	USES_CONVERSION;
+	CShowInfoDlg tip(pInfo->pNotifyInterface, lpText); // 默认时显示 "正在导入账单，请稍候......"
+	g_hWndInfoDlg = &tip;
+	tip.SetType(pInfo->type);
+	if(pInfo->type == 0)
+	{
+		HWND hMainFrame = FindWindow(_T("MONEYHUB_MAINFRAME"), NULL);
+		tip.DoModal(hMainFrame);
+	}
+	else
+	{
+		tip.DoModal();//正在获取数据的记录
+	}
+	delete pInfo;
+
+	g_hWndInfoDlg = NULL;
+	ThreadCacheDC::DestroyThreadCacheDC();
+	return 1;
+}
+
+CWindow* g_hJSWndInfoDlg = NULL;
+DWORD WINAPI  _threadShowJSInfoDLG(LPVOID lp)
+{
+	int i = (int)lp;
+
+	if(g_hJSWndInfoDlg != NULL)
+		return 0;
+	ThreadCacheDC::CreateThreadCacheDC();
+
+	if(i == 0)
+	{
+		LPCTSTR lpText = L"正在处理数据......";
+		CShowInfoDlg tip(NULL, lpText); 
+		g_hJSWndInfoDlg = &tip;
+		tip.DoModal();
+	}
+	else
+	{
+		CWaitPicDlg tip; 
+		g_hJSWndInfoDlg = &tip;
+		tip.DoModal();
+	}
+
+	g_hJSWndInfoDlg = NULL;
+
+	ThreadCacheDC::DestroyThreadCacheDC();
+	return 1;
+}
+
+void WINAPI  _endShowInfoDLGthread()
+{
+	if (NULL != g_hWndInfoDlg)
+	{
+		::SendMessage(g_hWndInfoDlg->m_hWnd, WM_FINISH_GET_BILL, 0, 0);
+		g_hWndInfoDlg = NULL;
+	}
+}
+
+void WINAPI _endShowJSInfoDLG()
+{
+	if (NULL != g_hJSWndInfoDlg)
+	{
+		::SendMessage(g_hJSWndInfoDlg->m_hWnd, WM_CLOSE, 0, 0);
+		g_hJSWndInfoDlg = NULL;
+	}
+
 }
 
 int WINAPI mhMessageBox(HWND hWnd, LPCTSTR lpText, LPCTSTR lpCaption, UINT uType)

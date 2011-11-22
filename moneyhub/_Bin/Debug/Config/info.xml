@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <main>
-  <category name="config" version="3.0.0.1">
+  <category name="config" version="4.0.0.1">
   </category>
   <host type="debug">
 	<debug>
@@ -9,6 +9,7 @@
 		<feedback>http://moneyhub.ft.com/cloud/</feedback>
 		<adv>openx.ft.com</adv>
 		<benefit>http://moneyhub.ft.com/coupon/</benefit>
+		<downloadmode>http://moneyhub.ft.com/download/test.txt</downloadmode>
 	</debug>
 	<release>
 		<web>http://www.moneyhub.cn/</web>
@@ -16,6 +17,7 @@
 		<feedback>http://cloud.moneyhub.cn/</feedback>
 		<adv>adv.moneyhub.cn</adv>
 		<benefit>http://benefit.moneyhub.cn/</benefit>
+		<downloadmode>http://cdn.moneyhub.cn/download.txt</downloadmode>
 	</release>
   </host>  
   
@@ -152,6 +154,11 @@
 				<domain name="FinancePage/*" />
 			</domains>
 	</site>
+	<site id="product" name="理财产品" noSubTab="false">
+			<domains>
+				<domain name="ProductPage/*" />
+			</domains>
+	</site>
 	<site id="homepage" name="我的首页" noclose="true" noSubTab="true">
 			<domains>
 				<domain name="StartPage/*" />
@@ -194,6 +201,7 @@
 	<site id="gdb" name="广发银行">
 			<domains>
 				<domain name="*.gdb.com.cn/*" />
+				<domain name="*.cgbchina.com.cn/*" />
 			</domains>
 	</site>
 	<site id="spdb" name="浦发银行">
@@ -214,6 +222,15 @@
 				<domain name="*.atpanel.com/*" />
 			</domains>	
 	</site>	
+	<site id="openunion" name="开联">
+			<domains>
+				<domain name="*.openunion.cn/*" />
+				<domain name="*.kltong.com/*" />
+				<domain name="*.open-union.com/*" />
+				<domain name="*.kailiantong.com/*" />
+				<domain name="*.lianxinmall.com/*" />
+			</domains>
+	</site>
 	<site id="yeepay" name="易宝支付">
 			<domains>
 				<domain name="*.yeepay.cn/*" />
@@ -287,6 +304,8 @@
 	<site id="chinapay" name="银联在线">
 			<domains>
 				<domain name="*.chinapay.com/*" />
+				<domain name="*.unionpay.com/*" />
+				<domain name="*.unionpaysecure.com/*" />
 			</domains>
 	</site>
 	
@@ -295,6 +314,16 @@
 				<domain name="*.99bill.com/*" />
 			</domains>
 	</site>
-	
    </urllist>
+   
+   	<errorhtml>
+		<site id="urlerror">
+			<domains>
+				<domain name="http://www.bankcomm.com/BankCommSite/uploadFiles" />
+				<domain name="http://news.kltong.com/iframe.php?type=links&amp;cat=16" />
+				<domain name="http://news.kltong.com/iframe.php?type=links&amp;cat=17" />
+				<domain name="https://ebanks.cgbchina.com.cn/" />
+			</domains>
+		</site>
+	</errorhtml>
 </main>

@@ -69,7 +69,6 @@ string CCollectInstallInfo::GetInstallInfo()
 	GetProduct_dmiAname();
 	GetMemory_size();
 
-	m_sXmlInfo += "</data>";
 	return m_sXmlInfo;
 }
 // 获得硬件ID的函数（硬件id为公司内自定义，参考需求文档）
@@ -160,7 +159,7 @@ void CCollectInstallInfo::GetSystem_nameAversion()
 
 	sversion = buf;
 
-	m_sXmlInfo += "<systemname>" + vname + "</systemname>";
+	m_sXmlInfo += "<systemname>" + vname + "mo</systemname>";
 	m_sXmlInfo += "<systemversion>" + sversion + "</systemversion>";
 
 	return;
@@ -284,13 +283,13 @@ void CCollectInstallInfo::GetAntivirus_name()
 
     CoUninitialize();
 
-	m_sXmlInfo += "<antivirusname>" + ws2s(aname) + "</antivirusname>";
+	m_sXmlInfo += "<antivirusname>" + ws2s(aname) + "mo</antivirusname>";
 }
 // 获得CPU名称
 void CCollectInstallInfo::GetCpu_name()
 {
 	CCPUID cpuid;
-	m_sXmlInfo += "<cpuname>" + cpuid.GetName() + "</cpuname>";
+	m_sXmlInfo += "<cpuname>" + cpuid.GetName() + "mo</cpuname>";
 }
 // 获得产品生产厂商和型号名称
 void CCollectInstallInfo::GetProduct_dmiAname()

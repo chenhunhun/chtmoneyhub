@@ -14,6 +14,8 @@
 #include "../../Utils/RecordProgram/RecordProgram.h"
 #include "../../Utils/getOSInfo/GetOSInfo.h"
 #include "../Utils/SecurityCache/comm.h"
+#include <DbgHelp.h>
+#pragma comment(lib, "Dbghelp.lib")
 
 #define IS_HANDLE_OURS(handle)			(((UINT)(handle) & 0xffff0000) == 0xffff0000)
 
@@ -300,7 +302,7 @@ BOOL WINAPI DetourHttpSendRequestA(HINTERNET hRequest, LPCSTR lpszHeaders, DWORD
 {
 	char szBuf[1024];
 	memset(szBuf, 0, sizeof(szBuf));
-	sprintf_s(szBuf, sizeof(szBuf), "MoneyhubUID: %s\r\nSN:%s\r\n", GenHWID2().c_str(),CSNManager::GetInstance()->GetSN().c_str());
+	sprintf_s(szBuf, sizeof(szBuf), "MoneyhubUID: %s\r\nSN:%s\r\nMoneyhubVersion:%d\r\n", GenHWID2().c_str(),CSNManager::GetInstance()->GetSN().c_str(), 31);
 	HttpAddRequestHeadersA(hRequest, szBuf, -1, HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE); 
 
 	return OldHttpSendRequestA(hRequest, lpszHeaders, dwHeadersLength, lpOptional, dwOptionalLength);
@@ -327,7 +329,7 @@ BOOL WINAPI DetourHttpSendRequestW(HINTERNET hRequest, LPCWSTR lpszHeaders, DWOR
 
  	TCHAR szBuf[1024];
 	memset(szBuf, 0, sizeof(szBuf));
-	swprintf_s(szBuf, L"MoneyhubUID: %s\r\nSN:%s\r\n",hwid.c_str(),sn.c_str());
+	swprintf_s(szBuf, L"MoneyhubUID: %s\r\nSN:%s\r\nMoneyhubVersion:%d\r\n",hwid.c_str(),sn.c_str(), 31);
 	HttpAddRequestHeadersW(hRequest, szBuf, -1, HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE); 
 
 	return OldHttpSendRequestW(hRequest, lpszHeaders, dwHeadersLength, lpOptional, dwOptionalLength);
@@ -716,16 +718,41 @@ int WINAPI DetourMessageBoxIndirectA(const LPMSGBOXPARAMSA lpMsgBoxParams)
 {
 	USES_CONVERSION;
 	wstring lpText = A2W(lpMsgBoxParams->lpszText);
-	wstring lpCaption = A2W(lpMsgBoxParams->lpszCaption);
+	if(lpText.find(L"当前安全设置禁止") != wstring::npos)
+		return IDOK;
+	if(lpText.find(L"Adobe Flash Player") != wstring::npos)
+	{
+		if(FlashAlertTime > 0)
+			return IDCANCEL;
+		else
+		{
+			lpText = L"您没有安装Adobe Flash Player,点击确定将访问Adobe.com,请您下载安装";
+			FlashAlertTime = 2;
+		}
+	}
+	//wstring lpCaption = A2W(lpMsgBoxParams->lpszCaption);
 	
-	return mhMessageBox(lpMsgBoxParams->hwndOwner, lpText.c_str(), lpCaption.c_str(), lpMsgBoxParams->dwStyle);
+	return mhMessageBox(lpMsgBoxParams->hwndOwner, lpText.c_str(), L"财金汇", lpMsgBoxParams->dwStyle);
 }
 
 typedef int (WINAPI * MessageBoxIndirectWFunc)(const LPMSGBOXPARAMSW lpMsgBoxParams);
 MessageBoxIndirectWFunc OldMessageBoxIndirectW = NULL;
 int WINAPI DetourMessageBoxIndirectW(const LPMSGBOXPARAMSW lpMsgBoxParams)
 {
-	return mhMessageBox(lpMsgBoxParams->hwndOwner, lpMsgBoxParams->lpszText, lpMsgBoxParams->lpszCaption, lpMsgBoxParams->dwStyle);
+	wstring lpText = lpMsgBoxParams->lpszText;
+	if(lpText.find(L"当前安全设置禁止") != wstring::npos)
+		return IDOK;
+	if(lpText.find(L"Adobe Flash Player") != wstring::npos)
+	{
+		if(FlashAlertTime > 0)
+			return IDCANCEL;
+		else
+		{
+			lpText = L"您没有安装Adobe Flash Player,点击确定将访问Adobe.com,请您下载安装";
+			FlashAlertTime = 2;
+		}
+	}
+	return mhMessageBox(lpMsgBoxParams->hwndOwner, lpText.c_str(), L"财金汇", lpMsgBoxParams->dwStyle);
 }
 
 /*typedef HANDLE (WINAPI* CreateThreadFunc)(LPSECURITY_ATTRIBUTES lpThreadAttributes,SIZE_T dwStackSize,LPTHREAD_START_ROUTINE lpStartAddress,LPVOID lpParameter,DWORD dwCreationFlags,LPDWORD lpThreadId);
@@ -753,8 +780,19 @@ LONG WINAPI DetourUnhandledExceptionFilter(struct _EXCEPTION_POINTERS* Exception
 {
 	// 记录用户出错信息
 	if (NULL != ExceptionInfo)
-	{
-		
+	{		
+		WCHAR szDumpFile[MAX_PATH] = {0};
+		ExpandEnvironmentStringsW(L"%APPDATA%\\MoneyHub\\MoneyhubDmp.dmp", szDumpFile, MAX_PATH);
+
+		HANDLE hDumpFile = CreateFile(szDumpFile, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL ,NULL);
+		MINIDUMP_EXCEPTION_INFORMATION stMiniDumpExceptionInfo;
+		stMiniDumpExceptionInfo.ExceptionPointers = ExceptionInfo;
+		stMiniDumpExceptionInfo.ThreadId = GetCurrentThreadId();
+		stMiniDumpExceptionInfo.ClientPointers = TRUE;
+		MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hDumpFile,
+			MiniDumpNormal, &stMiniDumpExceptionInfo, NULL, NULL);
+		CloseHandle(hDumpFile);
+
 		DWORD dwAddr = (DWORD)ExceptionInfo->ExceptionRecord->ExceptionAddress;
 		
 		CRecordProgram::GetInstance()->FeedbackError(MY_ERROR_PRO_CORE, ERR_UNHANDLE_EXCEPT, 
@@ -875,8 +913,8 @@ void CRegKeyManager::Initialize()
 	lRes = Detours::DetourAttach((PVOID*)&OldCertGetCertificateChain, DetourCertGetCertificateChain);
 	lRes = Detours::DetourTransactionCommit();
 	
-	if(  CGetOSInfo::getInstance()->isX64() )
-		g_filterModuleInX64App.InitializeHook();
+	//if(  CGetOSInfo::getInstance()->isX64() )
+		//g_filterModuleInX64App.InitializeHook();//问题比较多，暂时屏蔽，待定增加
 
 	ATLASSERT(lRes == NO_ERROR);
 }

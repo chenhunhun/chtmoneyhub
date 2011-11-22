@@ -179,6 +179,7 @@ public:
 
 	LRESULT OnBegin(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
 	{
+		SetTimer(MH_GIF_REFRESH, 100 ,NULL);
 		SetTimer(MH_SHOWTIMER, MAXTIMEELAPSE, NULL);
 
 		return 0;
@@ -188,6 +189,7 @@ public:
 	LRESULT OnHide(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
 	{
 		KillTimer(MH_SHOWTIMER);
+		KillTimer(MH_GIF_REFRESH);
 		ShowWindow(SW_HIDE);
 		return 0;
 	}

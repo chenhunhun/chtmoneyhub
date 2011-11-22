@@ -31,6 +31,9 @@ class CSSLLockButton;
 class CHelpButton;
 class CLoadButton;
 class CLoginButton;
+class CTextButton;
+class CAlarmButton;
+class CSynchroButton;
 class CSepButton;
 class CSettingButton; // gao
 class CMenuButton;
@@ -55,6 +58,9 @@ struct FrameStorageStruct
 	CHelpButton* pHelpButton;
 	CLoadButton* pLoadButton;
 	CLoginButton* pLoginButton;
+	CTextButton* pTextButton;
+	CAlarmButton* pAlarmButton;
+	CSynchroButton* pSynchroButton;
 	CSepButton* pSepButton;
 	CSettingButton* pSettingButton; // gao
 	CBackButton* pBackButton;
@@ -107,6 +113,9 @@ struct FrameStorageStruct
 	CSSLLockButton *SSLLockButton() const	{ return pSSLLockButton; };
 	CMenuButton* MenuButton() const			{ return pMenuButton; }
 	CLogoButton* LogoButton() const			{ return pLogoButton; }
+	CTextButton* TextButton() const			{ return pTextButton; }
+	CAlarmButton* AlarmButton() const		{ return pAlarmButton; }
+	CSynchroButton* SynchroButton()const	{ return pSynchroButton; }
 	CHelpButton* HelpButton() const			{ return pHelpButton; }
 	CLoadButton* LoadButton() const			{ return pLoadButton;}
 	CLoginButton* LoginButton()const		{ return pLoginButton;}

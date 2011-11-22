@@ -17,7 +17,7 @@ public:
 
 	CTabItem* GetItem() const				{ return m_pItem; }
 
-	void OptionalDestroy(int iType);
+	void OptionalDestroy(int iType, bool isTrueClose = true);
 
 	void DoNavigateBack();
 	void DoNavigateForward();
@@ -61,10 +61,9 @@ private:
 		MESSAGE_HANDLER(WM_ITEM_SET_PAGE_PROGRESS, OnSetPageProgress)
 		MESSAGE_HANDLER(WM_ITEM_TOGGLE_CATECTRL, OnToggleCateCtrl)
 
-		MESSAGE_HANDLER(WM_SET_DISPLAYHWND, OnSetRelatedHwnd)
-		MESSAGE_HANDLER(WM_CANCEL_GET_BILL, OnCloseBill)
 		MESSAGE_HANDLER(WM_GETTING_BILL, OnGettingBill)
 		MESSAGE_HANDLER(WM_FINISH_GET_BILL, OnFinishBill)
+		MESSAGE_HANDLER(WM_RE_GETBILL, OnResetGetBill)
 
 		MESSAGE_HANDLER(WM_TAB_AUTOCLOSE, OnTabClose)
 
@@ -77,10 +76,9 @@ private:
 	void OnClose();
 	void OnSize(UINT nType, CSize size);
 
-	LRESULT OnCloseBill(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled);
-	LRESULT OnGettingBill(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled);
-	LRESULT OnSetRelatedHwnd(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled);
+	LRESULT OnGettingBill(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled);//这个需要，因为要刷新界面
 	LRESULT OnFinishBill(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled);
+	LRESULT OnResetGetBill(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled);
 
 	LRESULT OnNotifyCreated(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled);
 	LRESULT OnSetMainToolbar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled);

@@ -29,6 +29,7 @@
 #include "Version.h"
 #include "../Utils/sn/SNManager.h"
 #include "Util/Util.h"
+#include "Util/Config.h"
 #include "UIControl/MainFrame.h"
 #include "Tlhelp32.h"
 #include "Util/SelfUpdate.h"
@@ -506,6 +507,10 @@ int CMainBranch::Install()
 		::SHSetValueW(HKEY_CURRENT_USER,L"Software\\Bank\\Setting",L"IsGuideShow",REG_DWORD,&i,4);//设置显示使用向导
 	}
 
+	DWORD i = 31;
+	::SHSetValueW(HKEY_CURRENT_USER,L"Software\\Bank\\Setting",L"Version",REG_DWORD,&i,4);//设置moneyhub版本号
+
+
 	// 设置ie8的标准模式运行财金汇，不用默认的ie8的IE7兼容模式
 	int iever = GetIEVersion();
 	if(iever == 8)
@@ -600,8 +605,70 @@ void CMainBranch::GenerationBlackCache()
 	GetModuleFileNameW(NULL, wcsBuf, MAX_PATH);
 	PathRemoveFileSpecW(wcsBuf);
 	std::wstring wstrBuf = wcsBuf;
-	wstrBuf             += L"\\Moneyhub_Svc.exe";  
+	wstrBuf += L"\\Moneyhub_Svc.exe";  
 	
 
 	ShellExecuteW(GetDesktopWindow(), L"open", wstrBuf.c_str(), L"-reblack", NULL, SW_HIDE);
+}
+
+void CMainBranch::CheckHID()
+{
+	if(g_strHardwareId.size() < 32)
+	{
+		char gid[ 33 ] = {0};
+		int gleft = (int)32 - g_strHardwareId.size();
+		for(int i = 0; i < gleft; i ++)
+			gid[i] =  'F';//
+		g_strHardwareId += gid;
+	}
+}
+void CMainBranch::RenameChk()
+{
+	char wsPath[MAX_PATH] = {0};
+	::GetModuleFileNameA(NULL,wsPath,MAX_PATH);
+	::PathRemoveFileSpecA(wsPath);
+
+	string wsDirectory = wsPath;
+
+	wsDirectory += "\\BankInfo\\banks\\";
+
+	string  dir = wsDirectory + "*.*";
+
+	WIN32_FIND_DATAA FindFileData;
+	HANDLE hFind;
+
+	hFind = FindFirstFileA(dir.c_str(), &FindFileData);
+
+	if(INVALID_HANDLE_VALUE == hFind)
+		return;
+	do{
+		std::string fn = FindFileData.cFileName;
+
+		if ((fn !=  ".") && (fn != "..") && (fn != ".svn"))
+		{
+			if ((FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+			{
+				string indir = wsDirectory + fn + "\\*.chk";
+				WIN32_FIND_DATAA FindFileData2;
+				HANDLE hFind2;
+
+				hFind2 = FindFirstFileA(indir.c_str(), &FindFileData2);
+
+				if(INVALID_HANDLE_VALUE != hFind2)
+				{
+					do{
+						std::string fn2 = FindFileData2.cFileName;
+						string oldname = wsDirectory + fn + "\\" + fn2;
+						DeleteFileA(oldname.c_str());
+
+					}while (FindNextFileA(hFind2, &FindFileData2) != 0);
+
+					FindClose(hFind2);
+				}
+			}
+		}
+	}while (FindNextFileA(hFind, &FindFileData) != 0);
+
+	FindClose(hFind);
+
 }

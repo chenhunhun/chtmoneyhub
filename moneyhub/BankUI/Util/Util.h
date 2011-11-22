@@ -7,7 +7,9 @@ enum TopPageStruct
 	//kCouponPage	= 2,
 	kFinancePage = 2,
 	kReportPage = 3,
-	kPageCount	= 4,
+	kSetPage = 4,
+	kProductPage = 5,
+	kPageCount	= 6,
 	kPageInvalid = -1,
 };
 
@@ -63,15 +65,23 @@ static void AccessDefaultPage(HWND hWnd)
 	hParent = ::CreateNewPage_0(hWnd, szPath, dwTopPage == 2, true);
 
 	_tcscpy_s(p, 100, _T("\\Html\\FinancePage\\report.html"));
+	hParent = CreateNewPage_2(hWnd, szPath, false, hParent);
+
+	_tcscpy_s(p, 100, _T("\\Html\\FinancePage\\set.html"));
+
 	CreateNewPage_2(hWnd, szPath, false, hParent);
 
 
+	// 理财产品
+//	_tcscpy_s(p, 100, _T("\\Html\\ProductPage\\index.html"));
+//	::CreateNewPage_0(hWnd, szPath, dwTopPage == 3, true);
+
 #ifdef SINGLE_PROCESS
 	// 测试页面
-	_tcscpy_s(p, 100, _T("\\Html\\ToolsPage\\test.html"));
-	::CreateNewPage_0(hWnd, szPath, FALSE);
+	//_tcscpy_s(p, 100, _T("\\Html\\ToolsPage\\test.html"));
+	//::CreateNewPage_0(hWnd, szPath, FALSE);
 
-	::CreateNewPage_0(hWnd, _T("http://www.boc.cn"), FALSE);
+	//::CreateNewPage_0(hWnd, _T("http://www.boc.cn"), FALSE);
 #endif
 
 }
@@ -101,6 +111,12 @@ static void SwitchTopPage(HWND hWnd, enum TopPageStruct tps)
 	{
 		_tcscpy_s(p, 100, _T("\\Html\\FinancePage\\index.html"));
 	}
+	else if (tps == kReportPage)
+		_tcscpy_s(p, 100, _T("\\Html\\FinancePage\\report.html"));
+	else if (tps == kSetPage)
+		_tcscpy_s(p, 100, _T("\\Html\\FinancePage\\set.html"));
+//	else if (tps == kProductPage)
+//		_tcscpy_s(p, 100, _T("\\Html\\ProductPage\\index.html"));
 
 	CreateNewPage_3_ExistWindow(hWnd, szPath, NULL);
 };

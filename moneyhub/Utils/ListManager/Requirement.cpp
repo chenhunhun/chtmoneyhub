@@ -48,6 +48,7 @@ CRequirement::CRequirement(const TiXmlNode *pRequire, const CWebsiteData *pWebsi
 			m_PutFile.CheckFile(strFileName, strPath, true);
 		else
 			m_PutFile.CheckFile(strFileName, strPath);
+		m_eRequireType = Require_File;
 	}
 	else if (strType == _T("exe"))//这个先放着，以后再说
 	{
@@ -64,11 +65,27 @@ CRequirement::CRequirement(const TiXmlNode *pRequire, const CWebsiteData *pWebsi
 
 		//std::wstring strInstallPath = AToW(pRequire->ToElement()->Attribute("installPath"));
 		m_PutFile.CheckExe(strIsInstallName, strFileName, type);
+		m_eRequireType = Require_Exe;
+	}
+	else if(strType == _T("classid"))
+	{
+		std::wstring strClassId = AToW(pRequire->ToElement()->Attribute("classid"));
+		m_ComInfo.SetClassId(strClassId);
+		m_eRequireType = Require_Class;
+		
 	}
 	else
 		ATLASSERT(0);
 }
 
+bool CRequirement::CheckComInfo()
+{
+	if(m_eRequireType != Require_Class)
+		return true;
+
+	m_ComInfo.CheckCom();
+	return true;
+}
 void CRequirement::InstallRequirement()
 {
 	switch (m_eRequireType)

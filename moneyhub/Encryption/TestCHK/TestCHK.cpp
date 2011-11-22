@@ -185,7 +185,7 @@ int _tmain(int argc, char* argv[])
 	char message[100];
 
 	std::string strCHK = strFileList;
-	strCHK += "\\MoneyHub.chk";
+	strCHK += "\\MoneyHub.mchk";
 
 	int ret = VerifyMoneyHubList(strFileList.c_str(), strCHK.c_str(), message);
 

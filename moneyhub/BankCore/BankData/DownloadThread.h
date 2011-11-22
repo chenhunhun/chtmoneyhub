@@ -1,4 +1,5 @@
 #pragma once
+#include "Wininet.h"
 
 
 enum {
@@ -11,6 +12,8 @@ enum {
 	ERR_FATALERROR = 5,
 //	ERR_OUTOFTIME = 6, 
 	ERR_UNKNOW = 7,
+	ERR_MEM_SMALL = 8,
+	ERR_PARAM = 9,
 };
 
 
@@ -101,17 +104,20 @@ public:
 	// 将断点文件路径转换成正常的路径
 	//static bool TranslanteToOriginalFileName(const std::wstring& strPath, std::wstring& strDesc);
 
-	void DownLoadInit(LPCTSTR lpszHWID, LPCTSTR lpszUrl, LPCTSTR lpszSaveFile, LPSTR lpSendData);
+	void DownLoadInit(LPCTSTR lpszHWID, LPCTSTR lpszUrl, LPSTR lpSendData);
 
 	//void BeginDownloadByThread(bool bCreateThread = true); // 是否启动线程式开始下载
-	int DownLoadData();
+	int DownLoadDataWithFile(LPCTSTR lpszSaveFile);
+
+	// 直接读取服务器的数据，不存储到文件中
+	int ReadDataFromSever(char* pDataRead, int nLength, DWORD* pRead);
 
 protected:
 	bool IsCancled(void);
 
 	int GetThreadState(void);
 	int TransferDataGet();
-	int TransferDataPost();
+	int TransferDataPost(BOOL bWithFile = TRUE);
 	//LPCTSTR GetSavePath(void);
 
 private:
@@ -119,6 +125,7 @@ private:
 	void SetupDownloadFile(); // 安装文件
 	UINT64  IsBreakPointFile(std::wstring wcsFile);
 	int DownLoadBreakpointFile();
+	int DownloadNoBreakFile();
 
 	//static DWORD WINAPI ThreadProc(LPVOID lpParam); // 下载线程式实体
 
@@ -128,6 +135,7 @@ private:
 	std::wstring	m_strDownURl; // 下载文件的URL
 	std::wstring	m_strHWID; // 本地计算机的硬件ID
 	std::string		m_strSendData; // 要发送到服务器的数据
+	bool			m_bBreakDownload; //是否是断点续传
 
 	bool			m_bCancle; // 是否被用户取消
 	int				m_bDLThreadState; // 保存下载的状态
@@ -147,6 +155,11 @@ private:
 	//CRITICAL_SECTION m_cs; // 用来取消，暂停时和下载同步时用
 	bool			m_bRetryWait; //  重试状态
 	bool			m_bCreateThread;
+
+	// 直接读取服务器的数据，不存储到文件中
+	char*			m_pRead;
+	int				m_nLength;
+	DWORD*			m_pReadLength;
 
 };
 

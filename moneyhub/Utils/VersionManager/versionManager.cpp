@@ -96,7 +96,7 @@ void versionManager::getMainModuleVersion(VMMAPDEF& mapVersion)
 		tstring strFileVersion = vinfo.GetFileVersion();
 		replace(strFileVersion.begin(), strFileVersion.end(), ',', '.');
 		strFileVersion.erase(remove(strFileVersion.begin(), strFileVersion.end(), ' '), strFileVersion.end());
-		strVersion = std::string(CT2A(strFileVersion.c_str()));
+		strVersion = std::string(CT2A(strFileVersion.c_str(), 936));
 	}
 	else 
 		return ;
@@ -125,19 +125,20 @@ void versionManager::getBankModuleVersion(VMMAPDEF& mapVersion)
 
 void versionManager::getOtherModuleVersion(VMMAPDEF& mapVersion)
 {
-	char vs[255];
+	wstring vs;
 	std::vector <std::wstring> vecWcspath;
 
 	std::wstring wcsPath = getModulePath();
-	std::wstring wcsTmp = wcsPath + L"\\Html\\info.chk";
+	std::wstring wcsTmp = wcsPath + L"\\Html\\info.mchk";
 	vecWcspath.push_back(wcsTmp);
-	wcsTmp = wcsPath + L"\\Config\\info.chk";
+	wcsTmp = wcsPath + L"\\Config\\info.mchk";
 	vecWcspath.push_back(wcsTmp);
 
 	USES_CONVERSION;
 	for(size_t i=0; i<vecWcspath.size(); i++)
 	{
-		if(  getVersionFromChk(vs,W2A(vecWcspath[i].c_str())) )
+		wstring szBankName = L"F";
+		if(  getVersionFromChk(vs,W2A(vecWcspath[i].c_str()), szBankName) )
 		{
 			wchar_t wcsModuleName[MAX_PATH] = {0};
 			wcscpy_s(wcsModuleName, _countof(wcsModuleName), vecWcspath[i].c_str() );
@@ -145,12 +146,12 @@ void versionManager::getOtherModuleVersion(VMMAPDEF& mapVersion)
 			wchar_t *p = wcsrchr(wcsModuleName, L'\\');
 
 			if(m_bEnName)
-				mapVersion.insert(std::make_pair(p+1, A2W(vs) ));
+				mapVersion.insert(std::make_pair(p+1, vs ));
 			else
 			{
 				VMMAPDEF::iterator it = m_mapEnChName.find(p+1);
 				if( it != m_mapEnChName.end() )
-					mapVersion.insert(std::make_pair(it->second.c_str(), A2W(vs) ));
+					mapVersion.insert(std::make_pair(it->second.c_str(), vs ));
 			}
 		}
 	}
@@ -188,7 +189,7 @@ bool  versionManager::traverseFile(LPWSTR path, LPWSTR wName, VMMAPDEF& mapVersi
 		}
 		else  
 		{
-			if(0 == wcscmp(fw.cFileName,L"info.chk"))//analysis version from info.chk
+			if(0 == wcscmp(fw.cFileName,L"info.mchk"))//analysis version from info.mchk
 			{
 				std::wstring wsXmlPath = getModulePath();
 				wsXmlPath += L"\\";
@@ -201,17 +202,17 @@ bool  versionManager::traverseFile(LPWSTR path, LPWSTR wName, VMMAPDEF& mapVersi
 				wsXmlPath += L'\\';
 				wsXmlPath += fw.cFileName;
 
-				char vs[255] = {0};
-				char szBankName[MAX_PATH] = {0};
+				wstring vs;
+				wstring szBankName;
 
-				if(false == getVersionFromChk(vs,W2A(wsXmlPath.c_str()), szBankName) )//得到版本号	
+				if(false == getVersionFromChk(vs, W2A(wsXmlPath.c_str()), szBankName) )//得到版本号	
 					continue;
 
 				if(m_bEnName)
-					mapVersion.insert(std::make_pair(wName, A2W(vs) ));
+					mapVersion.insert(std::make_pair(wName, vs));
 				else
 				{
-					mapVersion.insert(std::make_pair(A2W(szBankName), A2W(vs) ));
+					mapVersion.insert(std::make_pair(szBankName, vs ));
 				}
 
 				FindClose(hFind);
@@ -230,7 +231,7 @@ bool  versionManager::traverseFile(LPWSTR path, LPWSTR wName, VMMAPDEF& mapVersi
 
 
 
-bool versionManager::getVersionFromChk(LPSTR vs , LPCSTR lpCHKFileName, LPSTR szBankName)
+bool versionManager::getVersionFromChk(std::wstring& vs , LPCSTR lpCHKFileName,  std::wstring& szBankName)
 {
 	//char * content= NULL;//content[8000];
 	char content[80000] = {0};
@@ -262,7 +263,7 @@ bool versionManager::getVersionFromChk(LPSTR vs , LPCSTR lpCHKFileName, LPSTR sz
 	}
 
 	const TiXmlNode* pStatusId = pStatus->FirstChild("site");
-	if (NULL == pStatusId)//为Html或者Config的info.chk，亦或者出错
+	if (NULL == pStatusId)//为Html或者Config的info.mchk，亦或者出错
 	{
 		const TiXmlElement* pCGElement = pStatus->ToElement();
 		if(NULL == pCGElement)
@@ -271,7 +272,7 @@ bool versionManager::getVersionFromChk(LPSTR vs , LPCSTR lpCHKFileName, LPSTR sz
 		}
 
 		if( pCGElement->Attribute("version") != 0 )
-			strcpy_s(vs,20, pCGElement->Attribute("version") );
+			vs = AToW(pCGElement->Attribute("version") );
 		else
 		{
 			return false;
@@ -286,19 +287,19 @@ bool versionManager::getVersionFromChk(LPSTR vs , LPCSTR lpCHKFileName, LPSTR sz
 		return false;
 	}
 
-	if(szBankName)
+	if(szBankName != L"F")
 	{
 		USES_CONVERSION;
 		if( pStatusIdElement->Attribute("name") != 0 )
 		{
-			strcpy_s(szBankName,255, W2A(AToW(pStatusIdElement->Attribute("name")).c_str()) );
+			szBankName = AToW(pStatusIdElement->Attribute("name"));
 		}
 		else
 		 	return false;
 	}
 
 	if( pStatusIdElement->Attribute("version") != 0 )
-		strcpy_s(vs,20, pStatusIdElement->Attribute("version") );
+		vs = AToW(pStatusIdElement->Attribute("version") );
 	else
 		return false;
 

@@ -8,6 +8,7 @@
 #include "MainFrame.h"
 #include "SettingDlg.h"
 #include "AboutDlg.h"
+#include "ChildFrm.h"
 
 
 #include "../../Utils/HardwareID/genhwid.h"
@@ -19,6 +20,8 @@
 #include "../../Include/ConvertBase.h"
 #include "../../Utils/UserBehavior/UserBehavior.h"
 #include "ShowInfoBar.h"
+#include "ShowJSFrame.h"
+
 
 #define TIMER_AUTOUPDATE (0xf0)
 #define TIMER_BCHECKKERNEL (0xf1)
@@ -30,7 +33,9 @@ const UINT WM_SWITCHTOPPAGE = RegisterWindowMessage(_T("BankSwitchTopPageMsg"));
 
 CMainFrame::CMainFrame() : CFSMUtil(&m_tsm), m_ShowInfo(&m_tsm), m_BigButton(&m_tsm), m_TabCtrl(&m_tsm), m_CatetoryCtrl(&m_tsm), m_StatusBar(&m_tsm),
 	m_SysBtnBar(&m_tsm), m_TitleBar(&m_tsm), m_Toolbar(&m_tsm), m_wndMDIClient(m_TabCtrl, m_CatetoryCtrl, &m_tsm), m_hDWP(NULL), m_MenuButton(&m_tsm),
-	m_LogoButton(&m_tsm), m_BackButton(&m_tsm), m_ForwardButton(&m_tsm), m_RefreshButton(&m_tsm), m_HelpButton(&m_tsm),m_IsShowCloudMessage(false),m_IsShowCloudStatus(false), m_MenuDlg(NULL)//, m_LoadButton(&m_tsm), m_LoginButton(&m_tsm), m_SepButton(&m_tsm),m_SettingButton(&m_tsm)
+	m_LogoButton(&m_tsm), m_BackButton(&m_tsm), m_ForwardButton(&m_tsm), m_RefreshButton(&m_tsm), m_HelpButton(&m_tsm),m_IsShowCloudMessage(false),
+	m_IsShowCloudStatus(false), m_MenuDlg(NULL), m_LoadButton(&m_tsm), m_LoginButton(&m_tsm), m_SepButton(&m_tsm), m_pTextButton(NULL), m_AlarmButton(&m_tsm),
+	m_SynchroButton(&m_tsm), m_emLoad(emNotLoad), m_pUserInfoBtn(NULL), m_InfoDlg(NULL), m_pShowDlg(NULL), m_pLoadingButton(NULL), m_UserMenuDlg(NULL)//,m_SettingButton(&m_tsm)
 {
 	FS()->pMainFrame = this;
 }
@@ -40,6 +45,127 @@ CMainFrame::~CMainFrame()
 {
 	if (NULL != m_MenuDlg)
 		delete m_MenuDlg;
+
+	if (NULL != m_pTextButton)
+		delete m_pTextButton;
+	m_pTextButton = NULL;
+
+	if (NULL != m_pUserInfoBtn)
+		delete m_pUserInfoBtn;
+	m_pUserInfoBtn = NULL;
+
+	if (NULL != m_InfoDlg)
+		delete m_InfoDlg;
+	m_InfoDlg = NULL;
+
+	if (NULL != m_UserMenuDlg)
+		delete m_UserMenuDlg;
+	m_UserMenuDlg = NULL;
+}
+
+LRESULT CMainFrame::UpdateUserLoadStatus(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL &/*bHandled*/)// 更新用户登录状态
+{
+	CString strTp = (LPCTSTR)lParam;
+	strTp.TrimRight();
+
+	if (strTp.IsEmpty())
+		m_emLoad = emNotLoad;
+	else
+		m_emLoad = emNetLoaded;
+
+	int nState = MY_STATUE_USER_NOTLOAD;
+	if (m_emLoad == emNetLoaded)
+	{
+		nState = MY_STATUE_USER_LAODED;
+		// 登陆按钮
+		m_LoadButton.ShowWindow(false);
+		// 分隔线
+		m_SepButton.ShowWindow(false);
+		// 注册按钮
+		m_LoginButton.ShowWindow(false);
+		m_LogoButton.ShowWindow(false);
+	
+		RECT rcClient;
+		GetClientRect(&rcClient);
+		//w = rcClient.right;
+		//h = rcClient.bottom;
+
+		POINT pt;
+		SIZE sz;
+
+		// 同步按钮
+		pt.x = rcClient.right - m_SynchroButton.GetFullWidth() - 15;
+		// 提醒按钮
+		pt.x = pt.x - m_AlarmButton.GetFullWidth() - 10;
+
+		m_pTextButton = new CTextButton(&m_tsm);
+		m_pTextButton->CreateButton(m_hWnd, strTp, TEXT_BTN_USER_NAME);
+		// 文本按钮
+		pt.x = pt.x - m_pTextButton->GetTextButtonWidth() - 20;
+		pt.y = 49;
+		sz.cx = m_pTextButton->GetTextButtonWidth();
+		sz.cy = m_pTextButton->GetTextButtonHeight();
+		m_pTextButton->SetWindowPos(NULL, pt.x, pt.y, sz.cx, sz.cy, SWP_NOSIZE);
+
+		// 红色叹号
+		if (NULL == m_pUserInfoBtn)
+		{
+			m_pUserInfoBtn = new CSepButton(&m_tsm);
+			m_pUserInfoBtn->CreateButton(m_hWnd, _T("UserInfo.png"), WM_USER_INFO_CLICKED);
+
+		}
+		// 定位红色叹号
+		pt.x = pt.x - m_pUserInfoBtn->GetButtonWidth() - 4;
+		pt.y = 48;
+		sz.cx = m_pUserInfoBtn->GetButtonWidth();
+		sz.cy = m_pUserInfoBtn->GetButtonHeight();
+		m_pUserInfoBtn->SetWindowPos(NULL, pt.x, pt.y, sz.cx, sz.cy, SWP_NOSIZE);
+
+		// 文本按钮
+	//	m_LoginButton.ShowWindow(true);
+		// 同步按钮
+		m_SynchroButton.ShowWindow(true);
+		// 提醒按钮
+		m_AlarmButton.ShowWindow(true);
+	}
+	else
+	{
+		// 退出登录
+		nState = MY_STATUE_USER_NOTLOAD;
+		// 同步按钮
+		m_SynchroButton.ShowWindow(false);
+		// 提醒按钮
+		m_AlarmButton.ShowWindow(false);
+
+		// 文本按钮
+		if (NULL != m_pTextButton)
+		{
+			delete m_pTextButton;
+			m_pTextButton = NULL;
+		}
+
+		// 红色叹号
+		if (NULL != m_pUserInfoBtn)
+		{
+			m_pUserInfoBtn->ShowWindow(false);
+		}
+
+		// 登陆按钮
+		m_LoadButton.ShowWindow(true);
+		// 分隔线
+		m_SepButton.ShowWindow(true);
+		// 注册按钮
+		m_LoginButton.ShowWindow(true);
+		m_LogoButton.ShowWindow(true);
+	}
+
+	
+	// 更新当前HTML页面
+	FS()->TabItem()->GetChildFrame()->DoNavigateRefresh();
+
+	// 调用JS去更新首页的显示内容 
+	::PostMessage(FS()->TabItem()->GetChildFrame()->GetItem()->GetAxControl(), WM_CHANGE_FIRST_PAGE_SHOW, 0, nState);
+	return 0;
 }
 
 void CMainFrame::RecalcClientSize(int w, int h)
@@ -70,33 +196,71 @@ void CMainFrame::RecalcClientSize(int w, int h)
 
 	m_TitleBar.SetWindowPos(NULL, 0, 0, pt.x, 30/*rcSysBtn.bottom*/, SWP_NOZORDER);
 
+	// 图标按钮
 	pt.x = w - 105;
 	pt.y = 34;// m_BigButton.GetHeight() + 6;
 	sz.cx = m_LogoButton.GetFullWidth();
 	sz.cy = m_LogoButton.GetHeight();
 	m_LogoButton.SetWindowPos(NULL, pt.x, pt.y, sz.cx, sz.cy, SWP_NOSIZE);
 
-	//// 添加登陆按钮
-	//pt.x = pt.x - m_LoadButton.GetFullWidth();
-	//pt.y = 45;
-	//sz.cx = m_LoadButton.GetFullWidth();
-	//sz.cy = m_LoadButton.GetHeight();
-	//m_LoadButton.SetWindowPos(NULL, pt.x, pt.y, sz.cx, sz.cy, SWP_NOSIZE);
+	// 添加登陆按钮
+	pt.x = pt.x - m_LoadButton.GetFullWidth()- 15;
+	pt.y = 48;
+	sz.cx = m_LoadButton.GetFullWidth();
+	sz.cy = m_LoadButton.GetHeight();
+	m_LoadButton.SetWindowPos(NULL, pt.x, pt.y, sz.cx, sz.cy, SWP_NOSIZE);
 
-	//// 添加分隔图标
-	//pt.x = pt.x - m_SepButton.GetFullWidth();
-	//pt.y = 45;
-	//sz.cx = m_SepButton.GetFullWidth();
-	//sz.cy = m_SepButton.GetHeight();
-	//m_SepButton.SetWindowPos(NULL, pt.x, pt.y, sz.cx, sz.cy, SWP_NOSIZE);
+	// 添加分隔图标
+	pt.x = pt.x - m_SepButton.GetFullWidth() - 10;
+	pt.y = 48;
+	sz.cx = m_SepButton.GetFullWidth();
+	sz.cy = m_SepButton.GetHeight();
+	m_SepButton.SetWindowPos(NULL, pt.x, pt.y, sz.cx, sz.cy, SWP_NOSIZE);
 
-	//// 添加注册按钮
-	//pt.x = pt.x - m_LoginButton.GetFullWidth();
-	//pt.y = 45;
-	//sz.cx = m_LoginButton.GetFullWidth();
-	//sz.cy = m_LoginButton.GetHeight();
-	//m_LoginButton.SetWindowPos(NULL, pt.x, pt.y, sz.cx, sz.cy, SWP_NOSIZE);
- 
+	// 添加注册按钮
+	pt.x = pt.x - m_LoginButton.GetFullWidth() - 10;
+	pt.y = 48;
+	sz.cx = m_LoginButton.GetFullWidth();
+	sz.cy = m_LoginButton.GetHeight();
+	m_LoginButton.SetWindowPos(NULL, pt.x, pt.y, sz.cx, sz.cy, SWP_NOSIZE);
+
+
+
+	// 同步按钮
+	pt.x = w - m_SynchroButton.GetFullWidth() - 15;
+	pt.y = 40;
+	sz.cx = m_SynchroButton.GetFullWidth();
+	sz.cy = m_SynchroButton.GetHeight();
+	m_SynchroButton.SetWindowPos(NULL, pt.x, pt.y, sz.cx, sz.cy, SWP_NOSIZE);
+
+	// 提醒按钮
+	pt.x = pt.x - m_AlarmButton.GetFullWidth() - 10;
+	pt.y = 40;
+	sz.cx = m_AlarmButton.GetFullWidth();
+	sz.cy = m_AlarmButton.GetHeight();
+	m_AlarmButton.SetWindowPos(NULL, pt.x, pt.y, sz.cx, sz.cy, SWP_NOSIZE);
+
+	if (NULL != m_pTextButton)
+	{
+		// 文本按钮
+		pt.x = pt.x - m_pTextButton->GetTextButtonWidth() - 20;
+		pt.y = 49;
+		sz.cx = m_pTextButton->GetTextButtonWidth();
+		sz.cy = m_pTextButton->GetTextButtonHeight();
+		m_pTextButton->SetWindowPos(NULL, pt.x, pt.y, sz.cx, sz.cy, SWP_NOSIZE);
+	}
+
+	if (NULL != m_pUserInfoBtn)
+	{
+		// 红色叹号
+		pt.x = pt.x - m_pUserInfoBtn->GetButtonWidth() - 4;
+		pt.y = 48;
+		sz.cx = m_pUserInfoBtn->GetButtonWidth();
+		sz.cy = m_pUserInfoBtn->GetButtonHeight();
+		m_pUserInfoBtn->SetWindowPos(NULL, pt.x, pt.y, sz.cx, sz.cy, SWP_NOSIZE);
+	}
+
+
 
 	m_Toolbar.SetWindowPos(NULL, 0, 30/*rcSysBtn.bottom*/, w - s()->LogoButton()->GetWidth(), m_Toolbar.GetHeight(), SWP_NOZORDER);
 
@@ -258,13 +422,6 @@ void CMainFrame::UpdateSSLState()
 	Invalidate();
 }
 
-LRESULT CMainFrame::OnGetBill(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
-{
-	CShowInfoDlg tip((HWND)lParam);
-	tip.DoModal();
-
-	return 0;
-}
 //////////////////////////////////////////////////////////////////////////
 // message handler
 
@@ -305,10 +462,16 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_BackButton.CreateButton(m_hWnd);
 	m_ForwardButton.CreateButton(m_hWnd);
 	m_RefreshButton.CreateButton(m_hWnd);
-	m_HelpButton.CreateButton(m_hWnd);/*
+	m_HelpButton.CreateButton(m_hWnd);
+
 	m_LoadButton.CreateButton(m_hWnd);
 	m_LoginButton.CreateButton(m_hWnd);
-	m_SepButton.CreateLogoButton(m_hWnd);*/
+	m_SepButton.CreateButton(m_hWnd, _T("Sep_button.png"));
+
+	m_SynchroButton.CreateButton(m_hWnd);
+	m_AlarmButton.CreateButton(m_hWnd);
+	m_SynchroButton.ShowWindow(false);
+	m_AlarmButton.ShowWindow(false);
 //	m_SettingButton.CreateButton(m_hWnd);
 
 
@@ -460,6 +623,9 @@ LRESULT CMainFrame::OnNotifyAxUICreated(UINT /* uMsg */, WPARAM wParam, LPARAM l
 	m_ForwardButton.EnableWindow(TRUE);
 	m_BackButton.EnableWindow(TRUE);
 
+	// 检验是否存在自动登陆用户
+	UserAutoLoad();
+
 #ifndef SINGLE_PROCESS
 	SetTimer(TIMER_CHECKKERNEL, 5000, NULL);
 #endif
@@ -490,6 +656,47 @@ LRESULT CMainFrame::OnMyMenuClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPara
 	return 0;
 }
 
+LRESULT CMainFrame::OnShowUserMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL &/*bHandled*/) // 弹出用户登录后的菜单
+{
+	TPMPARAMS tps;
+	tps.cbSize = sizeof(TPMPARAMS);
+	m_pTextButton->GetWindowRect(&tps.rcExclude);
+
+	CPoint pt1;
+	pt1.x = tps.rcExclude.right - 100;
+	pt1.y = tps.rcExclude.bottom;
+
+	if (NULL == m_UserMenuDlg)
+	{
+		m_UserMenuDlg = new CMenuDlg(m_hWnd, _T("Menu2.png"), WM_USER_INFO_MENU_CLICKED, 4, 33, 7);
+		m_UserMenuDlg->Create(NULL,IDD_DLG_MENU);	
+	}
+
+	m_UserMenuDlg->ShowMenuWindow(pt1);
+
+	return 0;
+}
+
+LRESULT CMainFrame::OnUserMenuClick(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL &/*bHandled*/) // 用户登录后的菜单的响应事件
+{
+	int nVal = wParam;
+	switch(nVal)
+	{
+	case 1: // 更改邮箱
+		break;
+	case 2: // 更改密码
+		break;
+	case 3: // 导入数据
+		break;
+	case 4: // 退出
+		::PostMessage(m_IeWnd, WM_AX_LOAD_USER_QUIT, 0, 0);
+		break;
+	default:
+		break;
+	}
+	return 0;
+}
+
 LRESULT CMainFrame::OnShowHelpMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL &/*bHandled*/)
 {	
 	TPMPARAMS tps;
@@ -502,7 +709,7 @@ LRESULT CMainFrame::OnShowHelpMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 	if (NULL == m_MenuDlg)
 	{
-		m_MenuDlg = new CMenuDlg(m_hWnd);
+		m_MenuDlg = new CMenuDlg(m_hWnd, _T("NoSel.png"), WM_MY_MENU_CLICKED, 4, 25, 14);
 		m_MenuDlg->Create(NULL,IDD_DLG_MENU);	
 	}
 
@@ -520,7 +727,36 @@ LRESULT CMainFrame::OnHelpSetting(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 LRESULT CMainFrame::OnHelpTips(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	//CShowInfoDlg tip((HWND)0);
+	/*list<SELECTINFONODE> monthList;
+	SELECTINFONODE monthNode;
+	memset(&monthNode, 0, sizeof (monthNode));
+	strcpy(monthNode.szNodeInfo, "2010-09（已导入）");
+	monthNode.dwVal = 0;
+	monthList.push_back(monthNode);
+
+	memset(&monthNode, 0, sizeof (monthNode));
+	strcpy(monthNode.szNodeInfo, "2010-01");
+	monthNode.dwVal = 0;
+	monthList.push_back(monthNode);
+
+	memset(&monthNode, 0, sizeof (monthNode));
+	strcpy(monthNode.szNodeInfo, "2010-02");
+	monthNode.dwVal = 0;
+	monthList.push_back(monthNode);
+
+	memset(&monthNode, 0, sizeof (monthNode));
+	strcpy(monthNode.szNodeInfo, "2010-04");
+	monthNode.dwVal = 0;
+	monthList.push_back(monthNode);
+
+
+
+	CMonthSelectDlg dlg(&monthList);
+	dlg.DoModal();*/
+	/*CShowJSFrameDlg dlg;
+	dlg.DoModal();*/
+
+	//CShowJSChild *pChild = new CShowJSChild(m_hWnd, NULL);
 	CTipsDlg tip(1);
 	tip.DoModal();
 
@@ -635,12 +871,27 @@ LRESULT CMainFrame::OnSwitchTopPage(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPara
 
 LRESULT CMainFrame::OnHelpFeedback(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+	DWORD dwValueNameLength = 100;        // 值名字符串长度   
+	WCHAR ptszValueName[100] = L"";    // 值名字符串
+	wstring ieversion;
+
+	//获得ie版本信息
+	DWORD dwType, dwReturnBytes = sizeof(DWORD), dwPos = 0, dwSize = 0, dwMax = 0;
+	if( ERROR_SUCCESS == ::SHGetValueW(HKEY_LOCAL_MACHINE,L"SOFTWARE\\Microsoft\\Internet Explorer", L"Version", &dwType, &ptszValueName, &dwValueNameLength))
+	{
+		ieversion = ptszValueName;
+	}
+
+	CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_COMMON_PROCESS, CRecordProgram::GetInstance()->GetRecordInfo(L"IE版本:%s",ieversion.c_str()));
 	char szBuf[1024];
 	memset(szBuf, 0, sizeof(szBuf));
 	USES_CONVERSION;
 	sprintf_s(szBuf, sizeof(szBuf), "%sfeedback.php?MoneyhubUID=%s&v=%s&SN=%s",W2CA(CHostContainer::GetInstance()->GetHostName(kWeb).c_str()), GenHWID2().c_str(), ProductVersion_All, CSNManager::GetInstance()->GetSN().c_str());
 
-
+	HWND hPop = FindWindowW(NULL, L"MoneyHub_Svr_Mainframe");
+	if(hPop != NULL)
+		::PostMessage(hPop, WM_MONEYHUB_FEEDBACK, 0, 0);
+	//mhMessageBox(NULL, L"谢谢您的支持！",L"财金汇", MB_OK);
 	::CreateNewPage_0(m_hWnd, A2CT(szBuf),TRUE);
 
 	return 0;
@@ -716,5 +967,161 @@ LRESULT CMainFrame::OnCancelAddFav(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 {
 	if(m_IeWnd)
 		::PostMessageW(m_IeWnd, WM_CANCEL_ADDFAV,  wParam,  lParam);
+	return 0;
+}
+
+LRESULT CMainFrame::OnAutoUserDlg(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL &/*bHandled*/)
+{
+	if (MY_STATUE_CLOSE_DLG == lParam) // 表示关闭
+	{
+		if (NULL != m_pShowDlg && NULL != m_pShowDlg->m_hWnd) // 结束对话框
+		{
+			::PostMessage(m_pShowDlg->m_hWnd, END_SHOW_DIALOG, 0, 0);
+		}
+	}
+	else if(WY_STATUE_SHOW_DLG == lParam) // 表示打开
+	{
+		BOOL bTag = FALSE;
+		OnShowUserDlg(0, 0, wParam, bTag);
+	}
+	return 0;
+}
+
+LRESULT CMainFrame::OnShowUserDlg(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL &/*bHandled*/)
+{
+	wstring strText, strPath;
+	if (MY_TAG_LOAD_DLG == lParam)
+	{
+		strText = L"登录财金汇";
+		strPath = L"login.html";
+	}
+	else if (MY_TAG_REGISTER_DLG == lParam)
+	{
+		strText = L"注册财金汇账户";
+		strPath = L"register.html";
+	}
+	else if (MY_TAG_SETTING_DLG == lParam)
+	{
+		strText = L"设置";
+		strPath = L"setOption.html";
+	}
+	else if (MY_TAG_REGISTER_GUIDE == lParam)
+	{
+		strText = L"注册向导";
+		strPath = L"registerGuide.html";
+	}
+
+	CShowJSFrameDlg dlg(strText.c_str(), strPath.c_str());
+
+	m_pShowDlg = &dlg;
+
+	dlg.DoModal();
+
+	m_pShowDlg = NULL;
+
+	return 0;
+}
+
+LRESULT CMainFrame::UserInfoBtnClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL &/*bHandled*/)
+{
+	TPMPARAMS tps;
+	tps.cbSize = sizeof(TPMPARAMS);
+	m_pUserInfoBtn->GetWindowRect(&tps.rcExclude);
+
+	CPoint pt;
+	pt.x = tps.rcExclude.left - 32;
+	pt.y = tps.rcExclude.bottom;
+
+	if (NULL == m_InfoDlg)
+	{
+		m_InfoDlg = new CUserLoadInfoDlg(m_hWnd, _T("UserLoadInfo.png"));
+		m_InfoDlg->Create(NULL,IDD_DLG_MENU);	
+	}
+
+	m_InfoDlg->ShowMenuWindow(pt);
+	return 0;
+}
+
+LRESULT CMainFrame::ChangeUserDlgName(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL &/*bHandled*/)
+{
+	string strTp = (char*)lParam;
+	if (NULL != m_InfoDlg)
+		m_InfoDlg->SetWindowText(CA2W(strTp.c_str()));
+
+	return 0;
+}
+
+BOOL CMainFrame::UserAutoLoad()
+{
+	string strUserID, strMail, strStoken;
+	bool bBack = CBankData::GetInstance()->ReadNeedAutoLoadUser(strUserID, strMail, strStoken);
+
+	if (strUserID.length() <= 0 || !bBack)
+		m_emLoad = emNotLoad;
+	else
+		m_emLoad = emLoading;
+
+	if (m_emLoad == emLoading)
+	{
+		if (NULL == m_pLoadingButton)
+		{
+			m_pLoadingButton = new CTextButton(&m_tsm);
+			m_pLoadingButton->CreateButton(m_hWnd, L"正在登录。。。", TEXT_BTN_USER_LOADINT);
+
+
+			RECT rcClient;
+			GetClientRect(&rcClient);
+			POINT pt;
+			SIZE sz;
+
+			// 图标按钮
+			pt.x = rcClient.right - 105;
+			pt.y = 34;// m_BigButton.GetHeight() + 6;
+			sz.cx = m_LogoButton.GetFullWidth();
+			sz.cy = m_LogoButton.GetHeight();
+			m_LogoButton.SetWindowPos(NULL, pt.x, pt.y, sz.cx, sz.cy, SWP_NOSIZE);
+
+			// 添加登陆按钮
+			pt.x = pt.x - m_pLoadingButton->GetFullWidth()- 15;
+			pt.y = 48;
+			sz.cx = m_pLoadingButton->GetFullWidth();
+			sz.cy = m_pLoadingButton->GetHeight();
+			m_LoadButton.SetWindowPos(NULL, pt.x, pt.y, sz.cx, sz.cy, SWP_NOSIZE);
+
+			// 隐藏按钮
+			// 登陆按钮
+			m_LoadButton.ShowWindow(false);
+			// 分隔线
+			m_SepButton.ShowWindow(false);
+			// 注册按钮
+			m_LoginButton.ShowWindow(false);
+
+			// 通知内核进行登录
+			::PostMessage(m_IeWnd, WM_AX_USER_AUTO_LOAD, 0, 0);
+		}
+	}
+	return true;
+}
+
+LRESULT CMainFrame::OnFinishAutoLoad(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL &/*bHandled*/)
+{
+	CString strUserName = (LPCTSTR)lParam;
+	if (!strUserName.IsEmpty()) // 用户名不为空，自动登录成功
+	{
+		BOOL bTp = FALSE;
+		UpdateUserLoadStatus(0, 0, (LPARAM)(LPCTSTR)strUserName, bTp);
+	}
+	else// 自动登录失败
+	{
+		// 弹出登录对话框
+		::PostMessage(m_hWnd, WM_SHOW_USER_DLG, 0, MY_TAG_LOAD_DLG);
+
+		// 登陆按钮
+		m_LoadButton.ShowWindow(true);
+		// 分隔线
+		m_SepButton.ShowWindow(true);
+		// 注册按钮
+		m_LoginButton.ShowWindow(true);
+	}
 	return 0;
 }

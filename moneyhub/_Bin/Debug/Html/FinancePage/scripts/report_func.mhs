@@ -11,6 +11,8 @@ var myEndDate="";
 var myStartDate="";
 var	myDuring="";
 var mychart="";
+var resWidth = 0;
+var resHeight = 0;
 
 /*
  * 记录当前的日期状况,下标0位置，记录during参数，下标1位置，记录从今天位移的位置
@@ -25,83 +27,87 @@ $(function() {
 		$(this).unbind().click( function () {
 			$("#bank_tabs_title li").removeClass("click");
 			$(this).addClass("click");
-			if (index == 0) {
-				$("#tabs-1").show();
-				$("#tabs-2").hide();
-				GeneratePies('thismonth', 'pie');
-			} else {
-				$("#tabs-1").hide();
-				$("#tabs-2").show();
-				GeneratePies('thismonth', 'newPie');;
+			switch (index) {
+				case 0:
+					$("#tabs-1").show();
+					$("#tabs-2").hide();
+					$("#tabs-3").hide();
+					GeneratePies('thismonth', 'pie');
+    				$("#tabs-1 .dLeft div").removeClass("dSelectTab");
+    				$("#tabs-1 .dLeft :first").addClass("dSelectTab");
+					break;
+
+				case 1:
+					$("#tabs-1").hide();
+					$("#tabs-2").show();
+					$("#tabs-3").hide();
+					GeneratePies('thismonth', 'newPie');;
+					break;
+
+				default:
+					$("#tabs-1").hide();
+					$("#tabs-2").hide();
+					$("#tabs-3").show();
+					GeneratePies('thisyear', 'bar');;
+    				$("#tabs-3 .dLeft div").removeClass("dSelectTab");
+    				$("#tabs-3 .dLeft :first").addClass("dSelectTab");
+					break;
 			}
-			$(window).resize();
 		});
 	});
 
-	$("#headtabs").tabs({selected: 1});
-	$("#tabs").tabs();
-	$("#vtabs").tabs({
-		select: function(event, ui) {
-			if (ui.index == 4) {
-				$("#dSpecifyDates").show();
-			} else {
-				$("#dSpecifyDates").hide();
-			}
-		}
-	}).addClass('ui-tabs-vertical ui-helper-clearfix');
-	$("#vtabs li").removeClass('ui-corner-top').addClass('ui-corner-left');
-	$("#vtabs2").tabs().addClass('ui-tabs-vertical ui-helper-clearfix');
-	$("#vtabs2 li").removeClass('ui-corner-top').addClass('ui-corner-left');
-	$("button").button();
-	$("#datepicker1").datepicker();
-	$("#datepicker1").datepicker("option", "dateFormat", "yy-mm-dd");
-	$("#datepicker2").datepicker();
-	$("#datepicker2").datepicker("option", "dateFormat", "yy-mm-dd");
+	//设定点左侧时的事件
+    $(".dMainTab").each(function () {
+	    $(this).click(function(){
+		    $(this).addClass("dSelectTab");
+			$(this).prevAll().removeClass("dSelectTab");
+			$(this).nextAll().removeClass("dSelectTab");
+		})
+    });
+    $(".dLeft :first").addClass("dSelectTab");
 
-	$(window).resize();
+	initSize();
 });
 
 /** 窗口大小发生变化时调用此函数
  */
-$(window).resize(function() {
-	$("#dLeft").height($(window).height() - $("#dReportButtons").height());
-	$("#dRight").height($("#dLeft").height());
+function initSize() {
+	try {
+		screenSize = window.external.GetScreenSize().split("x");
+		resWidth = screenSize[0];
+		resHeight = screenSize[1] - 30;
+	} catch (e) {
+		resWidth = 1324;
+		resHeight = 468;
+	}
+
+	$(".dLeft").height(resHeight - $("#dReportButtons").height() - 6);
+	$(".dRight").height($(".dLeft").height());
 	$("#in").empty();
 	$("#out").empty();
 	$("#in2").empty();
 	$("#out2").empty();
-	$(".rvcharts").height($("#dLeft").height() - 165);
-	$(".rvchart").height($("#dLeft").height() - 165);
+	$(".rvcharts").height($(".dLeft").height() - 165);
+	$(".rvchart").height($(".dLeft").height() - 165);
 
-	var leftWidth = $(window).width() * 0.22;
-	if (leftWidth <= 165) {
-		$("#dLeft").width(165);
-		var wRight = $(window).width() - 166;
-		if (wRight < 300) {
-			$("#dRight").width(300);
-		} else {
-			$("#dRight").width(wRight);
-		}
-	} else {
-		$("#dLeft").width($(window).width() * 0.22);
-		$("#dRight").width($(window).width() * 0.78 - 10);
-	}
+	$(".dLeft").width(210);
+	$(".dRight").width(resWidth - 220);
 
-	$(".rvchart").width($("#dRight").width() * 0.49);
+	$(".rvchart").width($(".dRight").width() * 0.49);
 	if (!$('#tabs-1').is(':hidden')) { 
-		if(myStartDate==""||myEndDate==""){
+		if ((myStartDate == "") || (myEndDate == "")) {
 			GeneratePies(myDateRange, "pie");
-		}else{
-			GeneratePies(myDateRange, "pie",myStartDate,myEndDate,"resize");	
+		} else {
+			GeneratePies(myDateRange, "pie", myStartDate, myEndDate, "resize");	
 		}
 	} else if (!$('#tabs-3').is(':hidden')) {
 		GeneratePies("", "newPie");
 	}
 
-    $("#tabs-2").width($(window).width());
-	$("#rv1bottombar").css("padding-left", $("#dRight").width() / 2 - $("#rv1numincome").width() - $("#rv1barincome").width() - 20 + "px");
+    $("#tabs-2").width(resWidth);
+	$("#rv1bottombar").css("padding-left", $(".dRight").width() / 2 - $("#rv1numincome").width() - $("#rv1barincome").width() - 20 + "px");
 	$("#rv2bottombar").css("padding-left", $("#tabs-2").width() / 2 - $("#rv2numincome").width() - $("#rv2barincome").width() - 20 + "px");
-});
+}
 
 Date.prototype.pattern=function(fmt) {     
     var o = {     
@@ -145,14 +151,10 @@ Date.prototype.pattern=function(fmt) {
  * @param handleType "resize"
  */
 function GeneratePies(dataRange, charttype, startDate1, endDate1, handleType) {
-	$(".dMainTab").each(function () {
-		$(this).removeClass("dSelectTab");
-	});
-
 	myDateRange=dataRange;
 	var startDate = "";
 	var endDate = "";
-	if(handleType === undefined || handleType!="resize"){
+	if ((handleType === undefined) || (handleType!="resize")) {
 		var startDate = "";
 		var endDate = "";
 		var curDate = new Date();
@@ -330,21 +332,23 @@ function GeneratePies(dataRange, charttype, startDate1, endDate1, handleType) {
 			default:
 				startDate = MonthFirstDay.pattern("yyyy-MM-dd");
 				EndDate = MonthLastDay.pattern("yyyy-MM-dd");
-				during = "month";
+				if (charttype == "bar") {
+					during = "year";
+				} else {
+					during = "month";
+				}
 				break;
 		}
 		
-		myEndDate=endDate;
-		myStartDate=startDate;
-		myDuring=during;
-		mychart=charttype;
+		myEndDate = endDate;
+		myStartDate = startDate;
+		myDuring = during;
+		mychart = charttype;
 	} else {
-		endDate=myEndDate;
-		startDate=myStartDate;
-		during=myDuring;
+		endDate = myEndDate;
+		startDate = myStartDate;
+		during = myDuring;
 	}
-	
-	$("#b" + during).addClass("dSelectTab");
 
 	//更新当前日期状态
 	if (charttype == "pie") {
@@ -394,12 +398,37 @@ function GeneratePies(dataRange, charttype, startDate1, endDate1, handleType) {
 		RenderPie(getXML(startDate, endDate, during, "Pie"));
 	} else if (charttype == "bar") {
 		//生成柱图数据
-		RenderBar(getBarXml(startDate, endDate, during));
+		$("#tabs-3-headertext").html(startDate + "至" + endDate + "的收支趋势");	
+		switch (during){
+			case "year":
+				$("#tabs-3-dprev").html("上一年");
+				$("#tabs-3-dnext").html("下一年");
+				$("#tabs-3-dprev").css({"visibility":"visible"});
+				$("#tabs-3-dnext").css({"visibility":"visible"});
+				break;
+				
+			case "all":
+				$("#tabs-3-dprev").css({"visibility":"hidden"});
+				$("#tabs-3-dnext").css({"visibility":"hidden"});
+				$("#tabs-3-headertext").html("所有日期的收支趋势");	
+				
+			default:
+				break;
+		}
+		$("#tabs-3-dprev").unbind("click");	
+		$("#tabs-3-dprev").click(function() {
+			GeneratePies('prev' + during, 'bar');
+		});
+		$("#tabs-3-dnext").unbind("click");	
+		$("#tabs-3-dnext").click(function() {
+			GeneratePies('next' + during, 'bar');
+		});
+		RenderBar(getBarXml(startDate, endDate, "month"));
 	} else {
 		//生成资产
 		RenderNewPie(getXML(startDate, endDate, during, "newPie"));
 	}
-	$("#rv1bottombar").css("padding-left", $("#dRight").width() / 2 - $("#rv1numincome").width() - $("#rv1barincome").width() - 15 + "px");
+	$("#rv1bottombar").css("padding-left", $(".dRight").width() / 2 - $("#rv1numincome").width() - $("#rv1barincome").width() - 15 + "px");
 	$("#rv2bottombar").css("padding-left", $("#tabs-2").width() / 2 - $("#rv2numincome").width() - $("#rv2barincome").width() - 15 + "px");
 }
 
@@ -472,6 +501,10 @@ function RenderPie(xml){
 	if (chartheight > chartwidth) {
 		chartheight = chartwidth;
 	}
+	$("#in").width(chartwidth);
+	$("#in").height(chartheight);
+	$("#out").width(chartwidth);
+	$("#out").height(chartheight);
 	if (xmlOut != "") {
 		var chart = new FusionCharts("./swf/FCF_Pie2D.swf", "ChartId", chartwidth, chartheight);
 		chart.setDataXML(xmlOut);
@@ -554,9 +587,9 @@ function RenderNewPie(xml){
 	$("#rv2numoutcome").html(outValue + "元");
 	$("#sRV2Income").html(getValue);
 	$("#sRV2Outcome").html(outValue);
-	
-	$("#rv2chartleft").width($(window).width() * 0.49);
-	$("#rv2chartright").width($(window).width() * 0.49);
+
+	$("#rv2chartleft").width(resWidth * 0.49);
+	$("#rv2chartright").width(resWidth * 0.49);
 	var chartwidth = $("#rv2chartleft").width();
 	var chartheight = $("#rv2chartleft").height() - 22;
 
@@ -575,19 +608,29 @@ function RenderNewPie(xml){
 	}
 }
 
+/** 生成柱图
+ * @param xml 数据源
+ */
 function RenderBar(xml) {
-	xmlBar = createXmlData(xml, "bar");
-	var chartwidth = $("#rv2charts").width();
-	var chartheight = $("#rv2charts").height();
-	var chartBar = new FusionCharts("./swf/FCF_StackedColumn3D.swf", "ChartId", chartwidth, chartheight);
-	chartBar.setDataXML(xmlBar);
-	chartBar.addParam("wmode", "Opaque");
-	chartBar.render("bar");
+	//alert(xml);
+	var searchString = "<categories />";
+	if(xml.indexOf(searchString)<0){
+		xmlBar = createXmlData(xml, "bar");
+		var chartwidth = $(".dRight").width();
+		var chartheight = $(".dRight").height() - 50;
+		var chartBar = new FusionCharts("./swf/FCF_StackedColumn2D.swf", "ChartId", chartwidth, chartheight);
+		chartBar.setDataXML(xmlBar);
+		chartBar.addParam("wmode", "Opaque");
+		chartBar.render("bar");	
+	} else {
+		emptyXMLTips("bar");
+	}
+	
 }
 
-function emptyXMLTips(divId){
-	var content="目前此时间段无数据";
-	$("#"+divId).empty().append(content);
+function emptyXMLTips(divId) {
+	var content = "<div class='dEmptyData'>此时间段无数据</div>";
+	$("#" + divId).html(content);
 }
 
 function chkFlash() {

@@ -10,8 +10,8 @@ std::string CResourceManager::GetRootXMLFile(LPTSTR pfn)
 	//return GetFileContent(Website_None, _T(""), _T("info.xml"), false);
 	return GetFileContent(Website_Bank, pfn, _T("info.xml"), false);
 #else
-	//return GetFileContent(Website_None, _T(""), _T("info.chk"), true);  
-	return GetFileContent(Website_Bank, pfn, _T("info.chk"), true); 
+	//return GetFileContent(Website_None, _T(""), _T("info.mchk"), true);  
+	return GetFileContent(Website_Bank, pfn, _T("info.mchk"), true); 
 #endif
 }
 

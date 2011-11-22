@@ -138,7 +138,9 @@ BOOL CDriverLoader::InstallDriver() const
 	}
 
 	SC_HANDLE schService = NULL;
-	while(1)
+
+	int bTime = 0;//重试次数
+	while( 1 )
 	{
 		schService = CreateServiceA(schSCManager, m_drivername.c_str(), m_drivername.c_str(), SERVICE_ALL_ACCESS, SERVICE_KERNEL_DRIVER, 
 		/*SERVICE_AUTO_START*/SERVICE_SYSTEM_START, SERVICE_ERROR_NORMAL, m_DriverPath.c_str(), NULL, NULL, NULL, NULL, NULL);
@@ -146,7 +148,17 @@ BOOL CDriverLoader::InstallDriver() const
 			break;
 		else
 			Sleep(2000);
+
+		bTime ++;
+		if(bTime > 15)
+			break;
 	}
+	if(bTime > 15)
+	{
+		CRecordProgram::GetInstance()->FeedbackError(MY_ERROR_PRO_NAME, GetLastError(), L"InstallDriver CreateService exceed max time");
+		MessageBox(NULL, L"安装异常，建议您重新启动系统再安装财金汇", L"财金汇", MB_OK);
+	}
+	
 
 	if (schService == NULL)
 	{

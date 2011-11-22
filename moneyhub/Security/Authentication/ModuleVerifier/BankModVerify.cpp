@@ -23,7 +23,7 @@ CBankModVerify::~CBankModVerify(void)
 bool CBankModVerify::ReadCHK()
 {
 	bool result = false;
-	unsigned char* pText = CHKReader::GetCHKBuffer("authen.chk");
+	unsigned char* pText = CHKReader::GetCHKBuffer("authen.mchk");
 	if(pText == NULL)
 		goto FAILED;
 

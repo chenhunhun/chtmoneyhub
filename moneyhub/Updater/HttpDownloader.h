@@ -36,12 +36,14 @@ protected:
 	*/
 	UINT64 isBreakPointFile(std::wstring wcsFile);
 	bool downLoadBreakpointFile();
+	bool DownLoadFileNoBreak();
 	void getBreakDownloadName();
 
 protected:
 	tstring			m_strUrl;
 	tstring			m_strSaveFile;
 	std::wstring    m_wcsOriginalFileName;
+	bool			m_bBreakDownload;
 
 	LPVOID m_lpPostData;
 	DWORD m_dwPostDataLength;

@@ -9,12 +9,49 @@
 #include "..\ThirdParty\json\include\json\json.h"
 #include "../ThirdParty/tinyxml/tinyxml.h"
 #pragma once
-#define MY_BANK_NAME				L"MoneyhubBankData"
-#define MY_ERROR_SQL_ERROR		3000
-#define MY_ERROR_RUNTIME_ERROR	3001
+#define MY_BANK_NAME					L"MoneyhubBankData"
+#define MY_ERROR_SQL_ERROR				3000
+#define MY_ERROR_RUNTIME_ERROR			3001
+
+#define BILL_CANCEL_GET_BILL			2000		// 取消导入账单
+#define BILL_EXCEED_MAX_TIME			2001		// 超时
+#define BILL_NORMAL_STATE				0			// login success
+#define BILL_COM_ERROR					1000		// 其他失败
+#define BILL_GET_ACCOUNT_ERROR			1001		// 获取账户失败
+#define BILL_INNER_CANCEL				3000		// 内部取消收藏，要关闭显示正在登陆，同时关闭页面
+#define BILL_LOGIN_SUCC		         	3			// login success
+#define BILL_LOAD_DLG					10			// 显示正在登录账户界面
+#define BILL_SELECT_ACCOUNT				20			// 选择账户
+#define BILL_SELECT_ACCOUNT_MONTH2		21			// 弹出账户选择后又弹出月份选择
+#define BILL_SELECT_MONTH				30			// 选择月份
+#define BILL_SELECT_MONTH2				31			// 第二种选择月份的方法
+#define BLII_NEED_RESTART				33			// 选错了账号需要重新选取
+#define BILL_DOWNLOAD_DLG				40			// 显示正在下载界面
+#define BILL_RECORD_NUMBER				50			// 显示已下载记录条数界面
+#define BILL_BROWSER_GO		    		81			// continue getbill 
+#define BILL_BROWSER_LOOP		    	83			// loop getbill
+#define BILL_FINISH_STATE				99			// 一个账单抓取完成
+#define BILL_ALL_FINISH					100			// 将所有的账单抓取完成
+
+#define WM_BILL_CHANGE_NOFIFY			WM_USER + 0x100F //不是跨进程的消息！！
+#define WM_BILL_HIDE_NOFIFY				WM_USER + 0x100E //隐藏对话框的问题
+#define WM_BILL_SHOW_NOFIFY				WM_USER + 0x100D //显示对话框
 using namespace std;
 
+#define CHECKBOX_SHOW_CHECKED			0x00000010 // 显示时以选中的状态显示
+#define CHECKBOX_SHOW_UNCHECKED			0x00000100 // 显示时以没有选中的状态显示
+#define CHECKBOX_SHOW_CHECKED_BEFORE	0x00001000 // 显示时显示为已经导入
 
+typedef struct SELECTINFONODE // 选择账户和选择月份的时候用
+{
+	SELECTINFONODE()
+	{
+		memset(szNodeInfo, 0, 256);
+		dwVal = 0;
+	}
+	char	szNodeInfo[256];
+	DWORD	dwVal;
+}SELECTINFONODE, *PSELECTINFONODE;
 
 typedef struct TransactionRecord
 {
@@ -22,13 +59,16 @@ typedef struct TransactionRecord
 		memset(TransDate,0,256);
 		memset(PostDate,0,256);
 		memset(Description,0,256);
+		memset(Amount,0,256);
 		memset(Country,0,256);
 		memset(OriginalTransAmount,0,256);
+		memset(Payee,0,256);
 	}
 	char	TransDate[256];				//交易日
+	char    Payee[256];					//支付对象
 	char	PostDate[256];				//记账日
 	char	Description[256];			//摘要
-	float	Amount;						//金额
+	char	Amount[256];				//金额
 	int		CardNumber;					//卡号末4位
 	char	Country[256];				//交易地点
 	char	OriginalTransAmount[256];	//交易地金额，一般没有	
@@ -42,24 +82,49 @@ enum BillType
 
 struct BillData
 {
-	string aid;
-	string month;
-	int type;
-	int accountid;
+	BillData()
+	{
+		memset(select, 0, 256);
+		type = 0;
+		accountid = 0;
+	}
+	string				aid;					// 金融机构的aid
+	char				select[256];			// 选择的时间或者账户
+	string				tag;					// 金融账户的标记，账号末四位
+	int					type;					// 表明账户类型的
+	int					accountid;				// 要导入的账户id
+	bool				isSel;					// 初始化表明是否已经选择了对象	
 };
+typedef struct MonthBillRecord
+{
+	string				month;					// 导入的月份
+	bool				m_isSuccess;			// 判断账单是否导入成功
+	list<LPTRANRECORD>	TranList;				// 账单
+}MONTHBILLRECORD,*LPMONTHBILLRECORD;
 
 typedef struct BillRecord
 {
-	BillRecord(){
-		memset(aid,0,256);
-		memset(month,0,256);
-	}
-	char		aid[256];
-	char		month[256];
-	int			accountid;
-	BillType	type;					//账户类型		中文;美元
-	list<LPTRANRECORD> TranList;			//账单
+	string				balance;				// 余额，失败的话为“F”
+	BillType			type;					// 账户类型		中文;美元
+	list<LPMONTHBILLRECORD> bills;				// 分月或者时间记载的账单
 }BILLRECORD, *LPBILLRECORD;
+
+typedef struct BillRecords
+{
+	BillRecords()
+	{
+		memset(aid, 0, 256);
+		memset(tag, 0, 256);
+	}
+	char				aid[256];					// 机构id
+	char				tag[256];					// 实际得到的账号标记tag
+	int					type;						// 账户的类型，信用卡or借记卡
+	int					accountid;					// 要导入的账户，如果为后选择，那么该值不管
+	bool				isFinish;					// 账户是否导入完成
+	list<LPBILLRECORD>	BillRecordlist;				// 账单
+	list<SELECTINFONODE> m_mapBack;				// 导出账单中间获取的数据(多个账号或者是月份,bool值表示是否选中)
+	//dll申请的内存统一由该接口进行处理！！！，否则有内存问题
+}BILLRECORDS, *LPBILLRECORDS;
 
 typedef struct tagEventRecord
 {
@@ -110,6 +175,38 @@ typedef struct tagUSBKeyRecord
 	int		status;		// 表示下载状态，0-99表示下载过程，100表示下载，200表示下载安装完
 } USBRECORD, *LPUSBRECORD;
 
+//////////////////////////////////////////////////////////////////////////
+// Login Reg Syn Data
+
+struct UDData
+{
+	string       iTableNum;
+	string       lUT;
+	string       idbver;
+	string       imark;
+	int       iupdown;      //have updata (1 up) ( 2 down)( 3 same)   no insert( 0 null down )(4 up)  (待处理6 insert 7 update)
+	string	  strdata;
+};
+typedef std::map<std::string, UDData> UserIDMap;
+
+struct tfield
+{
+	int       ifieldNum;
+	std::map<int , std::string> m_field; // 
+};
+typedef std::map<std::string, tfield> TableField; // 
+
+typedef struct USERINFO
+{
+	USERINFO()
+	{
+		struserid = "Guest";
+	}
+	string       strmail;
+	string       strstoken;
+	string       struserid;
+}USERINFO;
+
 class CBankData
 {
 friend class ObjectLock;
@@ -127,11 +224,13 @@ public:
 	};
 
 public:
+	USERINFO m_CurUserInfo; // 当前用户信息
 	static CBankData* GetInstance();
 	const char* GetDbPath(std::string strUsID = "");
 	static const char* GetCouponPath();
 
 	void RemoveDatabase();
+	string FilterStringNumber(string& scr);
 
 public:
 	bool DeleteUSB(int vid, int pid, DWORD mid);
@@ -155,8 +254,8 @@ public:
 	
 	//下面是JS脚本调用的处理
 public:
-
-	bool InsertGetBillData(BILLRECORD& TRecord);
+	
+	bool IsMonthImport(const char* pKeyInfo, const char* pMonth, int nAccountID); 
 	// 收藏夹数据操作
 	// 注意调用该函数后请清空lFav
 	//void GetFav(std::list<LPFAVRECORD>& lFav);			//要给所有的Fav发送状态
@@ -184,15 +283,36 @@ public:
 	std::string GetCoupons();
 
 	std::string QuerySQL(std::string strSQL, std::string strDBName); // 账单接口
-	int ExecuteSQL(std::string strSQL);
+	int ExecuteSQL(std::string strSQL, std::string strDBName = "");
 	std::string GetXMLData(const std::string& strStartDate, const std::string& strEndDate, const std::string& dataseries, const std::string& charttype);
 	
 	// 如果lpConditon = NULL，将数据库的整个表拷贝到另一个数据库中，否则只拷贝满足条件的记录(两个表结构一样)
 	bool CpyDbTb2OtherDbTb(CppSQLite3DB& dbSour, CppSQLite3DB& dbDesc, LPSTR lpTbName, LPSTR lpDesTbName, LPSTR lpConditon = NULL);
 
+	bool InstallUpdateDB();
+	bool CreateNewUserDB(LPSTR lpstrUserDBName, LPSTR lpPassword, int nLen);
+	bool SetCurrentUserDB(LPSTR lpstrUserDBName, LPSTR lpPassword, int nLen);
+
+	// 修改当前用户密码
+	bool ChangeCurUserDBPwd(const char* pOldPwd, const int nOldLen, const char* pNewPwd, const int nNewLen);
+	
+	// 
+	bool ReadNeedAutoLoadUser(string& strUserID, string& strMail, string& strStoken);
+
 	// （可以满足表的结构不同，指定的列名进行拷贝）
 	//bool CpyDbTb2OtherDbTb(const CppSQLite3DB& dbSour, const CppSQLite3DB& dbDesc, PTBCPYNODE pTabName, std::vector<PTBCPYNODE>* pColName,  LPSTR lpCondition = NULL);
 
+	std::string strDBVer();
+	std::string str11[15];
+	UserIDMap*  GetUserIDMap() {return &m_UserIDMap;}
+	UserIDMap   m_UserIDMap;
+	TableField*  GetTablefield() {return &m_TableField;}
+	TableField   m_TableField;
+	int         GetList(std::string strBig30);
+	void        GfieldName ();
+	int         TableStr(std::string &strtable);
+	string      itostr(int hhh);
+	string      Filterchar(string scr);
 protected:
 
 	bool InternalGetFav(std::vector<LPFAVRECORD>& vec);
@@ -219,7 +339,7 @@ protected:
 	bool InternalGetCoupons(std::vector<LPCOUPONRECORD>& vecCouponRec);
 
 	std::string InternalQuerySQL(std::string strSQL, std::string strDBName); // 账单接口
-	int InternalExecuteSQL(std::string strSQL);
+	int InternalExecuteSQL(std::string strSQL, std::string strDBName);
 	std::string InternalGetPieXMLData(std::string strStartDate, std::string strEndDate);
 	std::string InternalGetNewPieXMLData(std::string strStartDate, std::string strEndDate);
 	std::string InternalGetBarXMLData(const std::string& strStartDate, const std::string& strEndDate, const std::string& strKind);
@@ -230,8 +350,9 @@ protected:
 
 	void SetIndexDoubleAttribute(TiXmlElement * pSet, const char * name, double val );
 
+
 	// 判断数据是否存在
-	bool IsFileExist(LPSTR lpPath);
+	bool IsFileExist(LPWSTR lpPath);
 
 
 	// 从源文件转换到目标文件
@@ -261,11 +382,17 @@ protected:
 private:
 	static CRITICAL_SECTION m_cs;
 	void CreateAccountTables(CppSQLite3DB& db); // 账单接口
-	std::string m_strUserDbPath; // 存储的是当前用户数据库的全路径
+	std::string m_strUtfUserDbPath; // 存储的是当前用户数据库的全路径 utf8!!
+	std::wstring m_strUserDbPath;//
+	std::string m_strUtfDataPath; // 存放用户数据库的路径 utf8
+	std::wstring m_strDataPath; // 存放用户数据库的路径
 	//std::string m_strUserSourDbPath; // 存储当前用户的数据库源文件路径
-	std::string m_strSysDbPath; // 存储系统数据的全路径
-	std::string m_strDataDbPath; // 存储DataDB的全路径
-	std::string m_strGuestTemplete; // 存储用户模板数据的路径
+	std::string m_strUtfSysDbPath; // 存储系统数据的全路径 uft8!!!
+	std::wstring m_strSysDbPath; // 存储系统数据的全路径
+
+	std::string m_strUtfDataDbPath; // 存储DataDB的全路径  ！！utf8
+	std::wstring m_strDataDbPath;//
+	std::wstring m_strGuestTemplete; // 存储用户模板数据的路径//这个不用utf存储
 
 	CppSQLite3DB m_dbUser;
 	CppSQLite3DB m_dbDataDB; // DataDB数据库对象

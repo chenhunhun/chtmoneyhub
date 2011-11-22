@@ -2,23 +2,17 @@
 #include "stdafx.h"
 #include "LoginButton.h"
 #include "../Skin/SkinManager.h"
-//#include "../Util/Util.h"
-#include "TabCtrl/TabItem.h"
-//#include "ChildFrm.h"
-//#include "MainFrame.h"
-//#include "../../Utils/HardwareID/genhwid.h"
-//#include "../../Utils/sn/SNManager.h"
-#include "../../BankData/BankData.h"
-#include "Version.h"
+#include "ShowJSFrame.h"
 
 CLoginButton::CLoginButton(FrameStorageStruct *pFS)
-: CFSMUtil(pFS)
+: CFSMUtil(pFS), m_hParentWnd(NULL)//, m_pShowDlg(NULL)
 {
 	pFS->pLoginButton = this;
 }
 
 void CLoginButton::CreateButton(HWND hParent)
 {
+	m_hParentWnd = hParent;
 	CRect rc(0, 0, s()->LoginButton()->GetWidth(), s()->LoginButton()->GetHeight());
 
 	HWND hWnd = Create(hParent, rc, NULL, WS_CHILD | WS_VISIBLE);
@@ -49,14 +43,23 @@ int CLoginButton::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 LRESULT CLoginButton::OnClick(int nIndex, POINT pt)
 {
-	/*CString strFileName;
-	GetModuleFileName(NULL, strFileName.GetBuffer(MAX_PATH), MAX_PATH);
-	strFileName.ReleaseBuffer();
-
-	strFileName = strFileName.Left(strFileName.ReverseFind('\\'));
-	strFileName += L"\\Html\\LoadAndLogin\\register.html";
-
-	::CreateNewPage_0(m_hWnd, strFileName, FALSE);*/
 	
+	/*CShowJSFrameDlg dlg(L"×¢²á²Æ½ð»ãÕË»§", L"register.html");
+
+	m_pShowDlg = &dlg;
+
+	dlg.DoModal();
+
+	m_pShowDlg = NULL;*/
+	::SendMessage(m_hParentWnd, WM_SHOW_USER_DLG, 0, 2);
+
 	return 0;
+}
+
+void CLoginButton::EndShowDialog(void)
+{
+	/*if (NULL != m_pShowDlg)
+	{
+		::PostMessage(m_pShowDlg->m_hWnd, END_SHOW_DIALOG, 0, 0);
+	}*/
 }

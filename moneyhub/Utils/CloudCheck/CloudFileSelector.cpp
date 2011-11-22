@@ -512,7 +512,14 @@ bool CCloudFileSelector::GetInputFiles()
 				
 				 DWORD dwType;
 				 DWORD dwValueNameLength = MAX_VALUENAME;
-				 if(ERROR_SUCCESS ==::SHGetValueW(hKey,ptszSubKey,L"Layout File",&dwType,&ptszValueName,&dwValueNameLength))
+				 HKEY hSubKey = 0;
+
+				 if (ERROR_SUCCESS != ::RegOpenKeyExW(hKey, ptszSubKey, 0, KEY_READ, &hSubKey))   
+				 {   
+					 continue;
+				 } 
+
+				 if(ERROR_SUCCESS == ::RegQueryValueExW(hSubKey,L"Layout File",NULL,&dwType,(LPBYTE)ptszValueName,&dwValueNameLength))
 				 {
 					 if(wcscmp(ptszValueName,L"") != 0)
 					 {
@@ -530,7 +537,7 @@ bool CCloudFileSelector::GetInputFiles()
 				 }
 
 				 dwValueNameLength = MAX_VALUENAME;
-				 if(ERROR_SUCCESS ==::SHGetValueW(hKey,ptszSubKey,L"IME File",&dwType,&ptszValueName,&dwValueNameLength))
+				 if(ERROR_SUCCESS ==::RegQueryValueExW(hSubKey,L"IME File",NULL,&dwType,(LPBYTE)ptszValueName,&dwValueNameLength))
 				 {
 					 if(wcscmp(ptszValueName,L"") != 0)
 					 {
@@ -547,6 +554,7 @@ bool CCloudFileSelector::GetInputFiles()
 					 }
 
 				 }
+				 RegCloseKey(hSubKey);
 			}
 		}
 	}
@@ -609,9 +617,17 @@ bool CCloudFileSelector::GetPrintEnvironments()
 				
 				 DWORD dwType;
 				 DWORD dwValueNameLength = MAX_VALUENAME;
+				 HKEY hSubKey = 0;
+
+				 if (ERROR_SUCCESS != ::RegOpenKeyExW(hKey, ptszSubKey, 0, KEY_READ, &hSubKey))   
+				 {   
+					 continue;
+				 }
 				 //获得子文件夹名记录
-				 if(ERROR_SUCCESS ==::SHGetValueW(hKey,ptszSubKey,L"Directory",&dwType,&ptszValueName,&dwValueNameLength))
+				 if(ERROR_SUCCESS ==::RegQueryValueExW(hSubKey,L"Directory",NULL,&dwType,(LPBYTE)ptszValueName,&dwValueNameLength))
 				 {
+					 RegCloseKey(hSubKey);//打开成功关闭该键值
+					 hSubKey = 0;
 					 if(wcscmp(ptszValueName,L"") != 0)
 					 {
 						 wstring tp(ptszValueName);
@@ -621,6 +637,11 @@ bool CCloudFileSelector::GetPrintEnvironments()
 						 continue;
 				 }
 
+				 if(hSubKey != NULL)
+				 {
+					 RegCloseKey(hSubKey);//打开成功关闭该键值
+					 hSubKey = 0;
+				 }
 				 wstring wwSub(ptszSubKey);
 				 wwSub += L"\\Drivers";
 
@@ -654,8 +675,20 @@ bool CCloudFileSelector::GetPrintEnvironments()
 							HKEY hActKey = NULL;
 							WCHAR nptszValueName[1024];
 							DWORD ndwValueNameLength = MAX_VALUENAME;
-							if(ERROR_SUCCESS ==::SHGetValueW(hChildKey,nptszSubKey,L"Directory",&dwType,&nptszValueName,&ndwValueNameLength))
+							HKEY hBSubKey = 0;
+
+							if (ERROR_SUCCESS != ::RegOpenKeyExW(hChildKey, nptszSubKey, 0, KEY_READ, &hBSubKey))   
+							{   
+								continue;
+							}
+
+							if(ERROR_SUCCESS ==::RegQueryValueExW(hBSubKey,L"Directory",NULL,&dwType,(LPBYTE)nptszValueName,&ndwValueNameLength))
 							{
+								if(hBSubKey != NULL)
+								{
+									RegCloseKey(hBSubKey);//打开成功关闭该键值
+									hBSubKey = 0;
+								}
 								if(wcscmp(ptszValueName,L"") != 0)
 								{
 									wstring tp(nptszValueName);
@@ -663,6 +696,12 @@ bool CCloudFileSelector::GetPrintEnvironments()
 								}
 								else
 									continue;
+							}
+
+							if(hBSubKey != NULL)
+							{
+								RegCloseKey(hBSubKey);//打开成功关闭该键值
+								hBSubKey = 0;
 							}
 
 							if( ERROR_SUCCESS != ::RegOpenKeyExW(hChildKey, nptszSubKey, 0, KEY_READ, &hActKey))
@@ -690,8 +729,15 @@ bool CCloudFileSelector::GetPrintEnvironments()
 									if (ERROR_SUCCESS == ::SHEnumKeyExW(hActKey, k, subkey, &ncbsub))   
 									{
 										//获得最终文件
+										HKEY hSubActKey = 0;
+
+										if (ERROR_SUCCESS != ::RegOpenKeyExW(hActKey, subkey, 0, KEY_READ, &hSubActKey))   
+										{   
+											continue;
+										}
+
 										ndwValueNameLength = MAX_VALUENAME;
-										if(ERROR_SUCCESS ==::SHGetValueW(hActKey,subkey,L"Configuration File",&dwType,&nptszValueName,&ndwValueNameLength))
+										if(ERROR_SUCCESS ==::RegQueryValueExW(hSubActKey,L"Configuration File",NULL, &dwType,(LPBYTE)nptszValueName,&ndwValueNameLength))
 										{
 											wchar_t* pfile = nptszValueName;
 											_wcslwr_s(pfile,1024);
@@ -707,13 +753,13 @@ bool CCloudFileSelector::GetPrintEnvironments()
 
 										ndwValueNameLength = MAX_VALUENAME;
 										memset(nptszValueName,0,sizeof(nptszValueName));
-										if(ERROR_SUCCESS ==::SHGetValueW(hActKey,subkey,L"Dependent Files",&dwType,&nptszValueName,&ndwValueNameLength))
+										if(ERROR_SUCCESS ==::RegQueryValueExW(hSubActKey,L"Dependent Files",NULL, &dwType,(LPBYTE)nptszValueName,&ndwValueNameLength))
 										{
 											GetStringFiles(nptszValueName,ndwValueNameLength/2,L"%SystemRoot%\\System32\\spool\\drivers\\" + wSubDir);
 										}
 
 										ndwValueNameLength = MAX_VALUENAME;
-										if(ERROR_SUCCESS ==::SHGetValueW(hActKey,subkey,L"Driver",&dwType,&nptszValueName,&ndwValueNameLength))
+										if(ERROR_SUCCESS ==::RegQueryValueExW(hSubActKey,L"Driver",NULL, &dwType,(LPBYTE)nptszValueName,&ndwValueNameLength))
 										{
 											wchar_t* pfile = nptszValueName;
 											_wcslwr_s(pfile,1024);
@@ -726,6 +772,7 @@ bool CCloudFileSelector::GetPrintEnvironments()
 											wstring wtp(expName);
 											m_cloudfile.insert(wtp);
 										}
+										RegCloseKey(hSubActKey);
 	
 									}
 

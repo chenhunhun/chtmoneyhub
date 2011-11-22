@@ -153,7 +153,7 @@ RequestExecutionLevel admin
 	completed4:
 	
 	     ;卸载驱动
-		 Sleep 2000
+		 Sleep 2500
 		 ExecWait '"$INSTDIR\MoneyHub.exe" -d'
 		;删除所有用户下的所有图标
 		SetShellVarContext all
@@ -218,9 +218,9 @@ RequestExecutionLevel admin
 	; Welcome page
 	!insertmacro MUI_PAGE_WELCOME
 	; License page
-	!define MUI_LICENSEPAGE_RADIOBUTTONS
-	!define MUI_LICENSEPAGE_RADIOBUTTONS_TEXT_ACCEPT "接受协议中的条款"
-	!define MUI_LICENSEPAGE_RADIOBUTTONS_TEXT_DECLINE "不接受协议中的条款"
+	;!define MUI_LICENSEPAGE_RADIOBUTTONS
+	;!define MUI_LICENSEPAGE_RADIOBUTTONS_TEXT_ACCEPT "接受协议中的条款"
+	;!define MUI_LICENSEPAGE_RADIOBUTTONS_TEXT_DECLINE "不接受协议中的条款"
 	!insertmacro MUI_PAGE_LICENSE "license.rtf"
 	; Directory page
 	;!insertmacro MUI_PAGE_DIRECTORY
@@ -437,30 +437,48 @@ RequestExecutionLevel admin
 	completed4:
 	
 		;开始安装
+		Sleep 2500
 		SetDetailsPrint none
 		UnRegDLL "$INSTDIR\bankactivex.dll"
 		ExecWait '"$INSTDIR\MoneyHub.exe" -d'
-		Sleep 2000
 		DeleteRegKey HKCU "Software\Bank"
 		;删除更新过的银行控件
 		RMDir /r "$PROGRAMFILES\MoneyHub\BankInfo\banks\cs_ecitic"
 		RMDir /r "$PROGRAMFILES\MoneyHub\BankInfo\banks\chinalife"
 		RMDir /r "$PROGRAMFILES\MoneyHub\BankInfo\banks\letao"
 		RMDir /r "$PROGRAMFILES\MoneyHub\BankInfo\banks\taobao"
-		;RMDir /r "$PROGRAMFILES\MoneyHub\BankInfo\banks\ecitic"
-		;RMDir /r "$PROGRAMFILES\MoneyHub\BankInfo\banks"
+		
+		
+		RMDir /r $PROGRAMFILES\MoneyHub\Config"
+		RMDir /r $PROGRAMFILES\MoneyHub\Html"
+		RMDir /r $PROGRAMFILES\MoneyHub\Skin"
+		RMDir /r $PROGRAMFILES\MoneyHub\BankInfo\banks\main"
+		
+		Delete "$PROGRAMFILES\MoneyHub\Authen.chk"
+		Delete "$PROGRAMFILES\MoneyHub\BankActiveX.dll"
+		Delete "$PROGRAMFILES\MoneyHub\ksafesdk.dll"
+		Delete "$PROGRAMFILES\MoneyHub\MoneyHub.exe"
+		Delete "$PROGRAMFILES\MoneyHub\MoneyHub.chk"
+		Delete "$PROGRAMFILES\MoneyHub\Moneyhub_svc.exe"
+		Delete "$PROGRAMFILES\MoneyHub\MoneyHub_Uninst.exe"
+		Delete "$PROGRAMFILES\MoneyHub\Moneyhub_Updater.exe"
+		Delete "$PROGRAMFILES\MoneyHub\MoneyHubPrt.sys"
+		Delete "$PROGRAMFILES\MoneyHub\MoneyHubPrt64.sys"
+		Delete "$PROGRAMFILES\MoneyHub\VMProtectDDK32.sys"
+		Delete "$PROGRAMFILES\MoneyHub\VMProtectDDK64.sys"
+		
 		;RMDir /r "$APPDATA\MoneyHub\Data"
 		Delete "$PROGRAMFILES\MoneyHub\moneyhub_pop.exe"
 		
 		;remove syslist.txt & info.xml
-		File /r /x .svn /x *.lib /x *.exp /x *.pdb /x *.ilk /x *.map /x BankActiveXTest.html /x BankLoaderTester.exe /x DigsigGen.exe /x ModuleVerifierTester.exe /x usbkeyinfo.xml /x VerifyList.xml /x CloudCheck.ini /x syslist.txt /x info.xml /x BlackList.txt /x BillUrl.xml ${PWD_DIR}\bak\*.*
+		File /r /x .svn /x *.lib /x *.exp /x *.pdb /x *.ilk /x *.map /x *.chk /x BankActiveXTest.html /x BankLoaderTester.exe /x DigsigGen.exe /x ModuleVerifierTester.exe /x usbkeyinfo.xml /x VerifyList.xml /x CloudCheck.ini /x syslist.txt /x info.xml /x BlackList.txt /x BillUrl.xml ${PWD_DIR}\bak\*.*
 
 		;开放权限，允许任何人读写，以保证不提权
 		AccessControl::GrantOnFile "$INSTDIR" "(BU)" "FullAccess"
 		
 		;创建appdata\bankconfig
-		CreateDirectory "$APPDATA\bankconfig"
-		CopyFiles $INSTDIR\BankInfo\banks $APPDATA\bankconfig
+		;CreateDirectory "$APPDATA\bankconfig"
+		;CopyFiles $INSTDIR\BankInfo\banks $APPDATA\bankconfig
 
 		;把优惠券页面需要的几张图片放到APPDATA下
 		;SetShellVarContext all
@@ -472,6 +490,10 @@ RequestExecutionLevel admin
 		;File /r /x .svn ${PWD_DIR}\bak\BankInfo\banks\cmbc\license.dll
 		;File /r /x .svn ${PWD_DIR}\bak\BankInfo\banks\sdb\pecsp.dll
 		;SetOutPath "$INSTDIR"
+		
+		ExecWait '"$INSTDIR\MoneyHub.exe" -renamechk'
+		
+		ExecWait '"$INSTDIR\MoneyHub.exe" -updb'
 		
 		RegDLL "$INSTDIR\bankactivex.dll"
 		ExecWait '"$INSTDIR\MoneyHub.exe" -i' $0
@@ -604,7 +626,7 @@ RequestExecutionLevel admin
 	completed4:
 	
 	    ;卸载驱动
-		Sleep 2000
+		Sleep 2500
 		ExecWait '"$INSTDIR\MoneyHub.exe" -d'
 	 
 		;删除所有用户下的所有图标

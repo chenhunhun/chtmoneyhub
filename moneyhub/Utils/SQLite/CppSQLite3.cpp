@@ -389,6 +389,25 @@ int CppSQLite3Query::getIntField(int nField, int nNullValue/*=0*/)
 	}
 }
 
+__int64 CppSQLite3Query::getInt64Field(int nField, int nNullValue/*=0*/)
+{
+	if (fieldDataType(nField) == SQLITE_NULL)
+	{
+		return nNullValue;
+	}
+	else
+	{
+		return sqlite3_column_int64(mpVM, nField);
+	}
+}
+
+
+__int64 CppSQLite3Query::getInt64Field(const char* szField, int nNullValue)
+{
+	
+	int nField = fieldIndex(szField);
+	return getInt64Field(nField, nNullValue);
+}
 
 int CppSQLite3Query::getIntField(const char* szField, int nNullValue/*=0*/)
 {
@@ -1147,10 +1166,33 @@ void CppSQLite3DB::open(const char* szFile, const char* szPw, int nPwLen)
 		//sqlite3_key(mpDB, "NCrFT2RIeD0NY2wHOI8W", 20);
 		CheckPassword(szPw, nPwLen);
 #else
-	sqlite3_key(mpDB, "", 0);
+	if (nPwLen == 0 || NULL == szPw)
+		sqlite3_key(mpDB, "", 0);
+	else
+		CheckPassword(szPw, nPwLen);
 #endif
 
 	setBusyTimeout(mnBusyTimeoutMs);
+}
+
+bool CppSQLite3DB::InitDbPassword(const char* szFile, const char* szPw, int nPwLen)
+{
+	int nRet = sqlite3_open(szFile, &mpDB);
+
+	if (nRet != SQLITE_OK)
+	{
+		const char* szError = sqlite3_errmsg(mpDB);
+		throw CppSQLite3Exception(nRet, (char*)szError, DONT_DELETE_MSG);
+	}
+
+	sqlite3_key(mpDB, "", 0);
+
+	nRet = sqlite3_rekey(mpDB, szPw, nPwLen); // 以用户给定的密码打开
+
+
+	setBusyTimeout(mnBusyTimeoutMs);
+
+	return (nRet == SQLITE_OK)?true:false; 
 }
 
 bool CppSQLite3DB::CheckPassword(const char* szPw, int nPwLen)

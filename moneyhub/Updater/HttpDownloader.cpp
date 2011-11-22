@@ -3,6 +3,7 @@
 #include "HttpDownloader.h"
 #include "UpdateMgr.h"
 #include "..\Utils\PostData\UrlCrack.h"
+#include "..\Utils\PostData\BankDownloadMode.h"
 #include "DownloadOperation.h"
 
 #define REPEATNUM               6
@@ -17,6 +18,7 @@ CHttpDownloader _HttpDownloader;
 
 CHttpDownloader::CHttpDownloader()
 {
+	m_bBreakDownload = true;
 	USES_CONVERSION;
 	m_strHWID = A2CT(GenHWID2().c_str());
 
@@ -42,7 +44,22 @@ int CHttpDownloader::GetData(LPCTSTR lpszUrl, LPCTSTR lpszSaveFile, CUpdateMgr* 
 	m_ui64FileSize = 0;
 	m_ui64TotalRead = 0;
 
-	return TransferDataGet();
+	eDownloadMode dMode = CDownloadMode::GetInstance()->GetMode();
+	m_bBreakDownload  = (dMode == eHttpBreak) ? true: false;
+
+	if(m_bBreakDownload == false)
+		 return TransferDataGet();//非断点续传超时，那么重试
+	else
+	{
+		int nRes = TransferDataGet();
+		if(nRes != 0)
+		{
+			m_bBreakDownload = false;
+			return TransferDataGet();
+		}
+		else
+			return nRes;
+	}
 }
 
 int CHttpDownloader::PostData(LPCTSTR lpszUrl, LPVOID lpPostData, DWORD dwPostDataLength, LPCTSTR lpszSaveFile, CUpdateMgr* pUpdateMgr)
@@ -125,15 +142,22 @@ int CHttpDownloader::TransferDataGet()
 	TCHAR szHeaders[100];
 	//_stprintf_s(szHeaders, _countof(szHeaders), _T("MoneyhubUID: %08X%08X%08X%08X\r\n"), m_hwid.dw1, m_hwid.dw2, m_hwid.dw3, m_hwid.dw4);
 	_stprintf_s(szHeaders, _countof(szHeaders), _T("MoneyhubUID: %s\r\n"), m_strHWID.c_str());
-	HttpAddRequestHeaders(m_hInetFile, szHeaders, -1, HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE); 
+	HttpAddRequestHeaders(m_hInetFile, szHeaders, -1, HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE);
+	HttpAddRequestHeaders(m_hInetFile, _T("User-Agent: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 2.0.50727; .NET CLR 3.0.04506.648; .NET CLR 3.5.21022; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729; .NET CLR 1.1.4322; .NET4.0C; .NET4.0E)\r\n"), -1, HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE); 
 
-	_stprintf_s(szHeaders,_countof(szHeaders),_T("Range: bytes=%d-"), isBreakPointFile(m_strSaveFile.c_str()) );
-  	HttpAddRequestHeaders(m_hInetFile, szHeaders, -1, HTTP_ADDREQ_FLAG_ADD_IF_NEW ) ;
+	if(m_bBreakDownload == true)
+	{
+		_stprintf_s(szHeaders,_countof(szHeaders),_T("Range: bytes=%d-"), isBreakPointFile(m_strSaveFile.c_str()) );
+  		HttpAddRequestHeaders(m_hInetFile, szHeaders, -1, HTTP_ADDREQ_FLAG_ADD_IF_NEW ) ;
+	}
 
 	BOOL bSend = ::HttpSendRequest(m_hInetFile, NULL, 0, NULL, 0);
 	if (!bSend)
 	{
+		int Error = GetLastError();
 		CloseHandles();
+		if(Error == ERROR_INTERNET_TIMEOUT && m_bBreakDownload)
+			return ERROR_INTERNET_TIMEOUT;
 		return ERR_NETWORKERROR;
 	}
 
@@ -161,9 +185,18 @@ int CHttpDownloader::TransferDataGet()
 	dwInfoSize = sizeof(szContentLength);
 	if (::HttpQueryInfo(m_hInetFile, HTTP_QUERY_CONTENT_LENGTH, szContentLength, &dwInfoSize, NULL))
 	{
-		m_ui64FileSize = (UINT64)_ttoi64(szContentLength) + isBreakPointFile(m_strSaveFile.c_str());
-		if (m_pUpdateMgr)
-			m_pUpdateMgr->SetProgressVal(m_ui64FileSize, 0);
+		if(m_bBreakDownload)
+		{
+			m_ui64FileSize = (UINT64)_ttoi64(szContentLength) + isBreakPointFile(m_strSaveFile.c_str());
+			if (m_pUpdateMgr)
+				m_pUpdateMgr->SetProgressVal(m_ui64FileSize, 0);
+		}
+		else
+		{
+			m_ui64FileSize = (UINT64)_ttoi64(szContentLength);
+			if (m_pUpdateMgr)
+				m_pUpdateMgr->SetProgressVal(m_ui64FileSize, 0);
+		}
 	}
 	else 
 	{
@@ -173,7 +206,10 @@ int CHttpDownloader::TransferDataGet()
 
 	NEED_STOP;
 
-	return this->downLoadBreakpointFile();
+	if(m_bBreakDownload)
+		return this->downLoadBreakpointFile();
+	else
+		return this->DownLoadFileNoBreak();
 }
 
 int CHttpDownloader::TransferDataPost()
@@ -224,6 +260,7 @@ int CHttpDownloader::TransferDataPost()
 	NEED_STOP;
 
 	HttpAddRequestHeaders(m_hInetFile, _T("Content-Type: application/x-www-form-urlencoded\r\n"), -1, HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE); 
+	HttpAddRequestHeaders(m_hInetFile, _T("User-Agent: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 2.0.50727; .NET CLR 3.0.04506.648; .NET CLR 3.5.21022; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729; .NET CLR 1.1.4322; .NET4.0C; .NET4.0E)\r\n"), -1, HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE); 
 
 	TCHAR szHeaders[1024];
 	//_stprintf_s(szHeaders, _countof(szHeaders), _T("MoneyhubUID: %08X%08X%08X%08X\r\n"), m_hwid.dw1, m_hwid.dw2, m_hwid.dw3, m_hwid.dw4);
@@ -410,8 +447,95 @@ UINT64  CHttpDownloader::isBreakPointFile(std::wstring wcsFile)
 	CloseHandle(hFile);
 	return uI64Return;
 }
-
 #define DOWNLOADLEN   ((1024)*(60))
+
+bool CHttpDownloader::DownLoadFileNoBreak()
+{
+
+	DWORD dwBytesRead = 0;
+	//char szReadBuf[DOWNLOADLEN];
+	char *szReadBuf = new char[DOWNLOADLEN];
+	if( !szReadBuf )
+		return false;
+
+	ZeroMemory(szReadBuf, DOWNLOADLEN);
+	DWORD dwBytesToRead = DOWNLOADLEN;
+
+	wchar_t wcsNum[255];
+	DWORD   dwRegType = 0, dwReturnSize = sizeof(wcsNum), dwFilePoint;
+	UINT64  uI64Num = 0;
+	bool    bIsBreak = false;
+
+	dwFilePoint = (DWORD)(uI64Num);
+	m_hSaveFile = CreateFile(m_strSaveFile.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+
+	if ( INVALID_HANDLE_VALUE == m_hSaveFile )
+	{
+		CloseHandles();
+		delete []szReadBuf;
+		return ERR_DISKERROR;
+	}
+
+	do
+	{
+		NEED_STOP;
+
+		if (!::InternetReadFile(m_hInetFile, szReadBuf, dwBytesToRead, &dwBytesRead))
+		{
+			CloseHandles();
+
+			if(m_repeatNum < REPEATNUM)
+			{
+				m_repeatNum ++;
+				DWORD dwBegin = GetTickCount();		
+				while( GetTickCount() - dwBegin < 1000 * m_repeatNum * 20)
+					Sleep(20000);
+
+				delete []szReadBuf;
+				return this->TransferDataGet() == 0 ? false:true ;
+			}
+			else
+			{
+				delete []szReadBuf;
+				return ERR_FILENOTFOUND;
+			}
+		}
+		else if (dwBytesRead)
+		{
+			DWORD dwBytesWritten = 0;
+			if (!WriteFile(m_hSaveFile, szReadBuf, dwBytesRead, &dwBytesWritten, NULL))
+			{
+				//文件写入错误，反馈 
+				CRecordProgram::GetInstance()->FeedbackError(MY_ERROR_PRO_NAME, MY_EEEOR_ID_FILER, MY_ERROR_DESCRIPT_FILER);
+
+				CloseHandles();
+				delete []szReadBuf;
+				return ERR_DISKERROR;
+			}
+
+			m_ui64TotalRead += dwBytesRead;
+
+			if (m_pUpdateMgr)
+				m_pUpdateMgr->SetProgressVal(m_ui64FileSize, m_ui64TotalRead);
+		}
+	} 
+	while (dwBytesRead);
+
+	CloseHandles();	
+
+	if( !MoveFileExW(m_strSaveFile.c_str(), m_wcsOriginalFileName.c_str() , MOVEFILE_REPLACE_EXISTING|MOVEFILE_COPY_ALLOWED ) )
+	{
+		CDownloadOperation don;
+		don.deleteAllUpdataFile();
+	}
+
+	m_wcsOriginalFileName = L"error";
+
+	delete []szReadBuf;
+	return ERR_SUCCESS;
+}
+
+//#define DOWNLOADLEN   ((1024)*(60))
 bool CHttpDownloader::downLoadBreakpointFile()
 {
 	DWORD dwBytesRead = 0;

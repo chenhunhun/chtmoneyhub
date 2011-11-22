@@ -32,11 +32,11 @@
 // 要发送的反馈地址信息
 #define UB_URL _T("data.feedback.php")
 
+CUserBehavior _guBehavior;
 
 CUserBehavior* CUserBehavior::GetInstance()
 {
-	static CUserBehavior inst;
-	return &inst;
+	return &_guBehavior;
 }
 // 初始化函数，其中获得了moneyhub的版本信息
 CUserBehavior::CUserBehavior()
@@ -54,24 +54,74 @@ CUserBehavior::CUserBehavior()
 		strFileVersion.erase(remove(strFileVersion.begin(), strFileVersion.end(), ' '), strFileVersion.end());
 		m_strMoneyVersion = std::string(CT2A(strFileVersion.c_str()));
 	}
+	InitializeCriticalSection(&m_cs);
 
 	m_url = CHostContainer::GetInstance()->GetHostName(kFeedback) + UB_URL;
+	//反馈单独做一个线程与服务器通信，否则有可能时间会很长；sendrequest的时间超时问题
+	m_hThread = NULL;
+
+}
+void CUserBehavior::BeginFeedBack()
+{
+	DWORD dw;
+	m_bClose = true;
+	m_hThread = CreateThread(NULL, 0, _threadFeedBackToServer, this, 0, &dw);
+}
+void CUserBehavior::CloseFeedBack()
+{
+	if(m_hThread != NULL)
+		::TerminateThread(m_hThread, 5);
+	m_bClose = false;
+	m_hThread = 0;
+}
+
+DWORD WINAPI CUserBehavior::_threadFeedBackToServer(LPVOID lp)
+{
+	while( 1 )
+	{
+		if(!_guBehavior.m_bClose)
+			break;
+		if(!_guBehavior.m_strFeedBackInfo.empty())
+		{
+			EnterCriticalSection(&_guBehavior.m_cs);
+			std::vector<std::string>::const_iterator itBeg = _guBehavior.m_strFeedBackInfo.begin();
+			for (; itBeg != _guBehavior.m_strFeedBackInfo.end(); itBeg ++)
+			{
+				CPostData::getInstance()->sendData(_guBehavior.m_url.c_str(),(LPSTR)(LPCSTR)(itBeg->c_str()), itBeg->size());
+			}
+			_guBehavior.m_strFeedBackInfo.clear();
+			LeaveCriticalSection(&_guBehavior.m_cs);
+		}
+		else
+			Sleep(5000);//5s钟查询一次是否有数据应该发送给服务器
+	}
+	return 0;
 
 }
 
-// 安装反馈的函数
-void CUserBehavior::Action_Install()
+// 安装反馈的函数，只调用一次，直接反馈
+void CUserBehavior::Action_Install(int i)
 {
 	CCollectInstallInfo in;
 	string xml = in.GetInstallInfo();
+	xml = "<moneyhubversion>" + m_strMoneyVersion + "</moneyhubversion>";
+	xml += "</data>";
 
 	wstring str = AToW(xml,CP_ACP);
 	string sstr = WToA(str,CP_UTF8);
 
+	if(i == 0)
+	{
+		EnterCriticalSection(&m_cs);
+		m_strFeedBackInfo.push_back(xml);
+		LeaveCriticalSection(&m_cs);
+		return;
+	}
+
 	CPostData::getInstance()->sendData(m_url.c_str(), (LPSTR)(LPCSTR)sstr.c_str(), sstr.size());
 }
-// 卸载反馈的函数
-void CUserBehavior::Action_Uninstall()
+// 卸载反馈的函数,不需要等，直接反馈就对了
+void CUserBehavior::Action_Uninstall(int i)
 {
 	// Head
 	std::string xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><data><action>uninstall</action>";
@@ -83,9 +133,18 @@ void CUserBehavior::Action_Uninstall()
 
 	// Tail
 	xml += "</data>";
+
+	if(i == 0)
+	{
+		EnterCriticalSection(&m_cs);
+		m_strFeedBackInfo.push_back(xml);
+		LeaveCriticalSection(&m_cs);
+		return;
+	}
+
 	CPostData::getInstance()->sendData(m_url.c_str(), (LPSTR)(LPCSTR)xml.c_str(), xml.size());
 }
-// 启动反馈（运行反馈）的函数
+// 启动反馈（运行反馈）的函数 需要等
 void CUserBehavior::Action_ProgramStartup(UBStartupStyle ubss)
 {
 	// Head
@@ -102,19 +161,22 @@ void CUserBehavior::Action_ProgramStartup(UBStartupStyle ubss)
 	xml += "<starttype>" + strStyle + "</starttype>";
 
 	// Version
-	xml += "<moneyhubversion>" + m_strMoneyVersion + "</moneyhubversion>";
+	xml += "<moneyhubversion>" + m_strMoneyVersion + "m</moneyhubversion>";
 
 	// Tail
 	xml += "</data>";
 
 	wstring str = AToW(xml,CP_ACP);
 	string sstr = WToA(str,CP_UTF8);
-	CPostData::getInstance()->sendData(m_url.c_str(), (LPSTR)(LPCSTR)sstr.c_str(), sstr.size());
+
+	EnterCriticalSection(&m_cs);
+	m_strFeedBackInfo.push_back(xml);
+	LeaveCriticalSection(&m_cs);
 
 	//CPostData::getInstance()->sendData(m_url.c_str(), (LPSTR)(LPCSTR)xml.c_str(), xml.size());
 }
 
-// 退出反馈的函数
+// 退出反馈的函数 ，只调用一次，可以等
 void CUserBehavior::Action_ProgramExit()
 {
 	// Head
@@ -124,16 +186,14 @@ void CUserBehavior::Action_ProgramExit()
 
 	xml += "<action>quit</action></data>";
 
-//	CPostData::getInstance()->sendData(m_url.c_str(), (LPSTR)(LPCSTR)xml.c_str(), xml.size());
-
-	// 将该反馈信息记录在m_strFeedBack成员变量中，统一反馈 郑鹏 2011.2.12 15:40 Begin
+	EnterCriticalSection(&m_cs);
 	m_strFeedBackInfo.push_back(xml);
-	// 将该反馈信息记录在m_strFeedBack成员变量中，统一反馈 郑鹏 2011.2.12 15:40 End
+	LeaveCriticalSection(&m_cs);
 
-	Action_SendDataToServerWhenExit (); // 发送数据到服务器
+	//CPostData::getInstance()->sendData(m_url.c_str(), (LPSTR)(LPCSTR)xml.c_str(), xml.size());
 }
 
-// 浏览反馈（访问反馈）的函数
+// 浏览反馈（访问反馈）的函数，不要等
 void CUserBehavior::Action_ProgramNavigate(const std::string& strUrl)
 {
 	// Head
@@ -147,11 +207,9 @@ void CUserBehavior::Action_ProgramNavigate(const std::string& strUrl)
 	// Tail
 	xml += "</data>";
 
-//	CPostData::getInstance()->sendData(m_url.c_str(), (LPSTR)(LPCSTR)xml.c_str(), xml.size());
-
-	// 将该反馈信息记录在m_strFeedBack成员变量中，统一反馈 郑鹏 2011.2.12 15:40 Begin
+	EnterCriticalSection(&m_cs);
 	m_strFeedBackInfo.push_back(xml);
-	// 将该反馈信息记录在m_strFeedBack成员变量中，统一反馈 郑鹏 2011.2.12 15:40 End
+	LeaveCriticalSection(&m_cs);
 }
 
 // 升级反馈（运行反馈）的函数  
@@ -162,8 +220,8 @@ void CUserBehavior::Action_Upgrade(std::string before,std::string end)
 	xml += "<SN>" + CSNManager::GetInstance()->GetSN() +"</SN>";
 
 	// 版本信息
-	xml += "<beforeversion>" + before + "</beforeversion>";
-	xml += "<afterversion>" + end + "</afterversion>";
+	xml += "<beforeversion>" + before + "m</beforeversion>";
+	xml += "<afterversion>" + end + "m</afterversion>";
 	// Tail
 	xml += "</data>";
 
@@ -178,7 +236,7 @@ void CUserBehavior::Action_Study(std::string& strfile, const char* hash,VerifyTy
 	xml += "<SN>" + CSNManager::GetInstance()->GetSN() +"</SN>";
 
 	// 过滤信息
-	xml += "<moduleinfo>" + strfile + "</moduleinfo>";
+	xml += "<moduleinfo>" + strfile + "mo</moduleinfo>";
 
 	string md5(hash);
 
@@ -202,13 +260,11 @@ void CUserBehavior::Action_Study(std::string& strfile, const char* hash,VerifyTy
 
 	wstring str = AToW(xml,CP_ACP);
 	string sstr = WToA(str,CP_UTF8);
-//	CPostData::getInstance()->sendData(m_url.c_str(), (LPSTR)(LPCSTR)sstr.c_str(), sstr.size());
 
-	//CPostData::getInstance()->sendData(m_url.c_str(), (LPSTR)(LPCSTR)xml.c_str(), xml.size());
+	EnterCriticalSection(&m_cs);
+	m_strFeedBackInfo.push_back(xml);
+	LeaveCriticalSection(&m_cs);
 
-	// 将反馈信息记录在m_strFeedBack成员变量中，统一反馈 郑鹏 2011.2.12 15:40 Begin
-	m_strFeedBackInfo.push_back(sstr);
-	// 将反馈信息记录在m_strFeedBack成员变量中，统一反馈 郑鹏 2011.2.12 15:40 End
 }
 
 // 错误反馈
@@ -224,11 +280,24 @@ void CUserBehavior::Action_SendErrorInfo(const std::string& strErrCode, const st
 	// Tail
 	xml += "</data>";
 
-	CPostData::getInstance()->sendData(m_url.c_str(), (LPSTR)(LPCSTR)xml.c_str(), xml.size());
+	EnterCriticalSection(&m_cs);
+	m_strFeedBackInfo.push_back(xml);
+	LeaveCriticalSection(&m_cs);
+
+	//CPostData::getInstance()->sendData(m_url.c_str(), (LPSTR)(LPCSTR)xml.c_str(), xml.size());
 }
 
 // 添加析构函数，清空反馈信息 郑鹏 2011.2.12 15:23 Begin
 CUserBehavior::~CUserBehavior()
+{
+	if(m_hThread != NULL)
+		::TerminateThread(m_hThread, 5);
+	m_hThread = 0;
+	DeleteCriticalSection(&m_cs);
+}
+// 添加析构函数，清空反馈信息 郑鹏 2011.2.12 15:23 End
+
+void CUserBehavior::Action_SendDataToServerWhenExit(void) // 退出时发送数据到服务器
 {
 	/*if(!m_strFeedBackInfo.empty())
 	{
@@ -240,19 +309,4 @@ CUserBehavior::~CUserBehavior()
 
 		m_strFeedBackInfo.clear();
 	}*/
-}
-// 添加析构函数，清空反馈信息 郑鹏 2011.2.12 15:23 End
-
-void CUserBehavior::Action_SendDataToServerWhenExit(void) // 退出时发送数据到服务器
-{
-	if(!m_strFeedBackInfo.empty())
-	{
-		std::vector<std::string>::const_iterator itBeg = m_strFeedBackInfo.begin();
-		for (; itBeg!=m_strFeedBackInfo.end(); ++itBeg)
-		{
-			CPostData::getInstance()->sendData(m_url.c_str(),(LPSTR)(LPCSTR)(itBeg->c_str()),itBeg->size());
-		}
-
-		m_strFeedBackInfo.clear();
-	}
 }

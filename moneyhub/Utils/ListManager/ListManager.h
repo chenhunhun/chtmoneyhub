@@ -45,11 +45,11 @@ public:
 public:
 	ReqList* GetReqList(){return &m_Requirements;}
 
+	list<wstring> m_urllist;
 private:
 	// id
 	std::wstring m_strID;
 
-	list<wstring> m_urllist;
 	// 名称
 	std::wstring m_strName;
 	mutable bool m_bNoClose;//是否有关闭按钮
@@ -163,6 +163,8 @@ public:
 	bool GetResult(){return m_result;};
 	DldFilterData* GetDldFilter() { return &m_DldFilterData; }
 
+	bool CheckCom(string appid = "");
+
 public:
 	static CString ExtractClearDomain(LPCTSTR lpszUrl);
 	static bool IsFinancePage(LPCTSTR lpszUrl);
@@ -209,7 +211,7 @@ private:
 
 	CListManager(bool bBankCore);// gao 2010-12-13
 
-	//遍历银行文件夹内info.chk
+	//遍历银行文件夹内info.mchk
 	bool traverseBankInfo(LPWSTR path, LPWSTR parentPath = NULL);
 
 	// 读取UI程序所需的数据 // gao 2010-12-16

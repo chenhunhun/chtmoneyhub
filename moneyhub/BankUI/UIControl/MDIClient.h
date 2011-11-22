@@ -48,6 +48,7 @@ public:
 	static bool m_bSafe;
 private:
 	bool getPriviledge();
+	bool isIE6;
 	
 public:
 
