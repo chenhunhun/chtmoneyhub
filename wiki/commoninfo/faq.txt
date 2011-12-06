@@ -131,6 +131,35 @@ debug运行加密数据库
 //	sqlite3_key(mpDB, "", 0);
 //#endif
 
+debug运行不加密数据库
+//#ifdef OFFICIAL_VERSION
+
+//	int nLen = strlen(szFile);
+//	if (nLen > 20)
+//	{
+//		// 这两个库用的是不同于用户库的密码
+//		if (strncmp(szFile + (nLen - 20), "\\MoneyHub\\DataDB.dat", 20) == 0 || strncmp(szFile + (nLen - 17), "\\Config\\SysDB.dat", 17) == 0) 
+//		{
+//			sqlite3_key(mpDB, "qkQazJMUHPQNysS4xc0D", 20);
+//			setBusyTimeout(mnBusyTimeoutMs);
+//			return;
+//		}
+//	}
+//	//sqlite3_key(mpDB, "NCrFT2RIeD0NY2wHOI8W", 20);
+//	CheckPassword(szPw, nPwLen);
+//#else
+	//if (nPwLen == 0 || NULL == szPw)
+		sqlite3_key(mpDB, "", 0);
+	//else
+	//	CheckPassword(szPw, nPwLen);
+//#endif
+
+
+
+info.xml
+  <host type="debug">
+
+
 
 
 http://topic.csdn.net/t/20011101/19/351580.html
@@ -178,11 +207,6 @@ abcd1234
 
 
 	//wstring::size_type ddd = url.find(_T("cmbchina"),0);
-
-
-
-PassRefPtr<DOMWindow> DOMWindow::open(const String& urlString, const AtomicString& frameName, const String& windowFeaturesString,
-
 
 
 
