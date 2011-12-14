@@ -132,6 +132,9 @@ debug运行加密数据库
 //#endif
 
 debug运行不加密数据库
+
+InitDbPassword
+
 //#ifdef OFFICIAL_VERSION
 
 //	int nLen = strlen(szFile);
