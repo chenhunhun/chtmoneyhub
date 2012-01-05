@@ -2,22 +2,23 @@
 <main>
   <category name="banks">
 
-<site id="99bill" name="快钱"  version="2.0.0.0">
+<site id="99bill" name="快钱"  version="2.0.0.1">
 			<domains>
 				<domain name="*.99bill.com/*" />
 			</domains>
 			<requirements>
 				<system type="All" cpu="0">
-					<require type="activex" name="capicom" reg="reg">
-						<file name="capicom.dll" />
+					<require type="activex" name="SafeEdit.dll" reg="reg">
+						<file name="SafeEdit.dll" />
 					</require>
-					<require type="classid" classid="69A5F9C4-01CB-470B-8161-CE67313E3CF4">
+					<require type="classid" classid="29590040-EEFA-408B-9C3E-09E7BD5AB00D">
 				    </require>
-					</system>
-			   </requirements>
+					<require type="classid" classid="1A841E9A-E965-441F-B0CF-0BD38A99221D">
+				    </require>
+				</system>
+			</requirements>
 			<pages>
 				<page url="https://passport.99bill.com/sso/login/authentication1.htm">
-					
 				</page>
 			</pages>
 		</site>

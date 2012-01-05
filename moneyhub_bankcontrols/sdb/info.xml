@@ -2,42 +2,44 @@
 <main>
   <category name="banks">
 
-<site id="sdb" name="深圳发展银行"  version="2.0.0.0">
+<site id="sdb" name="深圳发展银行"  version="2.0.0.1">
 			<domains>
 				<domain name="*.sdb.com.cn/*" />
 			</domains>	
 			<requirements>
 				<system type="All" cpu="32">
-					<require type="activex" name="sdbPower" reg="reg-32">
+					<require type="activex" name="PowerEnterSDB" reg="32reg">
 						<file name="PowerEnterSDB.ocx" />
 					</require>
 					<require type="driver" name="PECKP" service="Protectorsdb">
 						<file name="PECKP.sys" />
 					</require>
-					<require type="file" name="PECKP.sys" path="%SystemRoot%\system32\drivers" replace="false">
+					<require type="file" name="PECKP.sys" path="%SystemRoot%\system32\drivers" replace="true">
 					</require>
 					<require type="classid" classid="3BD97475-E081-45B3-A355-8B74E176B1F6">
 				    </require>
+					<require type="classid" classid="9BA878B8-5AF3-43E6-8DB1-E7849E4C6A4B">
+				    </require>
 				</system>
 				<system type="All" cpu="64">
-					<require type="activex" name="PowerEnterSDB" reg="reg-64">
+					<require type="activex" name="PowerEnterSDB" reg="64reg">
 						<file name="PowerEnterSDB.ocx" />
 					</require>
 					<require type="driver" name="PECKP_x64" service="Protectorsdb64">
 						<file name="PECKP_x64.SYS" />
 					</require>
-					<require type="file" name="PECKP_x64.SYS" path="%SystemRoot%\system32\drivers" replace="false">
+					<require type="file" name="PECKP_x64.SYS" path="%SystemRoot%\system32\drivers" replace="true">
 					</require>
 					<require type="classid" classid="3BD97475-E081-45B3-A355-8B74E176B1F6">
 				    </require>
-					</system>
+					<require type="classid" classid="9BA878B8-5AF3-43E6-8DB1-E7849E4C6A4B">
+				    </require>
+				</system>
 			</requirements>
-			<page url="https://ebank.sdb.com.cn/perbank/logon_pro.jsp">
-			        <require name="loalii" />
-			</page>
-            <page url="https://ebank.sdb.com.cn/corporbank/logon_basic.jsp">
-			        <require name="loalii" />
-			</page>				
+			<pages>
+				<page url="https://ebank.sdb.com.cn/perbank/logon_pro.jsp">
+				</page>
+			</pages>		
 </site>
   </category>  
 </main>
