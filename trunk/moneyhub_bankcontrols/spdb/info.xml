@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <main>
 	<category name="banks">
-		<site id="spdb" name="浦发银行" version="2.0.0.3">
+		<site id="spdb" name="浦发银行" version="2.0.0.4">
 			<domains>
 				<domain name="*.spdb.com.cn/*" />
 			</domains>
@@ -10,14 +10,14 @@
 					<require type="activex" name="spdbsafe_v4" reg="reg">
 						<file name="spdbsafe_v4.ocx" />
 					</require>
-					<require type="file" name="PECKP.SYS" path="%SystemRoot%\system32\drivers" replace="true">
+					<require type="file" name="PECKP.SYS" path="%SystemRoot%\system32\drivers" replace="false">
 					</require>
 				</system>
 				<system type="All" cpu="64">
 					<require type="activex" name="spdbsafe_v4" reg="reg">
 						<file name="spdbsafe_v4.ocx" />
 					</require>
-					<require type="file" name="PECKP_x64.SYS" path="%SystemRoot%\system32\drivers" replace="true">
+					<require type="file" name="PECKP_x64.SYS" path="%SystemRoot%\system32\drivers" replace="false">
 					</require>
 				</system>
 			</requirements>
