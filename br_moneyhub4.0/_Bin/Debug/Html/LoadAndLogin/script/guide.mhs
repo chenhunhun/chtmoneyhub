@@ -1,0 +1,56 @@
+﻿Hub.guide = (function(){
+    
+	var clickElement = {
+	    "guideTip" : Hub.dom.getById("guide-tip"),
+		"sayLogin" : Hub.dom.getById("guide-later"),
+		"register" : Hub.dom.getById("immediate-register")
+	}
+	
+	function setTip(param){
+	    try{
+		    if (/^[0-1]$/.test(param))
+		      window.external.SetRegGuideInfoParam(param);		
+		}catch(e){
+            //TODO
+            alert(e);			
+		}
+	}
+	
+	function tipClick(){
+		if (Hub.dom.hasClass(clickElement.guideTip, "checked")){
+			Hub.dom.removeClass(clickElement.guideTip, "checked");  
+			setTip("0");			
+		}else{
+			Hub.dom.addClass(clickElement.guideTip, "checked");
+			setTip("1");
+		}   
+	}
+
+	function askloginClick(){
+	    try{
+		    window.external.AutoDialog("registerguide", "false");
+			window.external.AutoDialog("load", "true");
+		}catch(e){
+		    //TODO
+		}
+	}
+	
+	function immediateRegister(){
+	    try{
+		    window.external.AutoDialog("registerguide", "false");
+			window.external.AutoDialog("register", "true");
+		}catch(e){
+            //TODO			
+		}
+	}
+	
+	return {
+	    init : function(){
+		    Hub.event.addEvent(clickElement.guideTip, "click", tipClick);
+	        Hub.event.addEvent(clickElement.sayLogin, "click", askloginClick);
+			Hub.event.addEvent(clickElement.register, "click", immediateRegister);
+		}
+	}
+})();
+
+window.onload = Hub.guide.init;

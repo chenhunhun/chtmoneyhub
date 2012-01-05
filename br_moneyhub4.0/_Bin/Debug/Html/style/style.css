@@ -1,0 +1,91 @@
+img {
+	border: none;
+}
+ul {
+	list-style: none;
+}
+a {
+	outline: none;
+}
+.pagehead {
+	width: 100%;
+	height: 40px;
+	background: url(../images/Favdivbg_top.png);
+}
+.oplist, .tipop {
+	overflow: hidden;
+	text-align: center;
+	padding-top: 12px;
+	position: relative;
+}
+.oplist li, .tipop li {
+	display: inline;
+	padding: 0 14px;
+}
+.oplist li span, .tipop li span {
+	height: 25px;
+	display: inline-block;
+	cursor: pointer;
+}
+.oplist li span {
+	_display:inline;
+}
+.yes_btn {
+	background:url(../images/yes_btn.gif) no-repeat;
+	width: 55px;
+}
+.del_btn {
+	background:url(../images/del_btn.gif) no-repeat;
+	width: 55px;
+}
+.save_btn {
+	background:url(../images/save_btn.gif) no-repeat;
+	width: 55px;
+}
+.cancel_btn {
+	background:url(../images/cancel_btn.gif) no-repeat;
+	width: 55px;
+}
+.next_btn {
+	background:url(../images/next_btn.gif) no-repeat;
+	width: 62px;
+}
+.prev_btn {
+	background:url(../images/prev_btn.gif) no-repeat;
+	width: 62px;
+}
+.finish_btn {
+	background:url(../images/finish_btn.gif) no-repeat;
+	width: 62px;
+}
+.pause_btn {
+	background:url(../images/pause_btn.gif) no-repeat;
+	width: 87px;
+}
+.convtran_btn {
+	background:url(../images/convtran_btn.gif) no-repeat;
+	width: 124px;
+}
+.delrec_btn {
+	background:url(../images/delrec_btn.gif) no-repeat;
+	width: 112px;
+}
+.radio li {
+	float: left;
+	background: url(../images/radio.gif) 0 center no-repeat;
+	padding-left: 22px;
+	margin-right: 6px;
+	cursor: pointer;
+}
+.radio li.cur {
+	background: url(../images/radioed.gif) 0 center no-repeat; 
+	background-position:0%,40%;
+}
+.radio li.curnone{
+	float: left;
+	background: url(../images/radio.gif) 0 center no-repeat;
+	padding-left: 22px;
+	padding-top:2px; 
+	margin-right: 6px;
+	cursor: pointer;
+}

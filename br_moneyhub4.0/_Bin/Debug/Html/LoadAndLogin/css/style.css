@@ -1,0 +1,210 @@
+@charset "utf-8";
+
+html, body, ul, li, table, td, tr, tbody, button, dl, dd, dt{
+margin: 0px;
+padding: 0px;
+overflow: hidden;
+}
+
+input {
+	background-image: url(../images/transparent.gif) no-repeat;
+    border: 0px solid white; 
+	height: 20px;
+    line-height: 20px;	
+	width: 194px;
+	width: 190px\9;
+	margin: 3px 0 0 5px;
+	float: left;
+	display: inline;
+	font-family: Arial, Georgia, Serif;
+	color: #C3C3C3;
+	position: absolute;
+	top: 1px;
+	z-index: 2;
+}
+
+a {text-decoration: none; color: #105D91;}
+
+.wrap {
+    height: 281px;
+	width: 470px;
+}
+
+.boxBgButtom {
+	background: url(../images/bottom_bg1.gif);
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/box8.png', sizingMethod='scale');
+	height: 45px;
+	/*position: relative;*//*此处不能用position: relative，否则在IE6下确定取消按钮无法正常工作*/
+	width: 470px;
+	overflow: hidden;
+}
+
+.boxBg {
+	background-color: #F7FCFF;
+	width: 470px;
+	height: 236px !important;
+	height: 235px;
+	overflow: hidden;
+}
+
+.box-title {
+    height: 28px;
+	line-height: 28px;
+	float: left;
+    clear: right;
+	font-size: 14px;
+	font-weight: bold;
+	color: white;
+	margin-top: 7px;
+}
+
+.form-label {
+    color: #105D91;
+	font-size: 12px;
+	float: left;
+	width: 60px;
+	height: 30px;
+	line-height: 30px;
+	margin-left: 3px;
+}
+
+.box-blank {
+    width: 100%; 
+	clear: both; 
+	height: 60px !important;
+	height: 55px;
+}
+
+.visitor-ask {float: right; width: 100px; cursor: pointer; display: inline;}
+
+.dValidation {clear: both; height: 15px; overflow: hidden; font-size: 12px; color: #e5542f;}
+.login-validate {margin-left: 5px;}
+.register-validate {margin-left: 70px;}
+
+.checkBox {cursor: pointer; float: left; height: 24px; width: 24px; background: url("../images/checkbox.gif") no-repeat 3px 6px;}
+.checked {background: url("../images/checkbox1.gif") no-repeat 3px 6px;}
+/*login style*/
+.box-logo {float: left; width: 150px; height: 108px;}
+.box-logo img {margin-left: 50px;}
+
+.box-form {float: left;}
+.box-form-register {overflow: hidden; height: 187px; margin-top: 50px;}
+
+.dRDRInput {
+    background: url("../images/input.png") no-repeat 3px 3px; 
+	display: inline-block; 
+	float: left; 
+	height: 30px; 
+	width: 204px;
+	position: relative;
+}
+
+.dRDRInput-bg-over {
+    position: absolute;
+	visibility: hidden;
+	height: 30px;
+	width: 204px;
+	left: 0;
+	top: 0;
+	z-index: 1;
+}
+
+.dEAItem {clear: both; width: 100%;}
+
+.LoginItem {width: 200px; height: 25px; float: left;}
+.login-button {float: right; width: 62px; cursor: pointer;}
+
+.iconInput img{float: left; height: 5px; width: 9px; margin: 10px 5px 3px 8px;}
+.iconInput {background: url(../images/iconBg.gif) no-repeat 2px 1px; height: 24px; width: 24px; margin-top: 3px; margin-right: 4px; display: inline; position: absolute; z-index: 2; right: 0;}
+
+.loginMsg {margin-left: 152px; height: 50px; line-height: 25px; color: #e5542f; font-size: 12px;}
+.login-ask{margin: 10px 0px 0px 3px;}
+
+/*register style*/
+.registerInputLabel {float: left; width: 60px; height: 30px; line-height: 30px; color: #476774; font-weight: bold; font-size: 12px; margin-right: 5px; display: inline}
+.register-blank {float: left; width: 90px; height: 110px;}
+.register-label {width: 200px; text-align: left; margin-left: 6px;}
+.register-label a{color: #6DA3C9}
+.register-button {float: left; width: 62px; cursor: pointer;}
+.register-button-blank {float: left; width: 158px; height: 25px;}
+.register-button-area {float: left; width:200px; height: 25px; margin-top: 12px;}
+.register-box-blank {height: 45px !important; height: 45px;}
+.register-tip {float: left; height: 25px; width: 30px; display: none;}
+.registerMsg {float: left; color: #e5542f; font-size: 12px; height: 30px; margin-left: 3px; display: inline;}
+
+/*register success style*/
+
+.register-success-blank {height: 60px; overflow: hidden;}
+.register-success-title {clear: both; width: 100%; height: 30px;}
+.register-success-tip {float: left; background: url("../images/register-success.gif") no-repeat; height: 28px; width: 28px; margin-left: 55px; display: inline;}
+.register-success-greet {float: left; height: 28px; line-height: 28px; color: #325F7E; font-size: 14px; font-weight: bold; margin-left: 8px; display: inline;}
+.register-success-mail {float: left; height: 28px; line-height: 28px; color: #619BC9; font-size: 14px; font-weight: bold; margin-left: 5px; width: 220px; overflow: hidden; display: inline;}
+.register-success-content {color: #325F7E; font-size: 12px; line-height: 22px; height: 50px; text-align: center; margin-top: 45px}
+.register-success-area {height: 25px; width: 100%; text-align: center;}
+.register-success-login img {margin-top: 12px; cursor: pointer;}
+
+/*register guide sytle*/
+.guide-title {border-bottom: 1px solid #E9EDF0; height: 60px; width: 100%; background: url(../images/text.gif) no-repeat 30px 18px;}
+.guide-body {clear: both; width: 100%; height: 172px; background-color: #FFFFFF;}
+.guide-content {float: left; width: 280px; margin-left: 15px; margin-top: 10px;display: inline;}
+.guide-content-feature {clear: both; width: 100%;}
+.guide-content-text {float: left; height: 55px; line-height: 55px; font-size: 14px; color: #838A90}
+.guide-content-img {float: left; height: 50px; width: 50px;}
+
+.feature1 {background: url(../images/feature1.gif) no-repeat 10px 14px}
+.feature2 {background: url(../images/feature2.gif) no-repeat 10px 16px}
+.feature3 {background: url(../images/feature3.gif) no-repeat 15px 12px}
+
+.guide-register {float: left;}
+.guide-register-img {background: url(../images/register3.gif) no-repeat; height: 56px; width: 137px; margin-top: 50px; cursor: pointer}
+.guide-register-text {font-size: 12px; height: 30px; line-height: 30px; color: #4FA8E0; cursor: pointer;}
+.guide-label {color: #105D91; font-size: 12px; float: left; width: 120px; height: 30px; line-height: 30px; margin-left: 3px; margin-top: 10px;display: inline;}
+.guide-check {margin-top: 10px; margin-left: 5px;}
+.guide-later {float: right; margin-right: 5px; text-align: right; cursor: pointer; display: inline;}
+
+/*set option style*/
+.option-item {float: left; background: #E6F6FF; width: 125px; height: 100%;}
+.option-item-selector {height: 32px; line-height: 30px; color: #456A83; font-size: 12px; text-indent: 25px; border-right: 1px solid #BBD4E6; cursor: pointer;}
+.option-item-selected {background: #F7FCFF; font-weight: bold; border-top: 1px solid #BBD4E6; border-bottom: 1px solid #BBD4E6; border-right: 0px;}
+.option-item-blank {height: 106px; border-right: 1px solid #BBD4E6;}
+.option-submit {margin-left: 310px !important; margin-left: 300px;}
+.option-submit-buttom {float: left; margin: 12px 0px 0px 10px; height: 25px; width: 62px; cursor: pointer;}
+.option-submit-ok {background: url(../images/yes-button.gif) no-repeat;}
+.option-submit-cancel {background: url(../images/cancel.gif) no-repeat;}
+.option-submit-app {background: url(../images/app.gif) no-repeat;}
+.option-content {float: left; width: 345px;}
+.option-content-blank {height: 30px;}
+.option-content-input {margin-left: 3px !important; margin-left: 0px; _margin-left: 3px; width: 170px; color: #000000}
+.option-content-input-blank {clear: both; height: 3px; overflow: hidden; }
+.option-content-readonlyMail {font-family: Arial, Georgia, Serif; height: 22px; width: 175px; margin-top: 3px; font-size: 13px; line-height: 22px; text-indent: 5px; color: #456A83; overflow: hidden;}
+
+
+.new-mail {height: 8px;}
+.optionInputLabel {float: left; height: 30px; line-height: 30px; color: #456A83; font-size: 12px; width: 100px; text-align: right;}
+.optionInput {float: left; background: url(../images/optionInput1.gif) no-repeat 0px 3px;position: relative; width: 182px; height: 30px; margin-left: 10px;display: inline;}
+.optionInput2 {background: url(../images/optionInput2.gif) no-repeat 0px 3px;}
+.option-content-submit {float: left; clear: right; background: url(../images/submit.gif) no-repeat; height: 25px; width: 62px; margin-left: 10px;cursor: pointer;display: inline;}
+.option-content-label {width: 120px}
+.option-content-verticalBlank {margin-left: 15px;}
+.option-content-table {table-layout: fixed; border-color: #E1E6EA; border-style: solid; border-width: 0 1px 1px 1px; border-collapse: collapse; width: 313px; text-align: left; text-indent: 7px; color: #4B6E85; font-size: 12px;}
+.option-content-table-th {height: 26px; border-bottom: 1px solid #DDEBF6; font-weight: normal; text-align: left;}
+.option-content-table tr td {height: 26px; white-space: nowrap; background: white;}
+.option-content-table-checkbox {margin-left: 5px;}
+.option-content-table-td-mail {font-family: Arial, Georgia, serif}
+.option-content-table-garbage {background: url("../images/delete.gif") no-repeat 0px 8px; height: 26px; width: 26px; float: left; cursor: pointer;}
+.option-content-validate {margin-left: 110px;}
+.option-content-tableDiv {height: 180px; width: 313px; overflow-y: auto; overflow-x: hidden; margin: 0 0 0 15px;}
+.option-content-tablethDiv {background: #F9F9F9; width: 311px; margin: 15px 0 0 15px; border-color:#E1E6EA; border-width: 1px 1px; border-style: solid}
+
+/*delete account style*/
+.delete-account-tip {float: left; background: url("../images/warn.gif") no-repeat; height: 28px; width: 28px; margin-left: 110px; display: inline}
+.delete-account-greet {float: left; height: 28px; line-height: 28px; color: #325F7E; font-size: 14px; font-weight: bold; margin-left: 8px; display: inline}
+.delete-account-title {margin-top: 65px; height: 50px; width: 100%;}
+.delete-account-select-content{margin-top: 20px; width: 100%; height: 60px;}
+.delete-account-select-radio {float: left; background: url("../images/radio.gif") no-repeat 0px 6px; height: 30px; width: 14px;}
+.delete-account-select-radioed {background: url("../images/radioed.gif") no-repeat 0px 6px}
+.delete-account-select-text {float: left; height: 28px; line-height: 28px; color: #325F7E; font-size: 12px; margin-left: 8px; display: inline;}
+.delete-account-select-list {clear: both; margin-left: 115px; width: 250px; height: 30px; cursor: pointer;}
+.delete-account-submit {margin-top: 12px; margin-left: 157px;}
+.delete-account-surearea {cursor: pointer;}
+.delete-account-cancelarea  {cursor: pointer; margin-left: 15px;}

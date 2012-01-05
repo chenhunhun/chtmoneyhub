@@ -1,0 +1,159 @@
+Hub.request = (function(){
+    /*得到本地用户信息*/
+	function getAccountMsg(){
+	    var accountList = [];
+	    try{
+		    accountList = JSON.parse(window.external.QuerySQL("select userid, mail, autoload, autoinfo, autoremb from datUserInfo", "DataDB"));
+		}catch(e){
+            accountList = [{"userid"   : "Guest", 
+							"mail"     : "访客",
+							"autoload" : 0,
+							"autoinfo" : 1,
+							"autoremb" : 0},
+			               {"userid"   : "sdfsdfds", 
+							"mail"     : "ddback@gmail.com",
+							"autoload" : 1,
+							"autoinfo" : 1,
+							"autoremb" : 0},
+						   {"userid"   : "zdfdasfd", 
+							"mail"     : "huwence@gmail.com",
+							"autoload" : 1,
+							"autoinfo" : 0,
+							"autoremb" : 1},
+						   {"userid"   : "fsdfsdfs", 
+							"mail"     : "friend@gmail.com",
+							"autoload" : 0,
+							"autoinfo" : 1,
+							"autoremb" : 1}]	
+		}
+	    return accountList;
+	}
+
+    /*得到当前用户UserID*/
+	function getUID(){
+	    var UID = "";
+		try{
+	       UID = window.external.GetCurrentUserID();	
+		}catch(e){
+		   //TODO
+		}
+		return UID;
+	}
+	
+	/*
+    @params 
+	 "mail"     : 更改邮箱
+	 "password" : 更改密码
+	 "login"    : 设置登录
+	*/
+	function getOptionId(){
+	    var optionId = "";
+		try{
+		    var status = window.external.GetCurrentSettingStatus();
+			switch(status){
+			    case "0":
+			        optionId = "Guest";
+					break;
+				case "1": //set passord
+                    optionId = "set-password";
+                    break;					
+			    case "2": //set mail
+				    optionId = "set-mail";
+					break;
+				case "3": //after load, get all settings
+				    optionId = "set-mail";
+					break;
+				default:
+				    break;
+			}
+		}catch(e){
+            //optionId = "Guest";	
+            //alert(e);			
+		}
+		return optionId;
+	}
+	
+	/*得到当前用户账号*/
+	function getCurrentMail(){
+	    var mail   = "",
+		    UID    = getUID(),
+			result = [];
+	    try{
+		    result = JSON.parse(window.external.QuerySQL("select mail as currentMail from datUserInfo where userid = '" + UID + "'" , "DataDB"));
+			if (result.length > 0){
+			    mail = result[0].currentMail;
+			}			
+		}catch(e){
+		   //TODO
+		   //mail = "gohuwence@finantech.com";
+		   debug(e);
+		}
+		return mail;
+	}	
+	
+	/*得到登录设置状态*/
+	function getAutoLoadStatus(){
+	    var autoLoad = 0, //default
+		    UID    = getUID(),
+			result = [];
+	    try{
+		    result = JSON.parse(window.external.QuerySQL("select autoLoad as autoLoad from datUserInfo where userid = '" + UID + "'" , "DataDB"));
+			if (result.length > 0){
+			    autoLoad = result[0].autoLoad;
+			}			
+		}catch(e){
+		   //TODO
+		   debug(e);
+		}
+		return autoLoad;
+	}
+	
+	/*删除本地账户*/
+	function deleteLocalAccount(id){
+	   try{
+	       var currentUserId = getUID();
+	       window.external.ExecuteSQL("delete from datUserInfo where userid = '" + id + "'", "DataDB");
+		   window.external.ExecuteSQL("delete from tbTotalEvent where datUserInfo_userid = '" + id + "'", "DataDB");//连带删除
+		   window.external.DeleteUserDbByID(id);
+		   if (id == currentUserId)//如果删除的是当前账户，则关闭设置页
+		      window.external.AutoDialog("setting", "false");
+	   }catch(e){}
+	}
+	
+	/*退出当前账户*/
+	function quitUserLoad(){
+	   try{
+           window.external.QuitUserLoad();		   
+	   }catch(e){}
+	}
+	
+	return{
+       	getAccountMsg: function(){
+		    return getAccountMsg();
+		},
+		
+		getUID: function(){
+		    return getUID();
+		},
+		
+		getCurrentMail: function(){
+		    return getCurrentMail();
+		},
+		
+		deleteLocalAccount: function(id){
+		    deleteLocalAccount(id);
+		},
+		
+		getOptionId: function(){
+		    return getOptionId();
+		},
+		
+		getAutoLoadStatus: function(){
+		    return getAutoLoadStatus();
+		},
+		
+		quitUserLoad: function(){
+		    quitUserLoad();
+		}
+	}
+})();
