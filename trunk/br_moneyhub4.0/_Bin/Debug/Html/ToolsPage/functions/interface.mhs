@@ -1,0 +1,272 @@
+Tesy = Tesy || {};
+
+Tesy.interact = {
+
+    getTodayAlarms: function(){
+        try {
+            var result = window.external.GetTodayAlarms();
+            if (typeof result == 'string') {
+                result = JSON.parse(result);
+            }
+        } 
+        catch (e) {
+            var result = [{
+                "id": 2,
+                "event_date": "2011-2-18",
+                "description": "事件详情（不超过30个中文字）",
+                "type": "event",
+                "status": 1
+            }, {
+                "id": 3,
+                "event_date": "2011-2-18",
+                "description": "事件详情（不超过30个中文字）",
+                "type": "event",
+                "status": 2
+            }, {
+                "id": 8,
+                "event_date": "2011-2-19",
+                "description": "出去打酱油啊",
+                "type": "event",
+                "status": 0
+            }, {
+                "id": 8,
+                "event_date": "2011-2-19",
+                "description": "优惠券到期",
+                "type": "coupon",
+                "status": 1
+            }, {
+                "id": 8,
+                "event_date": "2010-10-27",
+                "description": "到期了么",
+                "type": "event",
+                "status": 2
+            }, {
+                "id": 8,
+                "event_date": "2010-10-28",
+                "description": "加勒个油",
+                "type": "event",
+                "status": 0
+            }, {
+                "id": 8,
+                "event_date": "2010-10-21",
+                "description": "这货不是手",
+                "type": "event",
+                "status": 0
+            }];
+        }
+        return result;
+    },
+    
+    setAlerm: function(alermid, state, type){
+        try {
+            var start = '{';
+            var end = '}';
+            var str = start + '\"id\":\"' + Math.ceil(alermid) + '\",\"status\":' + Math.ceil(state) + ',\"type\":"' + type + '"' + end;
+            window.external.SetAlarm(str);
+			//alert("设置111");
+            window.external.RefreshPage(1);
+			//alert("刷新222");
+        } 
+        catch (e) {
+            debug('setAlerm error');
+        }
+    },
+    
+    getEventList: function(year, month){
+        try {
+            var result = window.external.GetEvents(Math.ceil(year), Math.ceil(month));
+            if (typeof result == 'string') {
+                result = JSON.parse(result);
+            }
+        } 
+        catch (e) {
+            var result = [{
+                "id": 1,
+                "start_date": "2010-10-19",
+                "event_date": "2010-10-19",
+                "description": "刘德华演唱会",
+                "repeat": 0,
+                "alarm": 1,
+                "status": 1
+            }, {
+                "id": 1,
+                "start_date": "2010-10-19",
+                "event_date": "2010-10-19",
+                "description": "不是吧",
+                "repeat": 0,
+                "alarm": 1,
+                "status": 1
+            }, {
+                "id": 1,
+                "start_date": "2010-10-19",
+                "event_date": "2010-10-19",
+                "description": "忘记了能干啥去了，呵呵",
+                "repeat": 0,
+                "alarm": 1,
+                "status": 1
+            }, {
+                "id": 2,
+                "start_date": "2010-10-01",
+                "event_date": "2010-10-08",
+                "description": "出去打酱油",
+                "repeat": 1,
+                "alarm": 3,
+                "status": 1
+            }, {
+                "id": 3,
+                "start_date": "2010-09-15",
+                "event_date": "2010-10-15",
+                "description": "看小月月传奇",
+                "repeat": 2,
+                "alarm": 0,
+                "status": 1
+            }, {
+                "id": 4,
+                "start_date": "2010-07-22",
+                "event_date": "2010-10-22",
+                "description": "诺贝尔和平奖",
+                "repeat": 3,
+                "alarm": 3,
+                "status": 1
+            }, {
+                "id": 5,
+                "start_date": "2009-10-19",
+                "event_date": "2010-10-19",
+                "description": "出国回家",
+                "repeat": 4,
+                "alarm": 10,
+                "status": 1
+            }, {
+                "id": 6,
+                "start_date": "2010-10-11",
+                "event_date": "2010-10-11",
+                "description": "记得看日和漫画",
+                "repeat": 2,
+                "alarm": 3,
+                "status": 1
+            }];
+        }
+        
+        return result;
+    },
+    
+    getEventsByDay: function(year, month, day){
+        try {
+            var result = window.external.GetEventsOneDay(Math.ceil(year), Math.ceil(month), Math.ceil(day));
+            if (typeof result == 'string') {
+                result = JSON.parse(result);
+            }
+        } 
+        catch (e) {
+        
+            var result = [{
+                "id": 11,
+                "start_date": "2010-10-25",
+                "event_date": "2010-10-25",
+                "description": "刘德华演唱会",
+                "repeat": 0,
+                "alarm": 1,
+                "status": 1
+            }, {
+                "id": 12,
+                "start_date": "2010-10-25",
+                "event_date": "2010-10-25",
+                "description": "不是吧",
+                "repeat": 0,
+                "alarm": 1,
+                "status": 1
+            }, {
+                "id": 13,
+                "start_date": "2010-10-25",
+                "event_date": "2010-10-25",
+                "description": "忘记了能干啥去了，呵呵",
+                "repeat": 0,
+                "alarm": 1,
+                "status": 1
+            }, {
+                "id": 24,
+                "start_date": "2010-10-18",
+                "event_date": "2010-10-25",
+                "description": "出去打酱油",
+                "repeat": 1,
+                "alarm": 3,
+                "status": 1
+            }, {
+                "id": 35,
+                "start_date": "2010-09-25",
+                "event_date": "2010-10-25",
+                "description": "看小月月传奇",
+                "repeat": 2,
+                "alarm": 0,
+                "status": 1
+            }, {
+                "id": 46,
+                "start_date": "2010-07-25",
+                "event_date": "2010-10-25",
+                "description": "诺贝尔和平奖",
+                "repeat": 3,
+                "alarm": 3,
+                "status": 1
+            }, {
+                "id": 57,
+                "start_date": "2009-10-25",
+                "event_date": "2010-10-25",
+                "description": "出国回家",
+                "repeat": 4,
+                "alarm": 10,
+                "status": 1
+            }, {
+                "id": 68,
+                "start_date": "2010-10-25",
+                "event_date": "2010-10-25",
+                "description": "记得看日和漫画",
+                "repeat": 2,
+                "alarm": 3,
+                "status": 1
+            }];
+            
+        }
+        return result;
+    },
+    
+    saveEvent: function(obj){
+    
+        function jsonStringify(o){
+            var start = '{';
+            var end = '}';
+            var returnString, s = '';
+            
+            s = s + '\"' + 'id' + '\"' + ':\"' + obj['id'] + '\",';
+            s = s + '\"' + 'event_date' + '\"' + ':' + '\"' + obj['event_date'] + '\"' + ',';
+            s = s + '\"' + 'description' + '\"' + ':' + '\"' + obj['description'] + '\"' + ',';
+            s = s + '\"' + 'repeat' + '\"' + ':' + obj['repeat'] + ',';
+            s = s + '\"' + 'alarm' + '\"' + ':' + obj['alarm'] + ',';
+            s = s + '\"' + 'status' + '\"' + ':' + obj['status'];
+            
+            returnString = start + s + end;
+            return returnString;
+        }
+        
+        var string = jsonStringify(obj);
+        try {
+            var result = window.external.AddEvent(string);
+            window.external.RefreshPage(1);
+        } 
+        catch (e) {
+            debug(e);
+        }
+        var list = window.external.GetEvents(2010, 10);
+        
+        return result;
+    },
+    
+    delEvent: function(eventid){
+        try {
+            window.external.DeleteEvent(eventid);
+            window.external.RefreshPage(1);
+        } 
+        catch (e) {
+        
+        }
+    }
+}

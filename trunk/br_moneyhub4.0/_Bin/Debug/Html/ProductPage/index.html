@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>精选理财产品</title>
+<link type="text/css" rel="stylesheet" href="../style/style.css" />
+<link type="text/css" rel="stylesheet" href="./style/style.css" />
+<script type="text/javascript" src="../scripts/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="../scripts/jquery/jquery.metadata.js"></script>
+<script type="text/javascript" src="../FinancePage/scripts/public.mhs"></script>
+<script type="text/javascript" src="scripts/functions.mhs"></script>
+<script type="text/javascript" src="../scripts/json2.js"></script>
+</head>
+<body onselectstart="return false;">
+<div class="dLeft">
+	<div id="dLeftHeader">
+		筛选条件
+	</div>
+	<div id="dLeftContent">
+		<div class="customScrollBox">
+			<div class="container">
+				<div id="selectTree" class="content">
+		    		<div class="dBlock">
+		    			<div class="dBlockHeader">
+		    				<span>
+		    					预期收益率
+							</span>
+		    			</div>
+		    			<div class="dBlockContent">
+		    				<div class="dBItem">
+		    					<span class="sCheckBox">
+								</span>
+								<span class="sDBItem">
+									3%以下
+								</span>
+		    				</div>
+		    				<div class="dBItem">
+		    					<span class="sCheckBox">
+								</span>
+								<span class="sDBItem">
+									3%到6%
+								</span>
+		    				</div>
+		    			</div>
+					</div>
+		    		<div class="dBlock">
+		    			<div class="dBlockHeader">
+		    				<span>
+		    					币种
+							</span>
+		    			</div>
+		    			<div class="dBlockContent">
+		    				<div class="dBItem">
+		    					<span class="sCheckBox">
+								</span>
+								<span class="sDBItem">
+									人民币
+								</span>
+		    				</div>
+		    				<div class="dBItem">
+		    					<span class="sCheckBox">
+								</span>
+								<span class="sDBItem">
+									其它币种
+								</span>
+		    				</div>
+		    			</div>
+					</div>
+				</div>
+			</div>
+			<div class="dragger_container" id="dLeftDragger">
+	    		<div class="dragger">=</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="dRight">
+	<div id="dRightRecords">
+		<div class="dRRBackground">
+			<div class="dRRBLeft"></div>
+			<div class="dRRBCenter"></div>
+			<div class="dRRBRight"></div>
+		</div>
+		<div id="dRTHeader">
+			<table class="dRTTable">
+				<tr id="sortHeader">
+					<td id="tdSort1" style="cursor: hand"><span id="sortCon1" value="sortCon1" class="tree1" style="display:none"></span>产品名称</td>
+					<td id="tdSort2" style="cursor: hand"><span id="sortCon2" value="sortCon2" class="tree1" style="display:none"></span>银行</td>
+					<td id="tdSort3" style="cursor: hand"><span id="sortCon3" value="sortCon3" class="tree1" style="display:none"></span>认购起始日期</td>
+					<td id="tdSort4" style="cursor: hand"><span id="sortCon4" value="sortCon4" class="tree1" style="display:none"></span>认购截止日期</td>
+					<td id="tdSort5" style="cursor: hand"><span id="sortCon5" value="sortCon5" class="tree1" style="display:none"></span>理财期限</td>
+					<td id="tdSort6" style="cursor: hand"><span id="sortCon6" value="sortCon6" class="tree1" style="display:none"></span>币种</td>
+					<td id="tdSort7" style="cursor: hand"><span id="sortCon7" value="sortCon7" class="tree1" style=""></span>预期收益</td>
+				</tr>
+			</table>
+		</div>
+		<div id="dRRDetail">
+			<div id="dLoading" style="display:none;">
+				<img src="images/loading.png" />
+			</div>
+			<div class="customScrollBox">
+				<div class="container" id="dRightContainer">
+		    		<div id="transContent" class="content" validate="{rangelength:[1,30]}">
+						<table id="dRightTableTrans" class="dRightTable">
+							<tr class="trDetail tDetail1">
+								<td colspan="6">数据正在读取中，请稍候……</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div class="dragger_container" id="dRightDragger">
+		    		<div class="dragger"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>
