@@ -207,12 +207,10 @@ hg clone --insecure https://blog-sample-code.jtianling.googlecode.com/hg/ jtianl
 
 abcd1234
 
-
-
-	//wstring::size_type ddd = url.find(_T("cmbchina"),0);
-
-
-
+环境变量
+VS90COMNTOOLS		D:\Program Files\Microsoft Visual Studio 9.0\Common7\Tools\
+VS100COMNTOOLS		D:\Program Files\Microsoft Visual Studio 10.0\Common7\Tools\
+Path			D:\Program Files\Common Files\Microsoft Shared\Windows Live;%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;D:\Program Files\TortoiseSVN\bin;D:\Program Files\Microsoft SQL Server\90\Tools\binn\;D:\Program Files\Microsoft Windows Performance Toolkit\;%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\;D:\Program Files\Windows Live\Shared;D:\Program Files\TortoiseGit\bin;F:\depot_tools;D:\Program Files\TortoiseHg\;D:\Program Files\Microsoft SQL Server\100\Tools\Binn\;D:\Program Files\Microsoft SQL Server\100\DTS\Binn\;D:\Program Files\QuickTime\QTSystem\;D:\Program Files\Git\cmd
 
 
 
