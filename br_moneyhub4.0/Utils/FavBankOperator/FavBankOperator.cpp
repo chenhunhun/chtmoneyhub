@@ -2,6 +2,7 @@
 #include "FavBankOperator.h"
 #include"../BankData/BankData.h" // gao 2010-12-14
 #include "../../ThirdParty/tinyxml/tinyxml.h"
+#include "../PublicInterface/PublicInterface.h"
 
 std::map<std::string, std::string> CFavBankOperator::m_mapBankNameAndID;
 CFavBankOperator::CFavBankOperator(void)
@@ -16,34 +17,34 @@ CFavBankOperator::~CFavBankOperator(void)
 
 // gao 2010-12-14
 // 修改程序启动时加载银行所有驱动的BUG
-bool CFavBankOperator::SeparateStringByChar(std::set<std::string>& setStor, const std::string& strSour, char chSep)
-{
-	if (strSour.length () <= 0)
-		return false;
-
-	std::string strT;
-
-	// 将字符串按chSep字符分隔开
-	for (std::set<std::string>::size_type i = 0; i < strSour.length (); i ++)
-	{
-		if (chSep == strSour[i]) // 当是分隔符时，添加到容器中
-		{
-			setStor.insert (strT);
-			strT.clear ();
-			continue;
-		}
-
-		strT += strSour[i];
-
-		if (i == strSour.length () - 1)
-		{
-			setStor.insert (strT);
-			strT.clear ();
-		}
-	}
-
-	return true;
-}
+//bool CFavBankOperator::SeparateStringByChar(std::set<std::string>& setStor, const std::string& strSour, char chSep)
+//{
+//	if (strSour.length () <= 0)
+//		return false;
+//
+//	std::string strT;
+//
+//	// 将字符串按chSep字符分隔开
+//	for (std::set<std::string>::size_type i = 0; i < strSour.length (); i ++)
+//	{
+//		if (chSep == strSour[i]) // 当是分隔符时，添加到容器中
+//		{
+//			setStor.insert (strT);
+//			strT.clear ();
+//			continue;
+//		}
+//
+//		strT += strSour[i];
+//
+//		if (i == strSour.length () - 1)
+//		{
+//			setStor.insert (strT);
+//			strT.clear ();
+//		}
+//	}
+//
+//	return true;
+//}
 
 std::string CFavBankOperator::GetBankIDOrBankName(const std::string& strCondition, bool bGetBName)
 {
@@ -98,14 +99,14 @@ bool CFavBankOperator::ReadFavBankID(std::set<std::string>& setBankID)
 	if (strBankID.empty ())
 		return false;
 
-	std::set<std::string> setBankItem;
-	SeparateStringByChar (setBankItem, strBankID, '}');
+	std::vector<std::string> vecBankItem;
+	PublicInterface::SeparateStringBystr (vecBankItem, strBankID, "}");
 
-	if (setBankItem.size () < 0)
+	if (vecBankItem.size () < 0)
 		return false;
 
-	std::set<std::string>::const_iterator it;
-	for (it = setBankItem.begin (); it != setBankItem.end (); it ++)
+	std::vector<std::string>::const_iterator it;
+	for (it = vecBankItem.begin (); it != vecBankItem.end (); it ++)
 	{
 		std::string strTemp = *it;
 		std::string strBkID;

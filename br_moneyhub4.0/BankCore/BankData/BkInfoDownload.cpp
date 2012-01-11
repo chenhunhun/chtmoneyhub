@@ -12,6 +12,7 @@
 #include "../ExternalDispatchImpl.h"
 #include "../../USBControl/USBHardWareDetector.h"
 #include "../../BankUI/UIControl/CoolMessageBox.h"
+#include "../Utils/PublicInterface/PublicInterface.h"
 
 #define _DownLoadPath  _T("BankDownLoad\\")
 #define _SetUpSubPath _T("BankInfo\\banks\\")
@@ -1289,15 +1290,15 @@ void CBkInfoDownloadManager::SetProgressNotifyHwnd(HWND hNotify) // 设置下载进度
 int CBkInfoDownloadManager::MyTwoVersionCompare(std::string& strVer1, std::string& strVer2)
 {
 	// 假设传入的是标准的如：1.0.0.0
-	std::set<std::string> setStr1, setStr2;
-	CFavBankOperator::SeparateStringByChar (setStr1, strVer1, '.');
-	CFavBankOperator::SeparateStringByChar (setStr2, strVer2, '.');
+	std::vector<std::string> vecStr1, vecStr2;
+	PublicInterface::SeparateStringBystr (vecStr1, strVer1, ".");
+	PublicInterface::SeparateStringBystr (vecStr2, strVer2, ".");
 	int nVer1 = 0, nVer2 = 0;
 	int nPower = 1000;
 
-	std::set<std::string>::const_iterator cstIt1;
-	std::set<std::string>::const_iterator cstIt2;
-	for (cstIt1 = setStr1.begin (), cstIt2 = setStr2.begin (); cstIt1 != setStr1.end () && cstIt2 != setStr2.end (); cstIt1 ++, cstIt2 ++)
+	std::vector<std::string>::const_iterator cstIt1;
+	std::vector<std::string>::const_iterator cstIt2;
+	for (cstIt1 = vecStr1.begin (), cstIt2 = vecStr2.begin (); cstIt1 != vecStr1.end () && cstIt2 != vecStr2.end (); cstIt1 ++, cstIt2 ++)
 	{
 		nVer1 += atoi((*cstIt1).c_str ())*nPower;
 		nVer2 += atoi((*cstIt2).c_str ())*nPower;

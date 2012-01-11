@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+<head>
+	<meta http-equiv = "Content-Type" content = "text/html;charset=utf-8"/>
+	<title>重置密码</title>
+    <link href = "css/style.css" type = "text/css" rel = "stylesheet"/>
+	<link href = "css/hub-list.css" type = "text/css" rel = "stylesheet"/>
+</head>
+<body>
+   <div id = "find-pwd-setting" class = "wrap">
+       <div class = "boxBg">
+			   <div class = "dEAItem">
+				   <div id = "find-pwd-tip" class = "find-pwd-label find-pwd-title">
+					   请输入登录邮箱，我们将为您发送一个身份验证码
+				   </div>
+				   <div class = "find-pwd-area">
+				 	  <div id = "find-pwd-tag" class = "find-pwd-label find-pwd-p">
+				 	      登录邮箱
+				 	  </div>
+				 	  <div class = "dRDRInput">
+				 	       <input id = "find-pwd-mail" class = "find-pwd-input" type = "text"/>
+						   <input id = "find-pwd-code" class = "find-pwd-input" style = "display: none" type = "text"/> 
+				 	  </div>
+			       </div>
+				   <div id = "find-pwd-validate" class = "dValidation find-pwd-validation">
+				   </div>
+				   <img id = "find-pwd-sure" class = "find-pwd-submit" src = "images/yes-button.gif"/>
+			   </div>
+	   </div>
+	   <div class = "boxBgButtom">
+	        <div id = "find-pwd-ask" class = "find-pwd-label find-pwd-bm find-pwd-indent">
+			    已收到身份验证码？点击此处
+			</div>
+	   </div>
+   </div>
+   <div id = "find-pwd-password" class = "wrap" style = "display: none">
+       <div class = "boxBg">
+			   <div class = "dEAItem">
+                   <div class = "find-pwd-area find-pwd-newpwd">
+				 	  <div id = "find-pwd-tag" class = "find-pwd-label find-pwd-p find-pwd-password-label">
+				 	      新密码
+				 	  </div>
+				 	  <div class = "dRDRInput">
+				 	       <input  id = "find-pwd-new" class = "find-pwd-input" type = "password"/>
+				 	  </div>
+			       </div>
+				   <div id = "find-pwd-new-validate" class = "dValidation find-pwd-validation">
+				   </div>
+				   <div class = "find-pwd-area">
+				 	  <div id = "find-pwd-tag" class = "find-pwd-label find-pwd-p find-pwd-password-label">
+				 	      再输一次
+				 	  </div>
+				 	  <div class = "dRDRInput">
+				 	       <input  id = "find-pwd-again" class = "find-pwd-input" type = "password"/>
+				 	  </div>
+			       </div>
+				   <div id = "find-pwd-again-validate" class = "dValidation find-pwd-validation">
+				   </div>
+				   <img id = "find-pwd-password-submit" class = "find-pwd-submit find-pwd-password-submit" src = "images/yes-button.gif"/>
+			   </div>
+	   </div>
+	   <div class = "boxBgButtom">
+	        <div id = "find-pwd-ask" class = "find-pwd-label find-pwd-bm find-pwd-indent">
+			</div>
+	   </div>
+   </div>
+</body>
+<script type="text/javascript" src = "script/hub.mhs"></script>
+<script type="text/javascript" src = "script/findPwd.mhs"></script>
+</html>

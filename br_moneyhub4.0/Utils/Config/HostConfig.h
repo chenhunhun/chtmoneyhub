@@ -8,6 +8,8 @@ using namespace std;
 
 enum webconfig
 {
+	kBeginTag, // 开始标志
+
 	kJsWeb = -1, //js用的域名
 	kWeb = 0,//主页地址
 	kHelp = 1,//帮助页地址
@@ -32,7 +34,12 @@ enum webconfig
 	kPMailVerify = 20, // 验证邮箱
 	kPUserUnlock = 21, //解除用户锁定状态
 	kPUserServerTime = 22, // 获取系统时间
-	kExchangeRate //更新汇率
+	kPSendFindMail = 23, // 发送OPT到指定的邮箱
+	kPCheckOPT = 24, // 校验OPT
+	kPInitPassword = 25, // 重置密码
+	kExchangeRate, //更新汇率
+
+	kEndTag // 结束标志
 };
 
 typedef   std::vector<std::wstring>  VECTORNPBNAME;

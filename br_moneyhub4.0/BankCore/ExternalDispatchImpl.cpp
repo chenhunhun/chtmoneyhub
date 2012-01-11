@@ -15,6 +15,7 @@
 #include "../Utils/HardwareID/genhwid.h" // 读取硬件ID
 #include "../Utils/SN/SNManager.h" // 读取SN
 #include "../Utils/CryptHash/base64.h"
+#include "../Utils/PublicInterface/PublicInterface.h"
 #include "AxUI.h"
 
 #define CMD_GET_UT				L"GetUT"
@@ -65,6 +66,9 @@
 #define CMD_QUERY_USER_LOAD		L"QuitUserLoad"
 #define CMD_READ_ETK			L"ReadETK"
 #define CMD_DEL_USERDB_BY_ID	L"DeleteUserDbByID"
+#define CMD_SEND_MAIL_FOR_OPT	L"SendMailForOPT" // 通知服务器很指定的邮箱发送OPT
+#define CMD_SEND_RECEIVED_OPT	L"SendReceivedOPT" // 往服务器发送OPT
+#define CMD_INIT_NEW_PWD		L"InitNewPassword" // 重置密码
 
 #define CMD_SHOWWAITWINDOW		L"ShowWaitWindow"
 
@@ -81,6 +85,9 @@
 #define MANU_LOAD_LAN_SUCC		"103" // 手动本地登录成功
 #define MANU_LOAD_PWD_OUTOFTIME "104" // 手动登录时密码已过期
 #define REGISTER_FREQUENTLY		"105" // 注册太频繁
+#define CHECK_OPT_SUCC			"228" // 校验OPT成功
+#define INIT_PASSWORD_SUCC		"238" // 重置密码成功
+#define SEND_MAIL_FREQUENTLY	"241" // 发送OPT邮件太过频繁
 #define USER_DB_PWD_LEN			32 // 用户数据库密码长度
 
 
@@ -127,6 +134,9 @@
 #define DISPID_QUERY_USER_LOAD	12439
 #define DISPID_READ_ETK			12440
 #define DISPID_DEL_USERDB_BY_ID 12441
+#define DISPID_SEND_MAIL_FOROPT 12442
+#define DISPID_SEND_RECV_OPT	12443
+#define DISPID_INIT_NEW_PWD		12444
 
 #define DISPID_GET_BILL_LIST	12500
 
@@ -144,6 +154,7 @@ CRect CExternalDispatchImpl::s_rectClient = CRect(0, 0, 0, 0);
 std::list<std::string> CExternalDispatchImpl::m_sstrVerctor;
 std::map<std::string, std::string> CExternalDispatchImpl::m_mapParam;
 CTime CExternalDispatchImpl::m_sLastRegTime;
+//CTime CExternalDispatchImpl::m_sLastFindMailTime;
 bool CExternalDispatchImpl::m_sbUpdateSynchroBtn = false;
 CExternalDispatchImpl::CExternalDispatchImpl(CAxControl *pAxControl) : m_pAxControl(pAxControl)
 {
@@ -322,6 +333,18 @@ STDMETHODIMP CExternalDispatchImpl::GetIDsOfNames(REFIID riid, LPOLESTR *rgszNam
 		{
 			rgDispId[i] = DISPID_SHELL_EXPLORER;
 		}*/
+		else if(CSTR_EQUAL == CompareString(lcid, NORM_IGNORECASE | NORM_IGNOREWIDTH, CMD_SEND_MAIL_FOR_OPT, -1, (TCHAR *)rgszNames[i], -1))
+		{
+			rgDispId[i] = DISPID_SEND_MAIL_FOROPT;
+		}
+		else if(CSTR_EQUAL == CompareString(lcid, NORM_IGNORECASE | NORM_IGNOREWIDTH, CMD_SEND_RECEIVED_OPT, -1, (TCHAR *)rgszNames[i], -1))
+		{
+			rgDispId[i] = DISPID_SEND_RECV_OPT;
+		}
+		else if(CSTR_EQUAL == CompareString(lcid, NORM_IGNORECASE | NORM_IGNOREWIDTH, CMD_INIT_NEW_PWD, -1, (TCHAR *)rgszNames[i], -1))
+		{
+			rgDispId[i] = DISPID_INIT_NEW_PWD;
+		}
 		else if(CSTR_EQUAL == CompareString(lcid, NORM_IGNORECASE | NORM_IGNOREWIDTH, CMD_READ_ETK, -1, (TCHAR *)rgszNames[i], -1))
 		{
 			rgDispId[i] = DISPID_READ_ETK;
@@ -1058,6 +1081,8 @@ STDMETHODIMP CExternalDispatchImpl::Invoke(DISPID dispIdMember, REFIID riid, LCI
 			strParam += strHWID;
 			strParam += MY_PARAM_END_TAG;*/
 
+#define KEY_GUEST_DB_VERSION 7 //关键的数据版本号
+
 			char chTemp[1024] = {0};
 			DWORD dwRead = 0;
 			string strSub;
@@ -1187,12 +1212,35 @@ STDMETHODIMP CExternalDispatchImpl::Invoke(DISPID dispIdMember, REFIID riid, LCI
 				// 如果数据库不存在且GUEST库中tbAccount不为空
 				if (!CBankData::GetInstance()->IsUserDBExist((LPSTR)strUserDb.c_str()))
 				{
-					if(CBankData::GetInstance()->IsTableEmptyInGuestDB("tbAccount"))
+					// 读取GuestDB版本
+					int nVer = CBankData::GetInstance()->GetGuestDBVersion();
+					if (nVer <= KEY_GUEST_DB_VERSION) // 7是4.0版本以前的数据库
+					{
+						char chVer[5] = {0};
+						itoa(nVer, chVer, 10);
+						string strName = chVer;
+						strName += "backupGuest";
+						// 将Guest库重命名
+						CBankData::GetInstance()->RenameUserDbByID(MONHUB_GUEST_USERID, strName.c_str());
+						string strPw;
+						int nPwLen = 0;
+
+#ifdef OFFICIAL_VERSION
+						strPw = "NCrFT2RIeD0NY2wHOI8W";
+						nPwLen = 20;
+#endif
+						string strGDb = MONHUB_GUEST_USERID;
+						strGDb += ".dat";
+						// 创建一个新库
+						CBankData::GetInstance()->CreateNewUserDB((LPSTR)strGDb.c_str(), (LPSTR)strPw.c_str(), nPwLen);
+					}
+
+					if(CBankData::GetInstance()->IsTableEmptyInGuestDB("tbAccount") && nVer > KEY_GUEST_DB_VERSION)
 					{
 						// 隐藏对话框
 						::PostMessage(g_hMainFrame, WM_AUTO_USER_DLG, MY_TAG_REGISTER_DLG, MY_STATUS_HIDE_DLG);
 						int nMesVal = mhMessageBox(g_hMainFrame, L"您之前在未登录状态下（访客账户）录入的数据是否要转移到当前的账户中？（转移后,访客账户中的数据将被清除）", L"提示", MB_YESNO | MB_ICONINFORMATION);
-						//::PostMessage(g_hMainFrame, WM_AUTO_USER_DLG, MY_TAG_REGISTER_DLG, MY_STATUE_SHOW_DLG);
+						
 						if (IDYES == nMesVal)
 						{
 							// 通知UI关闭当前用户库
@@ -1238,29 +1286,13 @@ STDMETHODIMP CExternalDispatchImpl::Invoke(DISPID dispIdMember, REFIID riid, LCI
 
 			if (strUserID.length() > 0 && strUserID != MONHUB_GUEST_USERID)
 			{
+				// 更新当前用户信息
 				CAxUI::UpdateUserInfo(strStoken.c_str(), strMail.c_str(), strUserID.c_str(), (int)emStatus, false, (char*)strMailVerify.c_str());
-				//// 更改当前用户信息(JS要使用USERID)
-				//CBankData::GetInstance()->m_CurUserInfo.strstoken = strStoken;
-				//CBankData::GetInstance()->m_CurUserInfo.strmail = strMail;
-				//CBankData::GetInstance()->m_CurUserInfo.struserid = strUserID;
-
-				//char userStatus[3] = {0};
-				//// 通知UI更新当前用户信息（同步在UI中要使用这些值）
-				//string strMesParam = strStoken + MY_PARAM_END_TAG;
-				//strMesParam += strMail;
-				//strMesParam += MY_PARAM_END_TAG;
-				//strMesParam += strUserID;
-				//strMesParam += MY_PARAM_END_TAG;
-				//strMesParam += strMailVerify;
-				//strMesParam += MY_PARAM_END_TAG;
-				//strMesParam += itoa((int)emStatus, userStatus, 10);
-				//strMesParam += MY_PARAM_END_TAG;
-				//::SendMessage(g_hMainFrame, WM_SETTEXT, WM_UPDATE_USER_STATUS, (LPARAM)strMesParam.c_str());
 			}
 
 			if (pVarResult != NULL)
 			{
-				
+				// 将本地登录的结果进行转换，传给JS接口
 				if (-1 != nLanLoad)
 				{
 					CString strTemp;
@@ -1456,6 +1488,8 @@ STDMETHODIMP CExternalDispatchImpl::Invoke(DISPID dispIdMember, REFIID riid, LCI
 				nName = MY_TAG_SETTING_DLG;
 			else if ("registerguide" == strParamName)
 				nName = MY_TAG_REGISTER_GUIDE;
+			else if ("initpwd" == strParamName)
+				nName = MY_TAG_INIT_PWD;
 
 			if ("true" == strParamType)
 				nType = MY_STATUE_SHOW_DLG;
@@ -1483,6 +1517,181 @@ STDMETHODIMP CExternalDispatchImpl::Invoke(DISPID dispIdMember, REFIID riid, LCI
 	//{
 	//	return S_OK;
 	//}
+
+	// 通知服务器发送OPT到指定的邮箱中
+	else if (dispIdMember == DISPID_SEND_MAIL_FOROPT && (wFlags & DISPATCH_METHOD))
+	{
+		string strBack;
+
+		//int n = m_sLastFindMailTime.GetYear() ;
+		//if (m_sLastFindMailTime.GetYear() == 1970)
+		//{
+		//	m_sLastFindMailTime = CTime::GetCurrentTime();
+		//}
+		//else
+		//{
+		//	CTime tNow = CTime::GetCurrentTime();
+		//	CTimeSpan timeSpan = tNow - m_sLastFindMailTime;
+		//	int nSec = timeSpan.GetTotalSeconds();
+		//	m_sLastFindMailTime = tNow;
+		//	if (nSec < 300) // 300S之内只能发一次
+		//	{
+		//		// 返回参数值
+		//		pVarResult->vt = VT_BSTR;
+		//		pVarResult->bstrVal = ::SysAllocString((LPOLESTR)A2COLE(SEND_MAIL_FREQUENTLY));
+		//		return S_OK;
+		//	}
+		//}
+
+		if(pDispParams->rgvarg[0].vt == VT_BSTR)
+		{
+
+			std::string strParam = OLE2A(pDispParams->rgvarg[0].bstrVal);
+
+			list<string> listParam;
+			listParam.push_back(strParam);
+			
+			int nBackVal = CommunicateWithServer(kPSendFindMail, listParam, strBack);
+			int nLen = strBack.length();
+			if (ERR_SUCCESS != nBackVal)
+			{
+				CRecordProgram::GetInstance()->FeedbackError(MY_PRO_NAME, MY_THREAD_IE_EXTERNEL, CRecordProgram::GetInstance()->GetRecordInfo(L"通知服务器发送OPT时与服务器通信失败:%d",nBackVal));
+			}
+
+		}
+
+		if (pVarResult != NULL)
+		{
+			// 返回参数值
+			pVarResult->vt = VT_BSTR;
+			pVarResult->bstrVal = ::SysAllocString((LPOLESTR)A2COLE(strBack.c_str()));
+		}
+		return S_OK;
+	}
+	// 检验OPT
+	else if (dispIdMember == DISPID_SEND_RECV_OPT && (wFlags & DISPATCH_METHOD))
+	{
+		string strBack;
+		if(pDispParams->rgvarg[0].vt == VT_BSTR)
+		{
+			std::string strParam = OLE2A(pDispParams->rgvarg[0].bstrVal);
+
+			list<string> listParam;
+			listParam.push_back(strParam);
+			
+			int nBackVal = CommunicateWithServer(kPCheckOPT, listParam, strBack);
+			if (ERR_SUCCESS != nBackVal)
+			{
+				CRecordProgram::GetInstance()->FeedbackError(MY_PRO_NAME, MY_THREAD_IE_EXTERNEL, CRecordProgram::GetInstance()->GetRecordInfo(L"校验OPT时与服务器通信失败:%d",nBackVal));
+			}
+			
+			if (strBack.find(CHECK_OPT_SUCC) != string::npos)
+				AddJSParam("my_opt_check_back", strBack.c_str()); // 记录下服务器端返回的数据，供重置密码时使用
+			else
+				AddJSParam("my_opt_check_back", ""); // 清除记录下来的数据
+
+
+		}
+
+		if (pVarResult != NULL)
+		{
+			int nIndex = strBack.find(MY_PARAM_END_TAG);
+			if (nIndex != string::npos)
+				strBack = strBack.substr(0, nIndex + 1);
+			// 返回参数值
+			pVarResult->vt = VT_BSTR;
+			pVarResult->bstrVal = ::SysAllocString((LPOLESTR)A2COLE(strBack.c_str()));
+		}
+		return S_OK;
+	}
+	// 重置密码
+	else if (dispIdMember == DISPID_INIT_NEW_PWD && (wFlags & DISPATCH_METHOD))
+	{
+		string strBack;
+		if(pDispParams->rgvarg[0].vt == VT_BSTR)
+		{
+			// 新密码
+			std::string strParam = OLE2A(pDispParams->rgvarg[0].bstrVal);
+			std::map<std::string, std::string>::const_iterator cstFind = m_mapParam.find("my_opt_check_back");
+			if (cstFind == m_mapParam.end())
+			{
+				return S_OK;
+			}
+
+			// 状态值#userid#stoken#kek#edek#
+			string strRead = cstFind->second;
+
+			// 读取分隔出来的字符串
+			std::vector<string> vecRead;
+			PublicInterface::SeparateStringBystr(vecRead, strRead, MY_PARAM_END_TAG);
+
+			if (vecRead.size() < 5)
+				return S_OK;
+
+			char chOldEDEK[USER_DB_PWD_LEN + 1] = {0};
+			int nBack = 0;
+			FormatDecVal(vecRead[4].c_str(), chOldEDEK, nBack);
+
+			char chOldKEK[USER_DB_PWD_LEN + 1] = {0};
+			FormatDecVal(vecRead[3].c_str(), chOldKEK, nBack);
+
+			char chDEK[USER_DB_PWD_LEN + 1] = {0};
+			// 将EDEK进行解密 解密出DEK
+			int nLen = UserDataASE256D((unsigned char*)chOldEDEK, USER_DB_PWD_LEN, (unsigned char*)chOldKEK, (unsigned char*)chDEK);
+
+			char chNewKEK[USER_DB_PWD_LEN + 1] = {0};
+			// 生成新的KEY
+			UserDataASH256((unsigned char*)strParam.c_str(), strParam.length(), (unsigned char*)chNewKEK);
+
+			char chNewEDEK[USER_DB_PWD_LEN + 1] = {0};
+			// 用新的KEK加密DEK生成新的EDEK
+			nLen = UserDataASE256E((unsigned char*)chDEK, USER_DB_PWD_LEN, (unsigned char *)chNewKEK, (unsigned char*)chNewEDEK);
+
+			list<string> listParam;
+			// userid
+			listParam.push_back(vecRead[1]);
+
+			// kek
+			string strTp;
+			FormatHEXString(chNewKEK, USER_DB_PWD_LEN, strTp);
+			listParam.push_back(strTp);
+
+			// edek
+			FormatHEXString(chNewEDEK, USER_DB_PWD_LEN, strTp);
+			listParam.push_back(strTp);
+
+			// stoken
+			listParam.push_back(vecRead[2]);
+			
+			int nBackVal = CommunicateWithServer(kPInitPassword, listParam, strBack);
+			if (ERR_SUCCESS != nBackVal)
+			{
+				CRecordProgram::GetInstance()->FeedbackError(MY_PRO_NAME, MY_THREAD_IE_EXTERNEL, CRecordProgram::GetInstance()->GetRecordInfo(L"重置密码时与服务器通信失败:%d",nBackVal));
+			}
+
+			// 服务端重置成功
+			if (strBack.find(INIT_PASSWORD_SUCC) != string::npos)
+			{
+				string strSQL = "update  datUserInfo set edek = '";
+				strSQL += strTp;
+				strSQL += "' where userid = '";
+				strSQL += vecRead[1];
+				strSQL += "'";
+
+				// 更新EDEK到数据库
+				CBankData::GetInstance()->ExecuteSQL(strSQL, "DataDB");
+			}
+
+		}
+		
+		if (pVarResult != NULL)
+		{
+			// 返回参数值
+			pVarResult->vt = VT_BSTR;
+			pVarResult->bstrVal = ::SysAllocString((LPOLESTR)A2COLE(strBack.c_str()));
+		}
+		return S_OK;
+	}
 
 	else if (dispIdMember == DISPID_READ_ETK && (wFlags & DISPATCH_METHOD))
 	{
@@ -1662,6 +1871,8 @@ STDMETHODIMP CExternalDispatchImpl::Invoke(DISPID dispIdMember, REFIID riid, LCI
 
 						// 更新当前用户的stoken
 						CBankData::GetInstance()->m_CurUserInfo.strstoken = strStoken;
+						// 更新UI中当前用户的stoken
+						::SendMessage(g_hMainFrame, WM_SETTEXT, WM_NOTIFYUI_CUR_USER_STOKEN, (LPARAM)strStoken.c_str());
 
 						//strRead = strRead.substr(strRead.find(MY_PARAM_END_TAG) + strTag.length(), strRead.length());
 						//string strEDEK = strRead.substr(0, strRead.find(MY_PARAM_END_TAG));
@@ -2294,4 +2505,40 @@ void CExternalDispatchImpl::ChangeCurUserSynchroStatus()
 	CBankData::GetInstance()->ExecuteSQL(strSQL, "DataDB");
 
 	m_sbUpdateSynchroBtn = true;
+}
+
+// 与服务器进行通讯
+int CExternalDispatchImpl::CommunicateWithServer(int nEmSite, list<string> listParam, string& strBack)
+{
+	webconfig emSite = (webconfig)nEmSite;
+	ATLASSERT( emSite > kBeginTag && emSite < kEndTag);
+	if (emSite <= kBeginTag || emSite >= kEndTag)
+		return false;
+
+	string strSend;
+	if (listParam.size() > 0)
+	{
+		strSend = "xml=";
+	}
+
+	// 合并参数
+	list<string>::const_iterator cstIt = listParam.begin();
+	for (; cstIt != listParam.end(); cstIt ++)
+	{
+		strSend += (*cstIt);
+		strSend += MY_PARAM_END_TAG;
+	}
+
+	char chTemp[1024] = {0};
+	wstring wstrHWID = CA2W(GenHWID2().c_str());
+
+	CDownloadThread downloadThread;
+	downloadThread.DownLoadInit(wstrHWID.c_str(), (CHostContainer::GetInstance()->GetHostName(emSite)).c_str(), (LPSTR)strSend.c_str());
+	DWORD dwRead = 0;
+	int nBackVal = downloadThread.ReadDataFromSever(chTemp, 1024, &dwRead);
+	
+	strBack = chTemp;
+
+	return nBackVal;
+
 }

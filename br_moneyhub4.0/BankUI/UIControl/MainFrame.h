@@ -93,6 +93,7 @@ private:
 		MESSAGE_HANDLER(WM_NOTIFYUI_CLOSE_CUR_USER, OnCloseCurUserDB)
 		MESSAGE_HANDLER(WM_NOTIFYUI_UPDATE_USER_DB, OnUpdateCurUserDB)
 		MESSAGE_HANDLER(WM_AX_INIT_SYNCHRO_BTN, OnInitSynchroBtnStatus)
+		MESSAGE_HANDLER(WM_NOTIFYUI_CUR_USER_STOKEN, OnChangeCurUserStoken)
 
 		MESSAGE_HANDLER(WM_CANCEL_ADDFAV, OnCancelAddFav)
 
@@ -122,6 +123,7 @@ private:
 
 	bool LoadFromFile(LPCTSTR lpPath);
 
+	LRESULT OnChangeCurUserStoken(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL &/*bHandled*/);
 	LRESULT OnInitSynchroBtnStatus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL &/*bHandled*/);//通知内核初始化同步按钮的状态
 	LRESULT OnSynchroBtnChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL &/*bHandled*/);
 	LRESULT OnUpdateCurUserDB(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL &/*bHandled*/); // UI更新当前用户库

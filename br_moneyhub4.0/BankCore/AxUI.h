@@ -38,6 +38,7 @@ public:
 		MESSAGE_HANDLER_EX(WM_AX_GET_ALL_BILL, OnGetAllBill)
 		MESSAGE_HANDLER_EX(WM_FINISH_GET_BILL, OnSendToBillPage)
 		MESSAGE_HANDLER_EX(WM_RESEND_VERIFY_MAIL, OnResendVerifyMail)
+		MESSAGE_HANDLER_EX(WM_SET_JSPARAM, OnSetJSParam)
 
 		MESSAGE_HANDLER_EX(WM_TIMER, OnTimer)
 		HANDLE_TUO_COPYDATA()
@@ -54,6 +55,7 @@ public:
 	LRESULT OnExit(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT OnResendVerifyMail(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	//LRESULT OnShowUserDlg(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	LRESULT OnSetJSParam(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -65,6 +67,7 @@ protected:
 	char *m_pbilldata;
 	static DWORD WINAPI _threadInit(LPVOID lp);
 	void CheckSystemTime(void);
+	void CleanUserDBNotExistRecord(); // 清除datUserInfo表中存在但数据库不存在的用户
 public:
 	static void UpdateUserInfo(const char* pStoken, const char* pMail, const char* pUserId, const int nUserStatus, bool bChangeMail, char* pVerifyMail = NULL);
 };

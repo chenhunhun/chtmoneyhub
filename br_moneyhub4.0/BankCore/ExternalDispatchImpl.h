@@ -50,6 +50,7 @@ private:
 	std::string m_strBkID;
 	static std::map<std::string, std::string> m_mapParam;
 	static CTime m_sLastRegTime; // 上一次注册时间
+//	static CTime m_sLastFindMailTime; // 上一次发送找回密码邮件的时间
 
 public:
 	static DWORD WINAPI DownloadBkCtrlThreadProc(LPVOID lpParam);
@@ -70,5 +71,8 @@ public:
 	static bool AddUserFavBank(const std::string& strBkID);
 	// 移除用户收藏的银行
 	static bool RemoveUserFavBank(const std::string& strBkID);
+	// 设置JS参数
 	static void AddJSParam(const char* pPName, const char* pPVal);
+	// 与服务器进行通讯
+	static int CommunicateWithServer(int nEmSite, list<string> listParam, string& strBack);
 };

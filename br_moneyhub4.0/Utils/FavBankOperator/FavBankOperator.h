@@ -23,9 +23,6 @@ public:
 //	static void MyTranslateBetweenBankIDAndInt(std::string& strBankID, int& nBankID, bool bToInt = true);
 
 	bool ReadFavBankID(std::set<std::string>& setBankID);
-
-	// 将字符串strSour按分隔字符或chSep截取，并保存到setStor容器中， chSep是strSour的分隔字符
-	static bool SeparateStringByChar(std::set<std::string>& setStor, const std::string& strSour, char chSep);
 private:
 	// 如果返回值大于0，表示增加了收藏，如果小于0，表示删除收藏, =0表示一样
 	int CompareTwoSet(const std::set<std::string>& setF, const std::set<std::string>& setSec, std::set<std::string>& setDiff);

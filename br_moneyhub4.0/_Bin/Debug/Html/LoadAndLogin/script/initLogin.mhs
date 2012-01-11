@@ -94,45 +94,6 @@ function getAccountMsg(){
 	return result;
 }
 
-function initRegisterEffect(){
-    var inputDom = [{"name"         : Hub.dom.getById("register-mail"), 
-					 "color"        : "#C3C3C3", 
-					 "over"         : "images/input2.png", 
-					 "out"          : "images/input.png",
-					 "deflautValue" : "请输入您常用的邮箱地址"},
-	                {"name"         : Hub.dom.getById("register-password-name"), 
-			         "color"        : "#C3C3C3", 
-				     "over"         : "images/input2.png", 
-				     "out"          : "images/input.png",
-					 "deflautValue" : "6-20字符（数字、字母、符号）"},
-					{"name"         : Hub.dom.getById("register-password"), 
-			         "color"        : "#C3C3C3", 
-				     "over"         : "images/input2.png", 
-				     "out"          : "images/input.png",
-					 "deflautValue" : ""},
-					{"name"         : Hub.dom.getById("register-password-agname"), 
-			         "color"        : "#C3C3C3", 
-				     "over"         : "images/input2.png", 
-				     "out"          : "images/input.png",
-					 "deflautValue" : "再输入一次密码以确认无误"},
-					{"name"         : Hub.dom.getById("register-password-again"), 
-			         "color"        : "#C3C3C3", 
-				     "over"         : "images/input2.png", 
-				     "out"          : "images/input.png",
-					 "deflautValue" : ""}],
-	    bgX = 3,
-		bgY = 3;
-		
-	//不需要同意条款	
-	//Hub.effect.loginCheck("register-checkbox");
-	
-	for (var i in inputDom){//input
-	    Hub.effect.init(inputDom[i], bgX, bgY);
-		Hub.effect.inputEffect(inputDom[i].name);
-	}
-	
-	Hub.register.addRegisterEvent();
-}
 
 /*自动登录时，如果失败弹出的信息*/
 function autoLoadMessage(param){
@@ -151,20 +112,32 @@ function autoLoadMessage(param){
 	}
 }
 
-
 function init(){
+    //时间较紧，以后需要重新组织
+    //立即注册
     Hub.dom.getById("login-to-register").onclick = function(){
 	   // Hub.dom.getById("login-wrap").style.display = "none";
 	   // Hub.dom.getById("register-wrap").style.display = "block";
 	   // initRegisterEffect();
 	   // Hub.register.changeTitle("注册财金汇");
 	   try{
-		    window.external.AutoDialog("load", "false");
-			window.external.AutoDialog("register", "true");
+		   window.external.AutoDialog("load", "false");
+		   window.external.AutoDialog("register", "true");
 	   }catch(e){
             //TODO				
 	   }
 	}
+
+    //找回密码
+	Hub.dom.getById("login-find-password").onclick = function(){
+	   try{
+		   window.external.AutoDialog("load", "false");
+		   window.external.AutoDialog("initpwd", "true");
+	   }catch(e){
+	      //TODO
+	   }
+	}
+
 	Hub.dom.getById("login-mail-immediate").onclick = function(){//从登陆页跳到注册页，这一触发事件将无效了
 	    Hub.dom.getById("register-success").style.display = "none";
 		Hub.dom.getById("login-wrap").style.display = "block";

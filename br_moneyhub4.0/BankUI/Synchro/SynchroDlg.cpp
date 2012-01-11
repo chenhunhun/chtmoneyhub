@@ -758,7 +758,7 @@ void CSynchroDlg::OnTimer(UINT_PTR nIDEvent)
 				{
 					//if(m_bSP2D){
 					//	m_bSP2D = FALSE;			ErrorSP2D();}
-					BSend  = FALSE;		dwprogress =0;				m_sUserName = "同步失败,清检查网络,尝试重新同步!";	m_sPassword = strdisperror.c_str();
+					BSend  = FALSE;		dwprogress =0;				m_sUserName = "同步失败,请检查网络,尝试重新同步!";	m_sPassword = strdisperror.c_str();
 					BPop = FALSE;     //ShowButRE();
 				}
 				break;

@@ -28,6 +28,9 @@
 		<pmailverify>https://ssl.mh.com/server/mail_verify.php</pmailverify><!--验证邮箱-->
 		<puserunlock>https://ssl.mh.com/server/user_unlock.php</puserunlock><!--解除用户锁定状态-->
 		<pusersevertime>https://ssl.mh.com/server/verify_time.php</pusersevertime><!--获取系统时间-->
+		<psendfindmail>https://ssl.mh.com/server/send_find_mail.php</psendfindmail><!--通知服务器很指定的邮箱发送OPT-->
+		<pcheckopt>https://ssl.mh.com/server/find_password_step1.php</pcheckopt><!--校验OPT-->
+		<pinitpwd>https://ssl.mh.com/server/find_password_step2.php</pinitpwd><!--重置密码-->
 		<exchangerate>http://app.mh.com/action/exchangerate.xml</exchangerate>
 	</debug>
   	<test>
@@ -55,6 +58,9 @@
 		<pmailverify>https://ssl.ft.com/server/mail_verify.php</pmailverify><!--验证邮箱-->
 		<puserunlock>https://ssl.ft.com/server/user_unlock.php</puserunlock><!--解除用户锁定状态-->
 		<pusersevertime>https://ssl.ft.com/server/verify_time.php</pusersevertime><!--获取系统时间-->
+		<psendfindmail>https://ssl.ft.com/server/send_find_mail.php</psendfindmail><!--通知服务器很指定的邮箱发送OPT-->
+		<pcheckopt>https://ssl.ft.com/server/find_password_step1.php</pcheckopt><!--校验OPT-->
+		<pinitpwd>https://ssl.ft.com/server/find_password_step2.php</pinitpwd><!--重置密码-->
 		<exchangerate>http://app.ft.com/action/exchangerate.xml</exchangerate>
 	</test>
 	<release>
@@ -82,6 +88,9 @@
 		<pmailverify>https://ssl.moneyhub.cn/server/mail_verify.php</pmailverify><!--验证邮箱-->
 		<puserunlock>https://ssl.moneyhub.cn/server/user_unlock.php</puserunlock><!--解除用户锁定状态-->
 		<pusersevertime>https://ssl.moneyhub.cn/server/verify_time.php</pusersevertime><!--获取系统时间-->
+		<psendfindmail>https://ssl.moneyhub.com/server/send_find_mail.php</psendfindmail><!--通知服务器很指定的邮箱发送OPT-->
+		<pcheckopt>https://ssl.moneyhub.com/server/find_password_step1.php</pcheckopt><!--校验OPT-->
+		<pinitpwd>https://ssl.moneyhub.com/server/find_password_step2.php</pinitpwd><!--重置密码-->
 		<exchangerate>http://app.moneyhub.cn/action/exchangerate.xml</exchangerate>
 	</release>
   </host>  
