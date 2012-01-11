@@ -24,8 +24,6 @@
 #define WM_ITEM_SET_PAGE_PROGRESS					(WM_USER + 0x4012)
 #define WM_ITEM_TOGGLE_CATECTRL						(WM_USER + 0x4013)
 
-#define WM_ITEM_ASK_SAVE_FAV						(WM_USER + 0x4040)
-#define WM_ITEM_TEST_SAVE_FAV						(WM_USER + 0x4041)
 
 #define WM_TAB_AUTOCLOSE							(WM_USER + 0x4020)
 //	取消获取账单
@@ -54,7 +52,11 @@
 #define WM_NOTIFYUI_UPDATE_USER_DB					(WM_USER + 0x403C) // 通知UI更新当前用户库
 #define WM_NOTIFYUI_SYNCHRO_BTN_CHANGE				(WM_USER + 0x403D) // 通知UI同步按钮更改颜色
 #define WM_AX_CALL_JS_SHOW_TEXT						(WM_USER + 0x403E) // 调用JS的显示文字
-#define WM_AX_INIT_SYNCHRO_BTN						(WM_USER + 0x4040) // 初始化同步按钮状态
+#define WM_ITEM_ASK_SAVE_FAV						(WM_USER + 0x4040)
+#define WM_ITEM_TEST_SAVE_FAV						(WM_USER + 0x4041)
+#define WM_AX_INIT_SYNCHRO_BTN						(WM_USER + 0x4042) // 初始化同步按钮状态
+#define WM_NOTIFYUI_CUR_USER_STOKEN					(WM_USER + 0x4043) // 通知UI更新当前用户stoken
+#define WM_SET_JSPARAM       						(WM_USER + 0x4044) // 更新界面
 
 
 #define WM_AX_NAVIGATE								(WM_USER + 0x5000)
@@ -101,6 +103,9 @@
 #define MY_TAG_REGISTER_DLG								2 // 表示注册对话框
 #define MY_TAG_SETTING_DLG								3 // 表示设置对话框
 #define MY_TAG_REGISTER_GUIDE							4 // 表示注册向导对话框
+//#define MY_TAG_SEND_OPT								5 // 通知服务器发送OPT到指定的邮箱中
+//#define MY_TAG_CHECK_OPT								6 // 校验OPT
+#define MY_TAG_INIT_PWD									7 // 重置密码
 
 //#define MY_STATUE_USER_LAODED							1 // 用户处于登录状态
 //#define MY_STATUE_USER_NOTLOAD							2 // 用户处于未登录状态

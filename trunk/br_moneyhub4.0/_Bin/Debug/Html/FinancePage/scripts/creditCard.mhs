@@ -731,7 +731,7 @@ function billDataInsert(){
 				}
 				var myDate = RMBData[i][1].substring(0,4)+"-"+RMBData[i][1].substring(4,6)+"-"+RMBData[i][1].substring(6,8);
 				//取得插入记录的id
-				var insertId=addTransaction(myDate, RMBData[i][5], tbCategory2_id, amount, '', selectedSubAid[0], '', RMBData[i][3], '',transactionClasses, RMBData[i][1]);
+				var insertId= addTransaction(myDate, RMBData[i][5], tbCategory2_id, amount, '', selectedSubAid[0], '', specialReplace(RMBData[i][3]), '',transactionClasses, RMBData[i][1]);
 				debug("insertId = "+insertId+","+i+","+RMBData[i][2]+"\n");
 				if(transLength>0){
 					for(var zz=0;zz<transLength;zz++){
@@ -788,6 +788,7 @@ function getSubAccountInfo(){
 function transactionViewList(){
 	//根据业务逻辑显示转账记录
 	var tLength = need2Trans.length;
+	debug("transactionViewList()="+need2Trans+"\n");
 	var myHtml = "";
 	if(tLength>0){
 		var isView = false;
@@ -796,7 +797,7 @@ function transactionViewList(){
 			if(need2Trans[i][1]==1){
 				//显示时处理
 				var sql1 = "SELECT a.id AS aId, tbcategory2_id AS cg2 FROM tbtransaction a, tbcategory1 b, tbcategory2 c, tbAccount d, tbSubAccount e "
-					+ " WHERE e.tbAccount_id=d.id AND a.tb_id=e.id AND a.tbcategory2_id=c.id AND c.tbcategory1_id=b.id "
+					+ " WHERE e.tbAccount_id=d.id AND a.tbsubaccount_id=e.id AND a.tbcategory2_id=c.id AND c.tbcategory1_id=b.id "
 					+ " AND sign='" + RMBData[need2Trans[i][2]][1] + "' AND transactionClasses=1 AND e.tbCurrency_id=1 AND d.keyinfo='" + keyInfo + "' "; 
 				if (keyInfo.length == 4) {
 					if (RMBData[need2Trans[i][2]][2] >= 0) {
@@ -816,6 +817,7 @@ function transactionViewList(){
 					}
 				}
 				try {
+					debug("transactionViewList()="+sql1+"\n");
 					result = JSON.parse(window.external.QuerySQL(sql1));
 				} catch(e) {
 				}
@@ -1337,3 +1339,14 @@ function addCurPageAccountAndPayee(){
 	$("#lotPayee").attr("value", "-1");
 	customizeSelect("#dBatchEdit")
 }
+
+/*
+ * 系统交易插入数据库进行特殊字符串的处理
+ */
+//以下的校验规则应同客户端的validate方法一同修改
+function specialReplace(str){
+	var handleStr = "";
+	handleStr = str.replace(/[%&*\\#`\n\t\'\"?\\\<\>\r]+/g," ");
+	return handleStr;
+}
+

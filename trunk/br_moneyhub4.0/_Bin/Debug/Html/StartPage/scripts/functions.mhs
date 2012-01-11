@@ -1531,15 +1531,20 @@ function sortNumber(a, b){
 
 function TabActivated() {
 	reloadStart = "-1";
+	var Start_Changed = "-1";  //管理页添加或删除主账户时通知提示频道
+	var BalanceChangedS = "-1";  // 我的账本页调整余额时通知提示频道
 	try {
 		reloadStart = window.external.GetParameter("ReloadStart");
 		window.external.SetParameter("ReloadStart", "-1");
+		Start_Changed = window.external.GetParameter("Start_Changed");
+		window.external.SetParameter("Start_Changed", "-1");
+		BalanceChangedS = window.external.GetParameter("BalanceChangedS");
+		window.external.SetParameter("BalanceChangedS", "-1");
 	} catch (e) {
-	} 
-	if (reloadStart != "-1") {
-	   window.location.reload();
 	}
-
+	if (reloadStart != "-1"||Start_Changed == "1"||BalanceChangedS == "1") {
+	   window.location.reload();
+	}   
 	var ConditionChange = -1;
 	ConditionChange = window.external.GetParameter("ConditionChange");
 	window.external.SetParameter("ConditionChange", "-1");
@@ -1570,7 +1575,7 @@ function getXML(startDate, endDate, during, curStyle){
 		xmlStr += '</chart>';
 		xmlStr += '<chart>';
 		if (during != "month") {
-		    xmlStr += '<set seriesName="支出" value="67" />';
+		    xmlStr += '<set seriesName=" 支出" value="67" />';
 		    xmlStr += '<set seriesName="收入" value="33" />';
 		} else {
 		    xmlStr += '<set seriesName="支出" value="20" />';

@@ -294,7 +294,19 @@ $(function() {
 			$("#iAmount2Area").hide();
 		}
 		selectOption("#" + a, "sAccount", $("#" + a + " input[name='sAccount']").siblings(".list").children(".option:first").attr("val"));
+        $("#" + a).unbind('keypress').keypress(function(e){//添加键盘事件
+			e.stopPropagation();
+			if (e.keyCode == 13){
+			   e.preventDefault();
+			   $("#" + a + " .iSave").click();
+			}else if (e.keyCode == 27){
+			   $("#" + a + " .iCancel").click();
+			}
+	    });
 	});
+
+    
+
 	$(".dRDetail").click(function (event) {
 		event.stopPropagation();
 	});
@@ -317,7 +329,9 @@ $(function() {
 	$(".iSave").unbind().click( function () {
 		//通知设置页余额有变动
 		try {
-			window.external.SetParameter("BalanceChanged", "1");
+			window.external.SetParameter("BalanceChanged", "1"); //余额有变动时通知管理页
+			window.external.SetParameter("BalanceChangedR", "1");   //余额有变动时通知统计报表页
+			window.external.SetParameter("BalanceChangedS", "1");   //余额有变动时通知提示频道
 		} catch (e) {
 		}
 
@@ -357,6 +371,8 @@ $(function() {
 				}
 			}
 			$(".dRDetail:visible").hide("slide", { direction: "up" }, 250);
+		}else{
+		    return false;
 		}
 		flagSave[a] = true;
 		$("#iAmount2Area").hide();
@@ -781,7 +797,9 @@ function editTransaction(event) {
 		if (confirm(deleteTips[1])) {
 			//通知设置页余额有变动
 			try {
-				window.external.SetParameter("BalanceChanged", "1");
+				window.external.SetParameter("BalanceChanged", "1"); //余额有变动时通知管理页
+			    window.external.SetParameter("BalanceChangedR", "1");   //余额有变动时通知统计报表页
+			    window.external.SetParameter("BalanceChangedS", "1");   //余额有变动时通知提示频道
 			} catch (e) {
 			}
 			$(divName).hide("slide", { direction: "up" }, 250);
@@ -2357,7 +2375,9 @@ function submitBatchDelete() {
 	} else {
 		//通知设置页余额有变动
 		try {
-			window.external.SetParameter("BalanceChanged", "1");
+			window.external.SetParameter("BalanceChanged", "1"); //余额有变动时通知管理页
+			window.external.SetParameter("BalanceChangedR", "1");   //余额有变动时通知统计报表页
+			window.external.SetParameter("BalanceChangedS", "1");   //余额有变动时通知提示频道
 		} catch (e) {
 		}
 

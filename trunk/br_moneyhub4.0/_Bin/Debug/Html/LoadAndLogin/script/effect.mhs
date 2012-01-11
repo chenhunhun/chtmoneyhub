@@ -352,10 +352,14 @@ Hub.selectOption = (function(){
 			Hub.dom.parent(this).style.display = "none";//this指向hub-list-option
        }else if (target.className.indexOf("img") > 1){
 	        var option = Hub.dom.parent(Hub.dom.parent(this));
-			//var mail   = Hub.dom.firstE(Hub.dom.parent(this)).innerHTML.toString();
-			option.style.display = "none";//this指向hub-list-img
-			Hub.dom.parent(this).style.display = "none";//隐藏option
 			var mail = Hub.dom.prevE(this).innerHTML;
+			Hub.dom.parent(this).style.display = "none";//隐藏option
+			//var mail   = Hub.dom.firstE(Hub.dom.parent(this)).innerHTML.toString();
+			if (option.offsetHeight <= 30){//当删除最后一个账户时，使用默认div替换
+			   option.innerHTML = defaultDiv;
+               addDefaultEffect(Hub.dom.getById("default-list"));
+			}
+			option.style.display = "none";//this指向hub-list-img
 			markAccount(mail);//标记删除
 			if (mail == loginInput.value){
 				with(loginInput){

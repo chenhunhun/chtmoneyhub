@@ -76,6 +76,9 @@ DWORD WINAPI CAxUI::_threadInit(LPVOID lp)
 			// 检验系统时间
 			pThis->CheckSystemTime();
 
+			// 清除datUserInfo表中存在但数据库不存在的用户
+			pThis->CleanUserDBNotExistRecord();
+
 			//启动usb监控线程
 			CUSBMonitor::GetInstance()->StartUSBMonitor();
 			CRecordProgram::GetInstance()->RecordCommonInfo(MY_PRO_NAME, MY_THREAD_ID_INIT, L"AxUI启动了USB监控线程");
@@ -202,7 +205,7 @@ LRESULT CAxUI::OnResendVerifyMail(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 	else if (strBack.find(MY_MAIL_VERIFY_SUCC) != string::npos)
 	{
-		// 用户已经论证了邮件
+		// 用户已经验证
 		return atoi(MY_MAIL_VERIFY_SUCC);
 	}
 	
@@ -560,36 +563,49 @@ LRESULT CAxUI::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
+LRESULT CAxUI::OnSetJSParam(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+		// 为JS添加参数
+		CExternalDispatchImpl::AddJSParam("ReloadStart", "1");
+		CExternalDispatchImpl::AddJSParam("ReloadTools", "1");
+		CExternalDispatchImpl::AddJSParam("ReloadFinance", "1");
+		CExternalDispatchImpl::AddJSParam("ReloadSet", "1");
+		CExternalDispatchImpl::AddJSParam("ReloadReport", "1");
+		CExternalDispatchImpl::AddJSParam("ReloadProduct", "1");
+	return 0;
+}
 
+// 清除datUserInfo表中存在但数据库不存在的用户
+void CAxUI::CleanUserDBNotExistRecord()
+{
+	string strSQL = "select userid from datUserInfo";
+	string strQuery = CBankData::GetInstance()->QuerySQL(strSQL, "DataDB");
+	if (strQuery.length() <= 0)
+		return;
 
+	int nIndex = 0;
+	const string strFind = "userid\":\"";
+	while((nIndex = strQuery.find(strFind)) != string::npos)
+	{
+		strQuery = strQuery.substr(strFind.length () + nIndex, strQuery.length());
+		int nSubFind = strQuery.find("\"");
+		if (nSubFind == string::npos)
+			break;
 
+		string strUserID = strQuery.substr(0, nSubFind);
+		string strDBName = strUserID;
+		strDBName += ".dat";
 
+		// 如果数据库文件不存在
+		if (!CBankData::GetInstance()->IsUserDBExist((LPSTR)strDBName.c_str()))
+		{
+			// 删除该用户表中该ID对应的记录
+			strSQL = "delete from datUserInfo where userid = '";
+			strSQL += strUserID;
+			strSQL += "'";
+			CBankData::GetInstance()->ExecuteSQL(strSQL, "DataDB");
+		}
+		
+	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}

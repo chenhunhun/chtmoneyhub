@@ -12,20 +12,25 @@ String.prototype.setP = function(value){
 	return this.replace(/\?/, value);
 }
 
+String.prototype.trim = function(){
+    return this.replace(/^\s*(.*?)\s*$/, "$1");
+}
+
 function getAccountList() {
     var result = [];
 	try {
 		result = JSON.parse(window.external.QuerySQL("SELECT a.id AS aid, a.name AS aname, b.name AS bname, b.id AS bid, tbBank_id, a.tbAccountType_id AS tid, b.tbAccountType_id AS tid2, "
 			+ "tbCurrency_id, b.Balance AS Balance, b.Days AS Days, b.EndDate AS EndDate, a.Comment AS acomment, b.Comment AS bcomment, keyInfo, BankID as bankId FROM tbAccount a, tbSubAccount b LEFT JOIN tbbank c ON c.id=tbBank_id WHERE a.id=b.tbAccount_id and a.mark = 0 and b.mark = 0 ORDER BY a.id DESC, tid2, bid"));//new
 	} catch (e) {
-		result = [{
+		/*result = [{
 			"aid": 1,
 			"aname": "aaa",
 			"bname": "bbb",
 			"bid": 123456789123456789,
 			"tid": 1,
 			"tid2": 100
-		}];
+		}];*/
+		alert("财金汇打开数据库失败，请重启财金汇再试一下。如需帮助,请联系财金汇客服。");
 	}
 	return result;
 }
@@ -101,7 +106,7 @@ function insertBank(name, classes, website) {
 	var bankId;
 	try {
 	    bankId = getMyId();
-		name = replaceSQLStr(name);
+		name = replaceSQLStr(name).trim();
 		if (window.external.ExecuteSQL("INSERT INTO tbBank(id, name, classId, Website, UT) VALUES(" + bankId + ", '" + name + "', "+ classes + ",'" + website + "', " + getUT() + ")") > 0);//new
     } catch (e) {
 	    bankId = -1;
@@ -191,7 +196,7 @@ function getCategory1Info(){
  */  
 function addCategory1(name1, type) {
 	var id1 = 0;
-	name1 = replaceSQLStr(name1);
+	name1 = replaceSQLStr(name1).trim();
 	try {
 	    var tempId = getMyId(),
 	    UT = getUT();
@@ -210,7 +215,7 @@ function addCategory1(name1, type) {
  * @param name1 二级分类名称
  */  
 function addCategory2(id, name) {
-	name = replaceSQLStr(name);
+	name = replaceSQLStr(name).trim();
 	var id1 = 0;
 	try {
 	    var tempId = getMyId(),
@@ -231,7 +236,7 @@ function addCategory2(id, name) {
 function updateCategory(classId, name, id, parentId) {
 	var result = false;
 	var table = "tbCategory2";
-	name = replaceSQLStr(name);
+	name = replaceSQLStr(name).trim();
 	var strParent = "";
 	if (classId == 1) {
 		table = "tbCategory1";
@@ -340,9 +345,9 @@ function getSinglePayeeName(id) {
  */   
 function addNewPayee(name, email, tel) {
 	//用户初始基准
-	name = replaceSQLStr(name);
-	email = replaceSQLStr(email);
-	tel = replaceSQLStr(tel);
+	name = replaceSQLStr(name).trim();
+	email = replaceSQLStr(email).trim();
+	tel = replaceSQLStr(tel).trim();
 	var test = -1;
 	try {
 	    var tempId = getMyId(),
@@ -406,7 +411,7 @@ function getAccountSubInfo(id){
     var result = [];
 	try {
         if(id!=0){
-			result = JSON.parse(window.external.QuerySQL("SELECT b.id as bid, balance, c.name as cname, b.name as bname, b.tbCurrency_id as curId FROM tbAccount a, tbSubAccount b, tbCurrency c where b.tbAccount_id = a.id and c.id = b.tbCurrency_id and a.mark = 0 and b.mark = 0 and a.id = "+id+"  ORDER BY b.id ASC"));//new
+			result = JSON.parse(window.external.QuerySQL("SELECT b.id as bid, balance, c.name as cname, b.name as bname, b.tbCurrency_id as curId, a.keyInfo as MyKey  FROM tbAccount a, tbSubAccount b, tbCurrency c where b.tbAccount_id = a.id and c.id = b.tbCurrency_id and a.mark = 0 and b.mark = 0 and a.id = "+id+"  ORDER BY b.id ASC"));//new
 		} 
     } catch (e) {
     }
@@ -436,8 +441,8 @@ function getSubAccountName(id){
  */
 function addAccount(name, accountTypeId, bankId, content, keyInfo) {
 	debug("开始创建账户:\n");
-	name = replaceSQLStr(name);
-	content = replaceSQLStr(content);
+	name = replaceSQLStr(name).trim();
+	content = replaceSQLStr(content).trim();
 	if (bankId == null) bankId = "";
 	var tempId = getMyId();
 	var UT = getUT();
@@ -454,6 +459,7 @@ function addAccount(name, accountTypeId, bankId, content, keyInfo) {
 		if (result > 0) newId = tempId; 
 		try {
 			window.external.SetParameter("Report_Changed", "1");
+			window.external.SetParameter("Start_Changed", "1");
 		} catch (e) {
 		}
     } catch(e) {
@@ -475,7 +481,7 @@ function addAccount(name, accountTypeId, bankId, content, keyInfo) {
  * @return 子账户编号        
  */
 function addAccountSub(accountId, tbCurrency_id, openbalance, balance, days, enddate, tbAccountType_id, subName, comment) {
-	subName = replaceSQLStr(subName);
+	subName = replaceSQLStr(subName).trim();
 	var result = -1;
 	if ((tbAccountType_id == "") || (tbAccountType_id == null))
 		tbAccountType_id = 8756;
@@ -487,6 +493,7 @@ function addAccountSub(accountId, tbCurrency_id, openbalance, balance, days, end
 		result = tempId;
 		try {
 			window.external.SetParameter("Report_Changed", "1");
+			window.external.SetParameter("Start_Changed", "1");
 		} catch (e) {
 		}
     } catch(e) {
@@ -520,7 +527,7 @@ function addAccountSub(accountId, tbCurrency_id, openbalance, balance, days, end
  */     
 function editAccount(id, accountTypeId, name, bankId, content) {
 	var result = 0;
-	name = replaceSQLStr(name);
+	name = replaceSQLStr(name).trim();
 	content = replaceSQLStr(content);
 	var sql1 = "";
     var UT = getUT();
@@ -554,7 +561,7 @@ function editAccount(id, accountTypeId, name, bankId, content) {
  */        
 function editAccountSub(id, days, enddate, tbAccountType_id, subName, comment, myTid) {
 	var result = -1;
-	subName = replaceSQLStr(subName);
+	subName = replaceSQLStr(subName).trim();
 	try {
 	    var UT = getUT();
 		var sql = "UPDATE tbSubAccount SET days='" + days + "', enddate='" + enddate + "', comment='" + comment + "'";
@@ -586,7 +593,7 @@ function editAccountSub(id, days, enddate, tbAccountType_id, subName, comment, m
  */
 function addTransaction(transdate, payee_id, tbCategory2_id, amount, direction, tbSubaccount_id, exchangerate, comment, tbSubaccount_id1, transactionClasses, sign) {
 	var result = -1;
-	comment = replaceSQLStr(comment);
+	comment = replaceSQLStr(comment).trim();
 	//用户未选择分类，则定义为未分类处理
 	if (tbCategory2_id == 10000) {
 		//支出
@@ -629,7 +636,7 @@ function addTransaction(transdate, payee_id, tbCategory2_id, amount, direction, 
  */ 
 function editTrans(transdate, payee_id, tbCategory2_id, amount, direction, exchangerate, comment, id) {
 	var result = false;
-	comment = replaceSQLStr(comment);
+	comment = replaceSQLStr(comment).trim();
 	if(tbCategory2_id == 10000){
 		//支出
 		tbCategory2_id = 10065;
@@ -1136,6 +1143,7 @@ function deleteAccount(id) {
 		 window.external.ExecuteSQL("UPDATE tbAccount" + deleteStatus + ", UT = " + getUT() + " WHERE mark = 0 and id=" + id);//new
 		 try {
 			window.external.SetParameter("Report_Changed", "1");
+			window.external.SetParameter("Start_Changed", "1");
 		} catch (e) {
 		}
 	} catch (e) {
@@ -1162,6 +1170,7 @@ function deleteSubAccount(aid, bid) {
 		}
 		try {
 			window.external.SetParameter("Report_Changed", "1");
+			window.external.SetParameter("Start_Changed", "1");
 		} catch (e) {
 		}
 	 } catch(e) {
@@ -1350,7 +1359,7 @@ function addInvestEvent(name, subName, event_date, alarm, tbAccount_id, tbSubAcc
    var obj = {};  //创建序列化对象
    obj.id = (id == undefined) ? 0 : parseInt(id, 10);
    obj.status = 1;
-   obj.description = (name + " " + subName + "提醒").replace(/^\s+(.*?)\s+$/, "$1"); //事件名称应为主账户名+子账户名+到期
+   obj.description = (name + " " + subName + "提醒").trim();
    obj.repeat = 2;
    obj.event_date = event_date;
    obj.alarm = (alarm == "") ? 0 : parseInt(alarm, 10);
@@ -1468,6 +1477,24 @@ function deleteEventByName(name){
 	   window.external.SetParameter("eventAlarm", "1");
 	}catch(e){
        //TODO	
+	}
+}
+
+/*根据事件类型删除提醒事件*/
+function deleteEvent(tbAccountId, tbSubAccountId){
+    var UT = getUT();
+    var sql = "update tbEvent set mark = 1, UT = ? where tbAccount_id = ?";
+	sql = sql.setP(UT).setP(tbAccountId);
+	if (tbSubAccountId != undefined){
+	   sql += " and tbSubAccount_id = ?";
+	   sql = sql.setP(tbSubAccountId);
+	}
+	try{
+	   window.external.ExecuteSQL(sql);
+	   window.external.SetParameter("eventAlarm", "1");
+	}catch(e){
+	   //TODO
+	   alert(e);
 	}
 }
 
@@ -2217,9 +2244,9 @@ function mergeSubAccount(tid,oldAid,oldSid,newAid,newSid){
 		debug("mergeSubAccount4="+sql+"\n");
 		
 		//step2,删除子账户的event
-		sql = "update tbevent set mark = 1, UT = '"+UT+"' where mark = 0 and tbsubaccount_id = "+oldSid;
-		window.external.ExecuteSQL(sql);
-		debug("mergeSubAccount6="+sql+"\n");
+		//sql = "update tbevent set mark = 1, UT = '"+UT+"' where mark = 0 and tbsubaccount_id = "+oldSid;
+		//window.external.ExecuteSQL(sql);
+		//debug("mergeSubAccount6="+sql+"\n");
 		//step3,删除原子账户
 		sql = "update tbsubaccount set mark = 1, UT = '"+UT+"' where mark = 0 and tbsubaccount_id = "+oldSid;
 		window.external.ExecuteSQL(sql);
@@ -2233,10 +2260,10 @@ function mergeSubAccount(tid,oldAid,oldSid,newAid,newSid){
 function moveSubAccount(tid,oldAid,oldSid,newAid,newSid){
 	try{
 		var UT =  getUT();
-		var sql = "update tbevent set tbAccount_id = "+newAid+", UT = '"+UT+"' where mark = 0 and tbsubaccount_id = "+oldSid;
-		window.external.ExecuteSQL(sql);
-		debug("moveSubAccount1="+sql+"\n");
-		sql = "update tbsubaccount set tbaccount_id = "+newAid+", UT = '"+UT+"' where mark = 0 and id = "+oldSid;
+		//var sql = "update tbevent set tbAccount_id = "+newAid+", UT = '"+UT+"' where mark = 0 and tbsubaccount_id = "+oldSid;
+		//window.external.ExecuteSQL(sql);
+		//debug("moveSubAccount1="+sql+"\n");
+		var sql = "update tbsubaccount set tbaccount_id = "+newAid+", UT = '"+UT+"' where mark = 0 and id = "+oldSid;
 		window.external.ExecuteSQL(sql);
 		debug("moveSubAccount2="+sql+"\n");
 	} catch(e){
@@ -2247,9 +2274,9 @@ function moveSubAccount(tid,oldAid,oldSid,newAid,newSid){
 //账户合并时移除掉原来的主账户
 function removeAccount( aid ){
 	var UT =  getUT();
-	var sql = "update tbevent set mark=1, UT = '"+UT+"' where mark = 0 and tbAccount_id = "+aid;
-	window.external.ExecuteSQL(sql);
-	sql = "update tbaccount set mark=1, UT = '"+UT+"' where mark = 0 and id = "+aid;
+	//var sql = "update tbevent set mark=1, UT = '"+UT+"' where mark = 0 and tbAccount_id = "+aid;
+	//window.external.ExecuteSQL(sql);
+	var sql = "update tbaccount set mark=1, UT = '"+UT+"' where mark = 0 and id = "+aid;
 	window.external.ExecuteSQL(sql);
 }
 

@@ -208,3 +208,18 @@ a {text-decoration: none; color: #105D91;}
 .delete-account-submit {margin-top: 12px; margin-left: 157px;}
 .delete-account-surearea {cursor: pointer;}
 .delete-account-cancelarea  {cursor: pointer; margin-left: 15px;}
+
+/*find password style*/
+.find-pwd-label {font-size: 12px; color: #105D91; font-weight: bold; height: 30px; line-height: 30px;}
+.find-pwd-area  {height: 30px;}
+.find-pwd-p {float: left; display: inline; margin: 0 5px 0 90px;}
+.find-pwd-title {margin: 50px 0 10px 90px; font-weight: normal;}
+.find-pwd-input {color: black;}
+.find-pwd-submit {margin: 10px 0 0 150px; cursor: pointer;}
+.find-pwd-bm {font-weight: normal; margin:10px 0 0 100px; cursor: pointer;}
+.find-pwd-indent {text-indent: 65px}
+.find-pwd-newpwd {margin: 50px 0 0}
+.find-pwd-validation {margin-left: 151px;}
+.find-pwd-margin {margin-left: 163px}
+.find-pwd-password-label {width: 52px;}
+.find-pwd-password-submit {margin-left: 151px}

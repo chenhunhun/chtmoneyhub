@@ -8,6 +8,7 @@
 <link type="text/css" rel="stylesheet" href="../style/style.css" />
 <link type="text/css" rel="stylesheet" href="style/style.css" />
 
+
 <script type="text/javascript" src="../scripts/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="../scripts/jquery/jquery-ui.min.js"></script>
 <script type="text/javascript" src="../scripts/jquery/ui/jquery.ui.datepicker.js"></script>
@@ -352,7 +353,7 @@
 					<div>
 						<span class="sRDRInput">
 							<div class="dRDRInput">
-								<input type="text" class="box iLimitLength" value="" name="AccountName" validate="{required:['账户名称'], unique:['账户名称']}" onselectstart="event.cancelBubble=true;" />
+								<input type="text" class="box iLimitLength" value="" name="AccountName" validate="{required:['账户名称'], unique:['账户名称'], illChar: true}" onselectstart="event.cancelBubble=true;" />
 								<input type="hidden" name="AccountId" value="0" />
 							</div>
 						</span>
@@ -384,7 +385,7 @@
 				<div class="dRDRField">
 					<div>
 						<div class="dRDRInput">
-							<textarea name="description" class="iLimitLength" onselectstart="event.cancelBubble=true;"></textarea>
+							<textarea name="description" class="iLimitLength" onselectstart="event.cancelBubble=true;" validate="{illChar: true}"></textarea>
 						</div>
 					</div>
 					<div class="dValidation">&nbsp;</div>
@@ -421,7 +422,7 @@
 					<div>
 						<span class="sRDRInput">
 							<div class="dRDRInput">
-								<input type="text" class="box iLimitLength" name="AccountName" validate="{required:['账户名称'], unique:['账户名称']}" onselectstart="event.cancelBubble=true;" />
+								<input type="text" class="box iLimitLength" name="AccountName" validate="{required:['账户名称'], unique:['账户名称'], illChar: true}" onselectstart="event.cancelBubble=true;" />
 								<input type="hidden" name="AccountId" value="0" />
 							</div>
 						</span>
@@ -435,7 +436,7 @@
 				<div class="dRDRField">
 					<div>
 						<div class="dRDRInput">
-							<textarea name="description" class="iLimitLength" onselectstart="event.cancelBubble=true;"></textarea>
+							<textarea name="description" class="iLimitLength" onselectstart="event.cancelBubble=true;" validate="{illChar: true}"></textarea>
 						</div>
 					</div>
 					<div class="dValidation">&nbsp;</div>
@@ -508,7 +509,7 @@
 					<div>
 						<span class="sRDRInput">
 							<div class="dRDRInput">
-				 				<input type="text" name="subName" class="iLimitLength" validate="{required:['子账户名'], unique:['子账户名']}" onselectstart="event.cancelBubble=true;" />
+				 				<input type="text" name="subName" class="iLimitLength" validate="{required:['子账户名'], unique:['子账户名'], illChar: true}" onselectstart="event.cancelBubble=true;" />
 								<input type="hidden" name="SubAccountId" value="0" />
 								<input type="hidden" name="AccountId" value="0" />
 							</div>
@@ -527,7 +528,7 @@
 								<select id="newsa100_currency" name="currency">
 								</select>
 								<div class="dRDRInput1">
-									<input type="text" id="balance" class="iMoney" name="balance" value="0.00" validate="{required:['初始余额'], number:['初始余额'], range:[-99999999999.99, 99999999999.99, '初始余额']}" onselectstart="event.cancelBubble=true;" />
+									<input type="text" id="balance" class="iMoney" name="balance" value="0.00" validate="{required:['初始余额'], number:['初始余额'], range:[-99999999999.99, 99999999999.99, '初始余额'], illChar: true}" onselectstart="event.cancelBubble=true;" />
 								</div>
 							</div>
 						</span>
@@ -541,7 +542,7 @@
 				<div class="dRDRField">
 					<div>
 						<div class="dRDRInput">
-							<textarea name="description" class="iLimitLength" onselectstart="event.cancelBubble=true;"></textarea>
+							<textarea name="description" class="iLimitLength" onselectstart="event.cancelBubble=true;" validate="{illChar: true}"></textarea>
 						</div>
 					</div>
 					<div class="dValidation">&nbsp;</div>
@@ -563,7 +564,7 @@
 					<div>
 						<span class="sRDRInput">
 							<div class="dRDRInput">
-				 				<input type="text" name="subName" class="iLimitLength" validate="{required:['子账户名'], unique:['子账户名']}" onselectstart="event.cancelBubble=true;" />
+				 				<input type="text" name="subName" class="iLimitLength" validate="{required:['子账户名'], unique:['子账户名'], illChar: true}" onselectstart="event.cancelBubble=true;" />
 								<input type="hidden" name="SubAccountId" value="0" />
 								<input type="hidden" name="AccountId" value="0" />
 							</div>
@@ -582,7 +583,7 @@
 								<select name="currency" id="newsa101_currency">
 								</select>
 								<div class="dRDRInput1">
-									<input type="text" id="balance" class="iMoney" name="balance" value="0.00" validate="{required:['初始余额'], number:['初始余额'], range:[-99999999999.99, 99999999999.99, '初始余额']}" onselectstart="event.cancelBubble=true;" />
+									<input type="text" id="balance" class="iMoney" name="balance" value="0.00" validate="{required:['初始余额'], number:['初始余额'], range:[-99999999999.99, 99999999999.99, '初始余额'], illChar: true}" onselectstart="event.cancelBubble=true;" />
 								</div>
 							</div>
 						</span>
@@ -605,7 +606,7 @@
 				 	<div>
 					 	<span class="sRDRInput">
 							<div class="dRDRInput">
-				 				<input type="text" readonly="true" name="sdate" class="sdate" onselectstart="event.cancelBubble=true;" />
+								<input type="text" name="sdate" class="sdate" onselectstart="event.cancelBubble=true;" validate="{illDate: true}"/>
 				 			</div>
 				 		</span>
 						<span class="sRDRStar"></span>
@@ -632,7 +633,7 @@
 				<div class="dRDRField">
 					<div>
 						<div class="dRDRInput">
-							<textarea name="description" class="iLimitLength" onselectstart="event.cancelBubble=true;"></textarea>
+							<textarea name="description" class="iLimitLength" onselectstart="event.cancelBubble=true;" validate="{illChar: true}"></textarea>
 						</div>
 					</div>
 					<div class="dValidation">&nbsp;</div>
@@ -654,7 +655,7 @@
 					<div>
 						<span class="sRDRInput">
 							<div class="dRDRInput">
-				 				<input type="text" name="subName" class="iLimitLength" validate="{required:['子账户名'], unique:['子账户名']}" onselectstart="event.cancelBubble=true;" />
+								<input type="text" name="subName" class="iLimitLength" validate="{required:['子账户名'], unique:['子账户名'],illChar: true}" onselectstart="event.cancelBubble=true;" />
 								<input type="hidden" name="SubAccountId" value="0" />
 								<input type="hidden" name="AccountId" value="0" />
 							</div>
@@ -702,7 +703,7 @@
 				 	<div>
 					 	<span class="sRDRInput">
 							<div class="dRDRInput">
-				 				<input type="text" id="sdate" readonly="true" name="sdate" class="sdate" onselectstart="event.cancelBubble=true;" />
+								<input type="text" id="sdate" name="sdate" class="sdate" onselectstart="event.cancelBubble=true;" validate= "{illDate: true}" />
 				 			</div>
 				 		</span>
 						<span class="sRDRStar"></span>
@@ -729,7 +730,7 @@
 				<div class="dRDRField">
 					<div>
 						<div class="dRDRInput">
-							<textarea name="description" class="iLimitLength" onselectstart="event.cancelBubble=true;"></textarea>
+							<textarea name="description" class="iLimitLength" onselectstart="event.cancelBubble=true;" validate="{illChar: true}"></textarea>
 						</div>
 					</div>
 					<div class="dValidation">&nbsp;</div>
@@ -766,7 +767,7 @@
 					<div>
 						<span class="sRDRInput">
 							<div class="dRDRInput">
-								<input type="text" class="box iLimitLength" name="AccountName" validate="{required:['账户名称'], unique:['账户名称']}" onselectstart="event.cancelBubble=true;" />
+								<input type="text" class="box iLimitLength" name="AccountName" validate="{required:['账户名称'], unique:['账户名称'], illChar: true}" onselectstart="event.cancelBubble=true;" />
 								<input type="hidden" name="AccountId" value="0" />
 							</div>
 						</span>
@@ -832,7 +833,7 @@
 				<div class="dRDRField">
 					<div>
 						<div class="dRDRInput">
-							<textarea name="description" class="iLimitLength" onselectstart="event.cancelBubble=true;"></textarea>
+							<textarea name="description" class="iLimitLength" onselectstart="event.cancelBubble=true;" validate = "{illChar: true}"></textarea>
 						</div>
 					</div>
 					<div class="dValidation">&nbsp;</div>
@@ -914,7 +915,7 @@
 				<div class="dRDRField">
 					<div>
 						<div class="dRDRInput">
-							<textarea name="description" class="iLimitLength" onselectstart="event.cancelBubble=true;"></textarea>
+							<textarea name="description" class="iLimitLength" onselectstart="event.cancelBubble=true;" validate="{illChar: true}"></textarea>
 						</div>
 					</div>
 					<div class="dValidation">&nbsp;</div>
@@ -935,7 +936,7 @@
 					<div>
 						<span class="sRDRInput">
 							<div class="dRDRInput">
-								<input type="text" class="box iLimitLength" name="AccountName" validate="{required:['账户名称'], unique:['账户名称']}" onselectstart="event.cancelBubble=true;" />
+								<input type="text" class="box iLimitLength" name="AccountName" validate="{required:['账户名称'], unique:['账户名称'], illChar: true}" onselectstart="event.cancelBubble=true;" />
 								<input type="hidden" name="AccountId" value="0" />
 							</div>
 						</span>
@@ -983,7 +984,7 @@
 				<div class="dRDRField">
 					<div>
 						<div class="dRDRInput">
-							<textarea name="description" class="iLimitLength" onselectstart="event.cancelBubble=true;"></textarea>
+							<textarea name="description" class="iLimitLength" onselectstart="event.cancelBubble=true;" validate="illChar:true"></textarea>
 						</div>
 					</div>
 					<div class="dValidation">&nbsp;</div>
@@ -1005,7 +1006,7 @@
 					<div>
 						<span class="sRDRInput">
 							<div class="dRDRInput">
-								<input type="text" class="box iLimitLength" name="AccountName" validate="{required:['账户名称'], unique:['账户名称']}" onselectstart="event.cancelBubble=true;" />
+								<input type="text" class="box iLimitLength" name="AccountName" validate="{required:['账户名称'], unique:['账户名称'], illChar: true}" onselectstart="event.cancelBubble=true;" />
 								<input type="hidden" name="AccountId" value="0" />
 							</div>
 						</span>
@@ -1037,7 +1038,7 @@
 				<div class="dRDRField">
 					<div>
 						<div class="dRDRInput">
-							<textarea name="description" class="iLimitLength" onselectstart="event.cancelBubble=true;"></textarea>
+							<textarea name="description" class="iLimitLength" onselectstart="event.cancelBubble=true;" validate="{illChar: true}"></textarea>
 						</div>
 					</div>
 					<div class="dValidation">&nbsp;</div>
@@ -1059,7 +1060,7 @@
 					<div>
 						<span class="sRDRInput">
 							<div class="dRDRInput">
-								<input type="text iLimitLength" class="box" name="AccountName" validate="{required:['账户名称'], unique:['账户名称']}" onselectstart="event.cancelBubble=true;" />
+								<input type="text iLimitLength" class="box" name="AccountName" validate="{required:['账户名称'], unique:['账户名称'], illChar: true}" onselectstart="event.cancelBubble=true;" />
 								<input type="hidden" name="AccountId" value="0" />
 							</div>
 						</span>
@@ -1091,7 +1092,7 @@
 				<div class="dRDRField">
 					<div>
 						<div class="dRDRInput">
-							<textarea name="description" class="iLimitLength" onselectstart="event.cancelBubble=true;"></textarea>
+							<textarea name="description" class="iLimitLength" onselectstart="event.cancelBubble=true;" validate="{illChar: true}"></textarea>
 						</div>
 					</div>
 					<div class="dValidation">&nbsp;</div>
@@ -1113,7 +1114,7 @@
 					<div>
 						<span class="sRDRInput">
 							<div class="dRDRInput">
-								<input type="text" class="box iLimitLength" name="AccountName" validate="{required:['账户名称'], unique:['账户名称']}" onselectstart="event.cancelBubble=true;" />
+								<input type="text" class="box iLimitLength" name="AccountName" validate="{required:['账户名称'], unique:['账户名称'], illChar: true}" onselectstart="event.cancelBubble=true;" />
 								<input type="hidden" name="AccountId" value="0" />
 							</div>
 						</span>
@@ -1145,7 +1146,7 @@
 				<div class="dRDRField">
 					<div>
 						<div class="dRDRInput">
-							<textarea name="description" class="iLimitLength" onselectstart="event.cancelBubble=true;"></textarea>
+							<textarea name="description" class="iLimitLength" onselectstart="event.cancelBubble=true;" validate="{illChar: true}"></textarea>
 						</div>
 					</div>
 					<div class="dValidation">&nbsp;</div>
@@ -1167,7 +1168,7 @@
 					<div>
 						<span class="sRDRInput">
 							<div class="dRDRInput">
-								<input type="text" class="box iLimitLength" name="AccountName" validate="{required:['账户名称'], unique:['账户名称']}" onselectstart="event.cancelBubble=true;" />
+								<input type="text" class="box iLimitLength" name="AccountName" validate="{required:['账户名称'], unique:['账户名称'], illChar: true}" onselectstart="event.cancelBubble=true;" />
 								<input type="hidden" name="AccountId" value="0" />
 							</div>
 						</span>
@@ -1216,7 +1217,7 @@
 				 	<div>
 					 	<span class="sRDRInput">
 							<div class="dRDRInput">
-				 				<input type="text" class="sdate" readonly="true" name="sdate" onselectstart="event.cancelBubble=true;" />
+								<input type="text" class="sdate" name="sdate" onselectstart="event.cancelBubble=true;" validate="{illDate: true}" />
 				 			</div>
 				 		</span>
 						<span class="sRDRStar"></span>
@@ -1243,7 +1244,7 @@
 				<div class="dRDRField">
 					<div>
 						<div class="dRDRInput">
-							<textarea name="description" class="iLimitLength" onselectstart="event.cancelBubble=true;"></textarea>
+							<textarea name="description" class="iLimitLength" onselectstart="event.cancelBubble=true;" validate="{illChar: true}"></textarea>
 						</div>
 					</div>
 					<div class="dValidation">&nbsp;</div>
@@ -1266,7 +1267,7 @@
 					<div>
 						<span class="sRDRInput">
 							<div class="dRDRInput">
-								<input type="text" class="box iLimitLength" name="CategoryName" validate="{required:['名称'], unique:['名称']}" onselectstart="event.cancelBubble=true;" />
+								<input type="text" class="box iLimitLength" name="CategoryName" validate="{required:['名称'], unique:['名称'], illChar: true}" onselectstart="event.cancelBubble=true;" />
 								<input type="hidden" name="CategoryId" value="0" />
 							</div>
 						</span>
@@ -1347,7 +1348,7 @@
 					<div>
 						<span class="sRDRInput">
 							<div class="dRDRInput">
-								<input type="text" class="box iLimitLength" name="PayeeName" validate="{required:['名称'], unique:['名称']}" onselectstart="event.cancelBubble=true;" />
+								<input type="text" class="box iLimitLength" name="PayeeName" validate="{required:['名称'], unique:['名称'], illChar: true}" onselectstart="event.cancelBubble=true;" />
 								<input type="hidden" name="PayeeId" value="0" />
 							</div>
 						</span>
@@ -1362,7 +1363,7 @@
 					<div>
 						<span class="sRDRInput">
 							<div class="dRDRInput">
-								<input type="text" class="box iLimitLength" name="PayeeTel" onselectstart="event.cancelBubble=true;" />
+								<input type="text" class="box iLimitLength" name="PayeeTel" onselectstart="event.cancelBubble=true;" validate="{illChar: true}" onselectstart="event.cancelBubble=true;"/>
 							</div>
 						</span>
 					</div>
@@ -1375,7 +1376,7 @@
 					<div>
 						<span class="sRDRInput">
 							<div class="dRDRInput">
-								<input type="text" class="box iLimitLength" name="PayeeEmail" onselectstart="event.cancelBubble=true;" />
+								<input type="text" class="box iLimitLength" name="PayeeEmail" onselectstart="event.cancelBubble=true;" validate="{illChar: true}"/>
 							</div>
 						</span>
 					</div>
@@ -1425,7 +1426,7 @@
 					<div>
 						<span class="sRDRInput">
 							<div class="dRDRInput">
-								<input type="text" class="box iLimitLength" name="BankName" validate="{required:['名称'], unique:['名称']}" onselectstart="event.cancelBubble=true;" />
+								<input type="text" class="box iLimitLength" name="BankName" validate="{required:['名称'], unique:['名称'], illChar: true}" onselectstart="event.cancelBubble=true;" />
 								<input type="hidden" name="BankId" value="0" />
 							</div>
 						</span>
@@ -1459,7 +1460,7 @@
 					<div>
 						<span class="sRDRInput">
 							<div class="dRDRInput">
-								<input type="text" class="box iLimitLength" name="BankWebsite" onselectstart="event.cancelBubble=true;" />
+								<input type="text" class="box iLimitLength" name="BankWebsite" onselectstart="event.cancelBubble=true;" validate="{illChar: true}" />
 							</div>
 						</span>
 						<span class="sRDRStar">&nbsp;</span>

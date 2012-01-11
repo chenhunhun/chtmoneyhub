@@ -338,6 +338,8 @@ public:
 
 	bool InstallUpdateDB();
 	bool UpdateDB7to8(wstring wFilePath, string sUtfFilePath); // 3.1库到4.0版本的升级函数
+	bool DB7to8(CppSQLite3DB& dbDesc, CppSQLite3DB& dbTemp, CppSQLite3DB& dbData);
+	std::string FilterSpecialString(string& str);
 
 	// 从模板库创建一个新的用户库
 	bool CreateNewUserDB(LPSTR lpstrUserDBName, LPSTR lpPassword, int nLen);
@@ -346,7 +348,7 @@ public:
 	void CreateUserDbFromGuestDb(LPSTR lpstrUserDBName, LPSTR lpPassword, int nLen);
 
 	// 将用户设置为当前用户
-	bool SetCurrentUserDB(LPSTR lpstrUserDBName, LPSTR lpPassword, int nLen);
+	bool SetCurrentUserDB(LPSTR lpstrUserDBName, LPSTR lpPassword, int nLen, bool bUI = true);
 
 	// 通过UserID删除用户数据库
 	bool DeleteUserDbByID(const char* pUserID, bool bCurUser = false);
@@ -357,10 +359,16 @@ public:
 	// 
 	bool ReadNeedAutoLoadUser(string& strUserID, string& strMail, string& strStoken);
 
+
 	// 检验用户库是否存在
 	bool IsUserDBExist(LPSTR lpstrUserDBName);
 
+	int GetGuestDBVersion(); // 读取GuestDB版本
+
 	bool IsTableEmptyInGuestDB(const char* pTbName);
+
+	// 重命名数据库
+	bool RenameUserDbByID(const char* pUserSour, const char* pUserDesc);
 
 
 	// （可以满足表的结构不同，指定的列名进行拷贝）

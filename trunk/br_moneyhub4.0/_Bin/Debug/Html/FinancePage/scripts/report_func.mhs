@@ -5,7 +5,8 @@ var MonthLastDay;
 var SeasonFirstDay;
 var YearFirstDay;
 
-var myDateRange="thismonth";
+var myDateRangeLeft="thismonth";
+var myDateRangeRight="thisyear";
 
 var myEndDate="";
 var myStartDate="";
@@ -24,7 +25,7 @@ var tab_during = "";
  * 
  * 初始默认为"week",0;
  */
-var dateStatus = ["week",0];
+var dateStatus = ["week", 0];
 
 $(function() {
 	//渲染上方的两个按钮
@@ -37,9 +38,9 @@ $(function() {
 					$("#tabs-1").show();
 					$("#tabs-2").hide();
 					$("#tabs-3").hide();
-					GeneratePies('thismonth', 'pie');
-    				$("#tabs-1 .dLeft div").removeClass("dSelectTab");
-    				$("#tabs-1 .dLeft :first").addClass("dSelectTab");
+					GeneratePies(myDateRangeLeft, 'pie');
+    				//$("#tabs-1 .dLeft div").removeClass("dSelectTab");
+    				//$("#tabs-1 .dLeft :first").addClass("dSelectTab");
 					break;
 
 				case 1:
@@ -53,9 +54,11 @@ $(function() {
 					$("#tabs-1").hide();
 					$("#tabs-2").hide();
 					$("#tabs-3").show();
-					GeneratePies('thisyear', 'bar');;
-    				$("#tabs-3 .dLeft div").removeClass("dSelectTab");
-    				$("#tabs-3 .dLeft :first").addClass("dSelectTab");
+					GeneratePies(myDateRangeRight, 'bar');;
+    				if(myDateRangeRight=="thisyear"){
+    					$("#tabs-3 .dLeft div").removeClass("dSelectTab");
+    					$("#tabs-3 .dLeft :first").addClass("dSelectTab");
+    				}
 					break;
 			}
 		});
@@ -72,6 +75,7 @@ $(function() {
     $(".dLeft :first").addClass("dSelectTab");
 
 	initSize();
+	$("body").css("top", "0px");
 });
 
 /** 窗口大小发生变化时调用此函数
@@ -101,9 +105,9 @@ function initSize() {
 	$(".rvchart").width($(".dRight").width() * 0.49);
 	if (!$('#tabs-1').is(':hidden')) { 
 		if ((myStartDate == "") || (myEndDate == "")) {
-			GeneratePies(myDateRange, "pie");
+			GeneratePies(myDateRangeLeft, "pie");
 		} else {
-			GeneratePies(myDateRange, "pie", myStartDate, myEndDate, "resize");	
+			GeneratePies(myDateRangeLeft, "pie", myStartDate, myEndDate, "resize");	
 		}
 	} else if (!$('#tabs-3').is(':hidden')) {
 		GeneratePies("", "newPie");
@@ -156,7 +160,8 @@ Date.prototype.pattern=function(fmt) {
  * @param handleType "resize"
  */
 function GeneratePies(dataRange, charttype, startDate1, endDate1, handleType) {
-	myDateRange=dataRange;
+	if ( charttype == "pie" ) myDateRangeLeft=dataRange;
+	if ( charttype == "bar" ) myDateRangeRight=dataRange;
 	var startDate = "";
 	var endDate = "";
 	if ((handleType === undefined) || (handleType!="resize")) {
@@ -643,12 +648,12 @@ function RenderBar(xml) {
 
 //解决建立了新账户或收入、支出之后未刷新的问题
 function TabActivated(){
-	var BalanceChanged = "-1";
+	var BalanceChangedR = "-1";
 	var Report_Changed = "-1";
 	reloadReport = "-1";
 	try {
-		BalanceChanged = window.external.GetParameter("BalanceChanged");
-		window.external.SetParameter("BalanceChanged", "-1");
+		BalanceChangedR = window.external.GetParameter("BalanceChangedR");
+		window.external.SetParameter("BalanceChangedR", "-1");
 		Report_Changed = window.external.GetParameter("Report_Changed");
 		window.external.SetParameter("Report_Changed", "-1");
 		reloadReport = window.external.GetParameter("ReloadReport");
@@ -658,7 +663,7 @@ function TabActivated(){
 	if (reloadReport != "-1") {
 	   window.location.reload();
 	}
-	if ((BalanceChanged == "1") || (Report_Changed == "1")) {
+	if ((BalanceChangedR == "1") || (Report_Changed == "1")) {
 		var tab_current = " ";
 		var tab_currentXml = " ";
 		$("#bank_tabs_title li").each(function(){

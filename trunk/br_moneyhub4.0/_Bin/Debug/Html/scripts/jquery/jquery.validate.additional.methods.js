@@ -323,3 +323,17 @@ jQuery.validator.addMethod("dayNumber", function(value, element, param) {
 		return (fResult >= 1 && fResult <= 31);
 	}
 },jQuery.validator.format("数字只能在1--31之间")); 
+
+jQuery.validator.addMethod("illChar", function(value, element, param){
+    var illChar = /[%&*\\#`\n\t\'\"?\\\<\>\r]+/;
+	return !illChar.test(value);
+}, jQuery.validator.format("存在非法字符"));
+
+jQuery.validator.addMethod("illDate", function(value, element, param){
+    var illDate = /^2\d{3}\-(?:(0[1-9]|1[0-2]))\-(?:(0[1-9]|1[0-9]|2[0-9]|3[0-1]))$/;
+	if (value == "" || illDate.test(value)){
+	    return true;
+	}else{
+	    return false;
+	}
+}, jQuery.validator.format("格式错误，以yyyy-mm-dd格式输入"));

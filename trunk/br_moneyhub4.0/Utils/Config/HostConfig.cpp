@@ -311,6 +311,27 @@ bool CHostContainer::GetAllHostName(VECTORNPBNAME *pVvecNPB )
 			m_host.insert(make_pair(kPUserServerTime,servertime));
 		}
 
+		const TiXmlNode *pSendMail = pType->FirstChild("psendfindmail");
+		if(pSendMail)
+		{
+			wstring sendmail = AToW(pSendMail->FirstChild()->Value());
+			m_host.insert(make_pair(kPSendFindMail,sendmail));
+		}
+		
+		const TiXmlNode *pCheckOPT = pType->FirstChild("pcheckopt");
+		if(pCheckOPT)
+		{
+			wstring checkopt = AToW(pCheckOPT->FirstChild()->Value());
+			m_host.insert(make_pair(kPCheckOPT,checkopt));
+		}
+		
+		const TiXmlNode *pInitPwd = pType->FirstChild("pinitpwd");
+		if(pInitPwd)
+		{
+			wstring initpwd = AToW(pInitPwd->FirstChild()->Value());
+			m_host.insert(make_pair(kPInitPassword,initpwd));
+		}
+
 		const TiXmlNode *pexchangerate = pType->FirstChild("exchangerate");
 		if(pexchangerate)
 		{

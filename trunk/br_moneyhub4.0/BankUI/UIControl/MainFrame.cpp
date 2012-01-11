@@ -1132,6 +1132,11 @@ LRESULT CMainFrame::OnShowUserDlg(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 			strText = L"×¢²áÏòµ¼";
 			strPath = L"registerGuide.html";
 		}
+		else if(MY_TAG_INIT_PWD == lParam)
+		{
+			strText = L"ÖØÖÃÃÜÂë";
+			strPath = L"findPwd.html";
+		}
 
 		CShowJSFrameDlg dlg(strText.c_str(), strPath.c_str(), nErrCode);
 
@@ -1324,5 +1329,14 @@ LRESULT CMainFrame::OnSynchroBtnChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 LRESULT CMainFrame::OnInitSynchroBtnStatus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL &/*bHandled*/)
 {
 	::PostMessage(FS()->TabItem()->GetChildFrame()->GetItem()->GetAxControl(), WM_AX_INIT_SYNCHRO_BTN, 0, 0);
+	return 0;
+}
+
+LRESULT CMainFrame::OnChangeCurUserStoken(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL &/*bHandled*/)
+{
+	string strParam = (char*)lParam;
+
+	if (0 != strParam.length())
+		CBankData::GetInstance()->m_CurUserInfo.strstoken = strParam;
 	return 0;
 }

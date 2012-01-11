@@ -766,7 +766,11 @@ Tesy.EventLay.prototype = {
             "04": {
                 text: "抱歉，单天事件不能超过10个",
                 option: 1
-            }
+            },
+			"05": {
+			    text: "抱歉，事件描述存在非法字符",
+				option: 1
+			}
         }
         
         var tipwrap = Tesy.dom.$('tipwrap');
@@ -877,6 +881,7 @@ Tesy.EventLay.prototype = {
         var date = Tesy.dom.$('dateselect').getAttribute('date');
         var dateArr = date.split("-");
         var sum_num = Tesy.calendar.dList[Math.ceil(dateArr[2]) - 1].getAttribute('sum_num');
+		var re = /[%&*\\#`\n\t\'\"?\\\<\>\r]+/;
 		
 		var checkData = (function(){
 			if (!regex.test(str)) {
@@ -888,7 +893,10 @@ Tesy.EventLay.prototype = {
             }else if (sum_num > 9 && (typeof obj) === 'undefined') {
                 Tesy.eventlay.initPop("04");
                 return false;
-            }
+            }else if (re.test(str)){
+			    Tesy.eventlay.initPop("05");
+			    return false;
+			}
 
 			str = str.match(regex).join(" ");
 			return str;

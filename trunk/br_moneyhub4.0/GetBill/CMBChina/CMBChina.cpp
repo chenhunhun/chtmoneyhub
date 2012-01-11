@@ -346,11 +346,6 @@ User-Agent: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET
 void AnalyticData(wstring& info, LPMONTHBILLRECORD pmcRecord, LPMONTHBILLRECORD pmuRecord, string currentmonth)
 {
 	USES_CONVERSION;
-	SYSTEMTIME time;
-	GetLocalTime(&time);
-	char cbtime[256] = {0};
-	sprintf_s(cbtime, 256, "%d%02d%02d", time.wYear, time.wMonth, time.wDay);
-	string localmonth = cbtime; 
 
 	//首先验证数据是否是正确的招行对账单
 	size_t ntitle = info.find(L"招商银行信用卡对账单");
