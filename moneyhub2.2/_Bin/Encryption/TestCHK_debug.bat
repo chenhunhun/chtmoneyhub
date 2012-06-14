@@ -1,1 +1,0 @@
-.\Debug\TestCHK.exe ..\Debug
