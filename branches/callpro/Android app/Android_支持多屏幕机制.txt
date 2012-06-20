@@ -1,0 +1,68 @@
+术语
+   1.Screen size 屏幕实际尺寸。
+Android讲屏幕实际尺寸分为3个通用的尺寸。
+  
+   2.Aspect ratio 长宽比
+
+   3.Resolution 分辨率
+
+   4.Density 密度
+   5.Density-independent pixel 密度无关的像素
+
+介绍：Adnroid1.6或以上SDK，在AndroidManifest.xml中提供新的一个元素<supports-screens>用于支持多屏幕机制。
+<supports-screens
+          Android:largeScreens="true"   是否支持大屏
+          Android:normalScreens="true"  是否支持中屏
+          Android:smallScreens="true"   是否支持小屏
+          Android:anyDensity="true"     是否支持多种不同密度
+/>
+
+
+Android提供3种方式处理屏幕自适应
+一.预缩放的资源(基于尺寸和密度去寻找图片)
+1.如果找到相应的尺寸和密度，则利用这些图片进行无缩放小时。
+2.如果没法找到相应的尺寸，而找到密度，则认为该图片尺寸为 "medium"，利用缩放这个图片显示。
+3.如果都无法匹配，则使用默认图片进行缩放显示。默认图片默认标配 "medium" (160)。
+
+二.自动缩放的像素尺寸和坐标(密度兼容)
+1.如果应用程序不支持不同密度Android:anyDensity="false",系统自动缩放图片尺寸和这个图片的坐标。
+  (代码中体现)
+2.对于预缩放的资源，当Android:anyDensity="false"，也不生效。
+3.Android:anyDensity="false"，只对密度兼容起作用，尺寸兼容没效果
+
+三.兼容模式显示在大屏幕，尺寸(尺寸兼容)
+1.对于你在<supports-screens>声明不支持的大屏幕，而这个屏幕尺寸是normal的话，系统使用尺寸为    ("normal")和密度为("medium)显示。
+2. 对于你在<supports-screens>声明不支持的大屏幕，而这个屏幕尺寸是larger的话，系统同样使用尺寸为                   ("normal")和密度为("medium)显示，不过会出现一层黑色的背景。不是居中显示。
+
+
+密度独立：
+系统默认应用支持DIP单位的，三个使用DIP的地方：
+1.加载资源时，使用DIP实现预缩放的资源。
+2.在Layout使用DIP，系统自动完成缩放。
+3.在应用程序中，自动缩放一些绝对像素。
+    (只有在Android:anyDensity="false"生效)即屏幕自适应方式二
+4.像素单位都使用DIP，文本单位使用SP
+
+最佳屏幕独立实践：
+1.使用wrap_content, fill_parent 和使用dip作为像素单位in XML layout files。
+2.避免使用AbsoluteLayout
+3.在代码中，不要使用像素数字硬编码，而是要通过dip转换为px。
+    例子：
+   你使用手势分析器分析一个scroll手势，假如，你滚动的距离是16px。
+1.在一个160dip的屏幕中，你实际移动距离 16px / 160dpi = 1/10th of an inch (or 2.5 mm)
+2.在一个240dip的屏幕中，你实际移动距离 16px / 240dpi = 1/15th of an inch (or 1.7 mm)
+  // The gesture threshold expressed in dip
+  private static final float GESTURE_THRESHOLD_DIP = 16.0f;
+  // Convert the dips to pixels
+  final float scale = getContext().getResources().getDisplayMetrics().density;
+  mGestureThreshold = (int) (GESTURE_THRESHOLD_DIP * scale);
+4.使用密度和/或尺寸特定资源(通过文件夹)
+
+
+关于预缩放或者自动缩放图片或9格图
+1.系统是一定对会资源包下的图片进行合理的缩放。
+   例如：一张240x240高密度图片，显示在中密度的屏幕上，图片大小自动变为160x160。
+2.你在API中不会得到被缩放后的图片尺寸，得到还是你原来图片的尺寸。
+3.如果你不想系统自动帮你缩放图片，可以建立一个res/drawable-nodpi文件夹，存放你的图片。
+4.也可以通过BitmapFactory.Options 完成系统自动缩放图片或9格图(在画图时)。
+5.自动缩放图片比预缩放花费更多CPU，但是用更少内存(RAM or ROM ？)

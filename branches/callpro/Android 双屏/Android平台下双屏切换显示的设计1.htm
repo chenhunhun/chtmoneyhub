@@ -1,0 +1,321 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=GB2312">
+<title>Android平台下双屏切换显示的设计_毕业论文网</title>
+<meta name="keywords" content="显示,设计,切换,平台,窗口,">
+<meta name="description" content="摘要：本文介绍了Android与其他主流智能手机平台的技术特点，给出了Android较于其他平台所具备的优势，详细分析了Android的架构及内部的工作机制，根据手机双屏显示技术的发展及现有技术存在的问题，结合Android平台的功能特点，在Android原有窗口管理系统的">
+<link href="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/main.css" rel="stylesheet" media="screen" type="text/css">
+<link href="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/main.htm" rel="stylesheet" media="screen" type="text/css">
+<style type="text/css">
+<!--
+.STYLE1 {color: #FF0000}
+a:visited {
+	text-decoration: none;
+	color: #000000;
+}
+a:active {
+	text-decoration: none;
+	color: #000000;
+}
+a:link {
+	text-decoration: none;
+	color: #000000;
+}
+a:hover {
+	text-decoration: none;
+	color: #000000;
+}
+-->
+</style>
+<link type="text/css" rel="stylesheet" href="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/bdsstyle.css"></head>
+<body class="articleview"><iframe style="display: none;" frameborder="0"></iframe><div id="bdshare_s"><iframe id="bdsIfr" style="position: absolute; display: none; z-index: 9999;" frameborder="0"></iframe><div style="display: none;" id="bdshare_l"><div id="bdshare_l_c"><h6>分享到</h6><ul><li><a href="#" class="bds_qzone qqkj">QQ空间</a></li><li><a href="#" class="bds_tsina xlwb">新浪微博</a></li><li><a href="#" class="bds_baidu bdsc">百度搜藏</a></li><li><a href="#" class="bds_renren rrw">人人网</a></li><li><a href="#" class="bds_tqq txwb">腾讯微博</a></li><li><a href="#" class="bds_kaixin001 kxw">开心网</a></li><li><a href="#" class="bds_tqf txpy">腾讯朋友</a></li><li><a href="#" class="bds_hi bdkj">百度空间</a></li><li><a href="#" class="bds_douban db">豆瓣网</a></li><li><a href="#" class="bds_tsohu shwb">搜狐微博</a></li><li><a href="#" class="bds_msn msn">MSN</a></li><li><a href="#" class="bds_qq qqsc">QQ收藏</a></li><li><a href="#" class="bds_taobao tjh">我的淘宝</a></li><li><a href="#" class="bds_tieba bdtb">百度贴吧</a></li><li><a href="#" class="bds_sohu shbsh">搜狐白社会</a></li><li><a href="#" class="bds_more">更多...</a></li></ul><p><a href="#" class="goWebsite">百度分享</a></p></div></div></div>
+<div class="header">
+    <div class="top w960 center">
+      <div class="title">
+        <h1><a href="http://www.slgz.cn/"><img src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/logo.gif" alt="毕业论文网 -计算机毕业论文|计算机毕业设计|计算机硕士论文|工程硕士论文 " height="60" width="200"></a> </h1>
+      </div>
+      <div class="banner">
+	    <li><a href="http://www.slgz.cn/html/biyesheji/VB/index.html">VB设计</a></li><li><a href="http://www.slgz.cn/html/biyesheji/ASP/index.html">ASP设计</a></li><li><a href="http://www.slgz.cn/html/biyesheji/NET/index.html">.NET设计</a></li><li><a href="http://www.slgz.cn/html/biyesheji/JAVA/index.html">JAVA设计</a></li><li><a href="http://www.slgz.cn/html/biyesheji/VF/index.html">VF设计</a></li><li><a href="http://www.slgz.cn/html/biyesheji/JSP/index.html">JSP设计</a></li><li><a href="http://www.slgz.cn/html/biyesheji/PHP/index.html">PHP设计</a></li><li><a href="http://www.slgz.cn/html/biyesheji/VC/index.html">VC/VC++设计</a></li><li><a href="http://www.slgz.cn/html/biyesheji/Delphi/index.html">Delphi设计</a></li><li><a href="http://www.slgz.cn/html/biyesheji/jsjwl/index.html">计算机网络</a></li><li><a href="http://www.slgz.cn/html/biyesheji/jixie/index.html">机械电子类</a></li><li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/index.html">其他设计</a></li>
+      </div>
+      
+      <div class="rlink">
+        <ul>
+          <li class="r1"><a href="http://www.slgz.cn/html/about/2011/0316/23787.html">信誉说明</a></li>
+          <li class="r2"><a href="http://www.slgz.cn/html/about/2011/0316/23788.html">付款方式</a></li>
+          <li class="r3"><a href="http://www.slgz.cn/html/about/2011/0316/23789.html">购买成品</a></li>
+          <li class="r4"><a href="http://www.slgz.cn/html/about/2011/0316/23790.html">定制论文</a></li>
+        </ul>
+      </div>
+      <!-- /banner -->
+  </div>
+  <!-- /top -->
+  <div class="top">
+    <div id="navbar">
+      <ul>
+        <li><a href="http://www.slgz.cn/">首页</a></li>
+        
+        <li><a href="http://www.slgz.cn/html/jingjixuelei/index.html">经济学论文</a></li>
+        <li><a href="http://www.slgz.cn/html/guanlixuelei/index.html">管理学论文</a></li>
+        <li><a href="http://www.slgz.cn/html/yiyaoxuelei/index.html">医药学论文</a></li>
+        <li><a href="http://www.slgz.cn/html/gongshangguanli/index.html">工商管理</a></li>
+        <li><a href="http://www.slgz.cn/html/jiaoyulunwen/index.html">教育论文</a></li>
+        <li><a href="http://www.slgz.cn/html/gonggongguanli/index.html">公共管理</a></li>
+        <li><a href="http://www.slgz.cn/html/faxuelunwen/index.html">法学论文</a></li>
+        <li><a href="http://www.slgz.cn/html/lixuelunwen/index.html">理学论文</a></li>
+        <li><a href="http://www.slgz.cn/html/jinrongzheng_/index.html">金融证劵</a></li>
+        <li><a href="http://www.slgz.cn/html/biyesheji/index.html">毕业设计</a></li>
+        <li><a href="http://www.slgz.cn/html/qikanzhenggao/index.html">期刊征稿</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class=""></div>
+</div>
+<!-- /header -->
+
+<!-- /header -->
+<div class="w960 center clear mt1">
+	<div class="place">
+        <div class="search">
+          <form action="/plus/search.php" name="formsearch" target="_blank">
+            <input name="kwtype" value="0" type="hidden">
+            <input name="keyword" class="lbtext" id="search-keyword" value="搜索论文" onfocus="this.value=''" type="text">
+            <select name="searchtype" id="search-option" style="display:none;">
+               <option value="titlekeyword" selected="selected">智能搜索</option>
+               <option value="title">仅搜索标题</option>
+            </select>
+            <button type="submit" class="lbbut"> </button>
+          </form>
+        </div>
+		<strong>当前位置:</strong> <a href="http://www.slgz.cn/">毕业论文网</a> &gt; <a href="http://www.slgz.cn/html/biyesheji/index.html">毕业设计</a> &gt; <a href="http://www.slgz.cn/html/biyesheji/qitasheji/index.html">其他设计</a> &gt; 
+	</div><!-- /place -->
+	<div class="pleft">
+		<div class="viewbox">
+			<div class="title">
+				<h2>Android平台下双屏切换显示的设计</h2>
+			</div><!-- /title -->
+			<div class="info"><img src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/about.jpg" border="0"></div>
+      <!-- /info -->
+
+			<div class="content">
+<a target="blank" href="http://wpa.qq.com/msgrd?V=1&amp;Uin=844974664&amp;Site=%BF%CD%BB%A7%B7%FE%CE%F1&amp;Menu=yes"><img src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/pa_004.gif" alt="QQ交谈" align="absmiddle" border="0">QQ:844974664</a> <span class="STYLE3 STYLE1"><strong>毕业论文网-提供毕业设计,毕业论文,硕士论文,留学生论文订制,论文发表服务,本站永久域名:www.slgz.cn</strong></span>
+<br>
+
+				
+摘要：本文介绍了Android与其他主流智能手机平台的技术特点，给出了Android较于其他平台所具备的优势，详细分析了Android的架构及内
+部的工作机制，根据手机双屏显示技术的发展及现有技术存在的问题，结合Android平台的功能特点，在Android原有窗口管理系统的基础上，提出了
+Android平台下双屏幕切换显示的解决方案。<br>　　关键词：slgz.cnandriod；双屏幕；切换；实现<br>　　　　Zhang Min,Zhang Jiandong<br>　　(Jiangxi University of Science and Technology,Applied Sciences,Ganzhou  341000,China)<br>　
+　Abstract:This paper describes the Android smartphone platform with the 
+other major technical characteristics,gives the Android platform over 
+the other have the advantage of a detailed analysis of the Android 
+framework and internal working mechanism,according to the mobile phone 
+and dual-display technology the problems of existing 
+technologies,combined with the Android platform features,the original 
+window manager in the Android system is proposed based on the Android 
+platform switching dual screen display solutions.<br>　　Keywords:Andriod;Dual screen;Switch;Achievement<br>　　一、前言<br>　
+　Android平台是由Google与开放手机联盟合作开发的一个完全开放的移动设备综合平台，其免费允许所有厂商和个人在其基础上进行开发。本课题的
+提出正是源于联想研究院基于Android平台的Beacon手机项目，本款手机采用独特的内外屏设计，用户可以将显示内容在内外屏之间进行切换显示，但
+Android平台目前仅支持单屏显示，还无法支持多个显示设备，因此基于项目需要需对Android平台的窗口管理系统进行功能扩展以支持双屏切换显
+示。<br>　　随着3G牌照的发放，3G业务的全面开放，3G已进入我们的生活。3G（3埘Generation）作为新一代的移动通信系统，将无线通
+信与国际互联网等多媒体通信相结合，能够处理图像、音乐、视频流等多种媒体形式，提供包括网页浏览、电话会议和电子商务等多种信息服务。<br>　　3G
+时代的到来使整个产业面临加速发展的新机遇，联想的Beacon手机正是在这样的背景下应运而生，为了充分发挥3G所带来的数据传输速率及传输质量的大幅
+提升，Beacon手机采用由Google和开放手机联盟合作开发的AndroidIn]平台，Android平台与现有的其他手机平台Symbian及
+Windows 
+mobile相比，最大的特点就是其强大的网络功能，Google将其在网络方面的技术优势与Android进行深度结合，通过Android用户不仅可
+以在手机上进行网页浏览及视频电话，还可以使用Google提供的Google地图和街景服务等，给用户带来了一个全新的移动网络体验。<br>　　除此
+之外，联想充分发挥其在PC上的技术优势，将手机与PC进行完美融合，设计出的这款Beacon手机，除了具备简单的手机通信功能外，更强调其卓越的移动
+办公能力，其独特的翻盖式和全键盘设计，使得其翻盖后更像一个缩小的笔记本，通过外屏用户可以进行基本的手机通信，而手机掀开后，其内部的超大触摸屏和全
+键盘，使其看上去更像一款缩微的笔记本电脑，用户可以进行文本编辑，多媒体播放，网页浏览，电子邮件的编辑收发，以及进行视频会议等。<br>　　独特的双屏显示方式是Beacon手机的一大亮点，但同时对该手机的软件开发提出了挑战，目前Android平台只支持单个显示设备，为了实现手机的内外屏切换显示，需对Andriod的窗口管理系统进行功能扩展。<br>　　二、Android平台下双屏切换显示的设计<br>　
+　Android平台目前只支持单屏幕显示，还无法支持双屏切换显示，因此在对Android平台深入研究的基础上，提出了双屏切换显示的解决方案，通过
+对其原有窗口管理系统的功能扩展，使其在捕捉到切屏事件后，可以及时的完成屏幕的切换工作，并将所要显示的内容根据当前屏幕的分辨率进行适当的调整。
+                <p align="center"><a href="http://www.slgz.cn/alipay/" target="_blank"><img src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/pay.png"></a></p>
+                <p style="padding-top:8px;">本文内容只是论文部分简介，如需了解更多详情请咨询本站客服！<a href="http://wpa.qq.com/msgrd?V=1&amp;Uin=93942916&amp;Site=%BF%CD%BB%A7%B7%FE%CE%F1&amp;Menu=yes" target="blank"><img alt="QQ交谈" src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/pa_003.gif" align="absmiddle" border="0">QQ:93942916</a><br>
+                </p>
+		  </div><!-- /content -->
+            
+            <div class="intro">
+<!-- Baidu Button BEGIN -->
+    <div id="bdshare" class="bdshare_b" style="line-height: 12px;"><img src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/type-button-1.jpg">
+		<a title="累计分享0次" class="shareCount">0</a>
+	</div>
+<script src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/bds_s_v2.js" type="text/javascript" id="bdshare_js" data="type=button&amp;uid=524390"></script>
+<script src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/shell_v2.js" type="text/javascript" id="bdshell_js"></script>
+<script type="text/javascript">
+	document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?t=" + new Date().getHours();
+</script>
+<!-- Baidu Button END -->
+            </div>
+            
+			<div class="dede_pages">
+				<ul class="pagelist">
+          <li><a>共3页: </a></li><li><a href="#">上一页</a></li><li class="thisclass"><a href="#">1</a></li><li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129641_2.html">2</a></li><li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129641_3.html">3</a></li><li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129641_2.html">下一页</a></li>
+				</ul>
+			</div><!-- /pages -->
+			
+			<div class="handle">
+				<div class="context">
+					<ul>
+						<li style="float:left;">上一篇：<a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129640.html">计算机网络安全设计的研究与探讨</a> </li>
+						<li style="float:right;">下一篇：<a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129642.html">茂名地区电力通信光缆网络优化研究</a> </li>
+					</ul>
+				</div><!-- /context -->
+			</div><!-- /handle -->
+            
+			<div class="boxoff">
+				<span>发布人：admin<script src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/count.htm" type="text/javascript" language="javascript"></script></span>　Tags：<a href="http://www.slgz.cn/tags.php?/%CA%F3%B1%EA%CD%E2%BF%C7%C9%E8%BC%C6/" target="_blank">鼠标外壳设计</a> <a href="http://www.slgz.cn/tags.php?/%B7%CA%D4%ED%BA%D0%D7%A2%CB%DC%C4%A4%B5%C4%C9%E8%BC%C6/" target="_blank">肥皂盒注塑膜的设计</a> <a href="http://www.slgz.cn/tags.php?/%B8%B4%B0%DA%EB%F1%CA%BD%C6%C6%CB%E9%BB%FA%C9%E8%BC%C6/" target="_blank">复摆腭式破碎机设计</a> <a href="http://www.slgz.cn/tags.php?/%C6%F8%CC%E5%B4%AB%CA%E4%CF%B5%CD%B3%C9%E8%BC%C6/" target="_blank">气体传输系统设计</a> 
+		  </div>
+		</div><!-- /viewbox -->
+
+	</div><!-- //左边内容结束 -->
+
+	<!-- //右边内容开始 -->
+	<div class="pright">
+        <div class="commend">
+			<dl class="tbox">
+				<dt><h3 class="L"></h3><strong>联系方式</strong></dt>
+				<dd style="padding:6px;">
+					<script src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/ad_js.htm" language="javascript"></script><table id="table3" border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tbody><tr>
+                  <td height="20"><p>    本站专业代写毕业论文,毕业设计,计算机硕士论文,工程硕士论文,博士论文,职称论文,高质量,快速度,价格合理！<br>
+                        品牌代写，实力见证！为您提供代写、指导、修改、写作、发表一条龙服务，解决您的后顾之忧。欢迎联系代写。</p>
+                  </td>
+                </tr>
+                </tbody><tbody>
+
+                  <tr>
+                    <td height="20" valign="middle"><div align="left"><font color="#0000ff"><b> 客 服QQ：844974664 <a href="tencent://message/?uin=844974664&amp;Site=%E6%AF%95%E4%B8%9A%E8%AE%BA%E6%96%87%E7%BD%91&amp;Menu=yes"><img src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/10_online.gif" border="0"></a></b></font></div></td>
+                  </tr>
+                  <tr>
+                    <td height="20"><font color="#0000ff"><b> 客 服QQ：93942916  <a href="tencent://message/?uin=93942916&amp;Site=%E6%AF%95%E4%B8%9A%E8%AE%BA%E6%96%87%E7%BD%91&amp;Menu=yes"><img src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/10_online.gif" border="0"></a></b></font></td>
+                  </tr>
+                  <tr>
+                    <td height="20"><font color="#0000ff"><b> 咨询电话：<img src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/shouji.gif"></b></font></td>
+                  </tr>
+                  <tr>
+                    <td height="20"><font color="#0000ff"><b> 投稿邮箱：service@slgz.cn</b></font></td>
+                  </tr>
+                </tbody>
+              </table>
+				</dd>
+			</dl>
+		</div>
+        
+        <div>
+          <dl class="tbox">
+				<dt><h3 class="L"></h3><strong>栏目列表</strong></dt>
+				<dd>
+					<ul class="d6">
+                      
+		<li><a href="http://www.slgz.cn/html/biyesheji/VB/index.html">VB设计</a></li>
+		<li><a href="http://www.slgz.cn/html/biyesheji/ASP/index.html">ASP设计</a></li>
+		<li><a href="http://www.slgz.cn/html/biyesheji/NET/index.html">.NET设计</a></li>
+		<li><a href="http://www.slgz.cn/html/biyesheji/JAVA/index.html">JAVA设计</a></li>
+		<li><a href="http://www.slgz.cn/html/biyesheji/VF/index.html">VF设计</a></li>
+		<li><a href="http://www.slgz.cn/html/biyesheji/JSP/index.html">JSP设计</a></li>
+		<li><a href="http://www.slgz.cn/html/biyesheji/PHP/index.html">PHP设计</a></li>
+		<li><a href="http://www.slgz.cn/html/biyesheji/VC/index.html">VC/VC++设计</a></li>
+		<li><a href="http://www.slgz.cn/html/biyesheji/Delphi/index.html">Delphi设计</a></li>
+		<li><a href="http://www.slgz.cn/html/biyesheji/jsjwl/index.html">计算机网络</a></li>
+		<li><a href="http://www.slgz.cn/html/biyesheji/jixie/index.html">机械电子类</a></li><li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/index.html" class="thisclass">其他设计</a></li>
+					</ul>
+				</dd>
+			</dl>
+        </div>      
+        
+		<div class="commend">
+			<dl class="tbox">
+				<dt><h3 class="L"></h3><strong>推荐文章</strong></dt>
+				<dd>
+					<ul class="c1 ico2">
+                    <li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0516/135759.html">我国种子企业的营销策略分析</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2010/1220/1752.html"> 音像租赁管理信息系统</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2010/1220/1751.html">警务管理系统</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2010/1220/1750.html">基于公钥加密体系的银行卡防伪研究</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2010/1220/1749.html">电子商务支付系统的研究</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2010/1220/1748.html">某公安局新闻发布网站设计</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2010/1220/1747.html">公安机关刑事案件网上比对系统</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2010/1220/1746.html">交通事故管理信息系统</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2010/1220/1745.html">于.NET的暂住人口管理信息系统实现</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2010/1220/1744.html">在线作业提交系统</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2010/1220/1743.html">派出所警用设备管理系统</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2010/1220/1742.html">NTFS文件系统存储结构研究</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2010/1220/1740.html">物流园停车场监控系统</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2010/1220/1739.html">在逃人员管理信息系统</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2010/1220/1738.html">计算机实验室网站设计</a></li>
+
+					</ul>
+				</dd>
+			</dl>
+		</div><!-- /commend -->
+		
+		<div class="hot">
+			<dl class="tbox">
+				<dt><h3 class="L"></h3><strong>热门文章</strong></dt>
+				<dd>
+					<ul class="c1 ico2">
+                    <li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2011/1215/67382.html">基于“PFC+LLC+CV\CC”拓扑结构的HB-LED驱动电源设计</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2011/1107/54626.html">浅析张恨水《金粉世家》中冷清秋形象</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129913.html">基于FlashPaper的文档在线阅读方法研究</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2011/1211/67047.html">大姨妈与卫生巾故事……的故事</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129187.html">园区网络设计</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2011/1122/64586.html">《天翼决》新手攻略:轮魔</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2011/1211/67097.html">安卓大杂烩</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2011/0317/24225.html">基于Apriori算法的关联规则挖掘系统的设计与实现</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2011/1122/64620.html">LOL:冰晶凤凰艾尼维亚完整攻略(一)</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2011/0401/27716.html">SQL数据库课程设计 学生选课</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129883.html">浅析我国网络安全技术现状及其发展趋势</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129815.html">网络安全技术的现状以及发展前景探讨</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129819.html">基于PHP MYSQL教务排课系统的设计与实现</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129856.html">信息管理系统在规模化种鸡场的应用</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129902.html">高职Photoshop平面设计课程教学改革实践探索</a></li>
+
+					</ul>
+				</dd>
+			</dl>
+		</div>
+		
+		<div class="hot">
+			<dl class="tbox">
+				<dt><h3 class="L"></h3><strong>相关文章</strong></dt>
+				<dd>
+					<ul class="c1 ico2">
+                    <li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129975.html">校园网安全解决方案的分析与设计</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129970.html">学校计算机信息资料管理系统的设计和开发</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129957.html">平面设计教学中色彩应用的重要性</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129954.html">基于B/S三层架构的实验室信息管理系统的研究与设计</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129943.html">浅论平面设计软件在中职艺术类院校的运用</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129942.html">基于Java ME和J2EE的小儿中医问诊系统的设计</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129940.html">基于GPRS的远程温度监控系统的设计</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129929.html">基于ASP.NET的单独招生信息系统设计</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129902.html">高职Photoshop平面设计课程教学改革实践探索</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129889.html">基于ACM自动判题系统的程序设计实践教学改革探索</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129876.html">一种基于GSM网的OA办公短信平台设计与实现</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129872.html">经贸校园的网络设计与管理</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129871.html">基于VR技术的三维校园漫游系统的设计与实现</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129851.html">钻石琢型的计算机辅助设计软件的设计与应用</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129848.html">出版物流第四方服务平台研究与设计</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129834.html">基于MIMO技术的信道容量研究与设计</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129829.html">模块式教学在计算机平面广告设计教学中的应用</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129826.html">《网页设计与制作》选修课的教学研究探讨</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129821.html">基于网络的远程医疗监护平台设计</a></li>
+<li><a href="http://www.slgz.cn/html/biyesheji/qitasheji/2012/0308/129820.html">浅谈网络婚恋交友系统的设计与实现</a></li>
+
+					</ul>
+				</dd>
+			</dl>
+		</div>
+
+
+	</div><!-- /pright -->
+</div>
+
+<div class="footer w960 center mt1 clear">
+	<p class="copyright">
+		Copyright &#169; 2006-2011 www.slgz.cn 计算机毕业论文 All Rights Reserved.<br>   客服QQ：844974664 客服QQ：93942916 鄂ICP备05000273号 <script src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/stat.php" language="JavaScript"></script><script src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/cnzz_core.php" charset="utf-8" type="text/javascript"></script><a href="http://www.cnzz.com/stat/website.php?web_id=2673390" target="_blank" title="站长统计"><img src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/pic.gif" border="0" hspace="0" vspace="0"></a><br><img src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/dibu.gif" height="48" width="590"> 
+    </p>
+</div>
+<script src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/qq.js" type="text/javascript"></script><div id="lovexin12" style="right:5px;POSITION:absolute;TOP:180px;z-index:100"><table style="margin-right: 0px; width: 90px;" align="left" border="0" cellpadding="0" cellspacing="0" height="32"><tbody><tr><td style="padding: 0px; font-size: 13px;" height="32"><table border="0" cellpadding="0" cellspacing="0" height="1"><tbody><tr><td style="padding: 0px; font-size: 13px; background: none repeat scroll 0% 0% transparent;" height="20"><img src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/qq_top.gif" usemap="#MapMapMap" border="0" height="33" width="90"></td></tr><tr><td style="padding: 0px 0px 0px 1px; font-size: 13px;" background="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/qq_center.gif" height="19"><table style="width: 86px;" align="center" border="0" cellpadding="0" cellspacing="0" height="1"><tbody><tr><td style="padding: 0px 4px 0px 1px;"><table align="left" border="0" cellpadding="0" cellspacing="0"><!--begin--><tbody><tr><td style="padding-left: 0px;" height="24" width="23"><img src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/pa.gif" alt="" align="right" border="0"></td><td style="background-repeat: repeat; background-attachment: scroll; padding: 0px 0px 0px 3px; background-position: 0% center;" align="left" height="24" width="55"><a style="color: rgb(241, 68, 0);" target="blank" href="http://wpa.qq.com/msgrd?V=1&amp;Uin=844974664&amp;Site=www.slgz.cn&amp;Menu=yes" title="为了更好的为您服务,请加在线客服为好友,QQ:844974664">客服①号</a></td></tr><tr><td style="padding-left: 0px;" height="24" width="23"><img src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/pa_002.gif" alt="" align="right" border="0"></td><td style="background-repeat: repeat; background-attachment: scroll; padding: 0px 0px 0px 3px; background-position: 0% center;" align="left" height="24"><a style="color: rgb(241, 68, 0);" target="blank" href="http://wpa.qq.com/msgrd?V=1&amp;Uin=93942916&amp;Site=www.slgz.cn&amp;Menu=yes" title="为了更好的为您服务,请加在线客服为好友,QQ:93942916">客服②号</a></td></tr><tr><td style="padding-left: 0px;" height="24" width="23"><img src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/pa_002.gif" alt="" align="right" border="0"></td><td style="background-repeat: repeat; background-attachment: scroll; padding: 0px 0px 0px 3px; background-position: 0% center;" align="left" height="24"><a style="color: rgb(241, 68, 0);" target="blank" href="http://wpa.qq.com/msgrd?V=1&amp;Uin=93942916&amp;Site=www.slgz.cn&amp;Menu=yes" title="为了更好的为您服务,请加在线客服为好友,QQ:93942916">客服③号</a></td></tr><tr><td style="padding-left: 0px;" height="24" width="23"><img src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/qq_01.gif" alt="" align="right" border="0" height="16" width="16"></td><td style="background-repeat: repeat; background-attachment: scroll; padding: 0px 0px 0px 3px; background-position: 0% center;" align="left" height="24"><a style="color: rgb(241, 68, 0); line-height: 24px;" target="blank" href="http://www.slgz.cn/html/about/2011/0316/23787.html" title="购买毕业设计(论文)前请先访问我们的购买指南">信誉说明</a></td></tr><tr><td style="padding-left: 0px;" height="24" width="23"><img src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/qq_01.gif" alt="" align="right" border="0" height="16" width="16"></td><td style="background-repeat: repeat; background-attachment: scroll; padding: 0px 0px 0px 3px; background-position: 0% center;" align="left" height="24"><a style="color: rgb(241, 68, 0); line-height: 24px;" target="blank" href="http://www.slgz.cn/html/about/2011/0316/23788.html" title="咨询前请先访问我们的帮助中心-疑难解答">付款方式</a></td></tr><tr><td style="padding-left: 0px;" height="24" width="23"><img src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/pa_005.gif" alt="" align="right" border="0"></td><td style="background-repeat: repeat; background-attachment: scroll; padding: 0px 0px 0px 3px; background-position: 0% center;" align="left" height="24"><a style="color: rgb(102, 102, 102);" target="blank" href="http://wpa.qq.com/msgrd?V=1&amp;Uin=81120664&amp;Site=www.slgz.cn&amp;Menu=yes" title="">售后服务</a></td></tr><tr><td style="padding-left: 0px;" height="24" width="23"><img src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/pa_005.gif" alt="" align="right" border="0"></td><td style="background-repeat: repeat; background-attachment: scroll; padding: 0px 0px 0px 3px; background-position: 0% center;" align="left" height="24"><a style="color: rgb(102, 102, 102);" target="blank" href="http://wpa.qq.com/msgrd?V=1&amp;Uin=81120664&amp;Site=www.slgz.cn&amp;Menu=yes" title="">技术支持</a></td></tr><tr><td style="padding-left: 0px;" height="24" width="23"><img src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/qq_02.gif" alt="" align="right" border="0" height="16" width="16"></td><td style="background-repeat: repeat; background-attachment: scroll; padding: 0px 0px 0px 3px; background-position: 0% center;" align="left" height="24"><a style="color: rgb(102, 102, 102); line-height: 24px;" target="blank" href="http://www.slgz.cn/html/about/2011/0316/23789.html" title="需要订做毕业设计(论文)前请先查看订做流程">购买成品</a></td></tr><tr><td style="padding-left: 0px;" height="24" width="23"><img src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/qq_02.gif" alt="" align="right" border="0" height="16" width="16"></td><td style="background-repeat: repeat; background-attachment: scroll; padding: 0px 0px 0px 3px; background-position: 0% center;" align="left" height="24"><a style="color: rgb(102, 102, 102); line-height: 24px;" target="blank" href="http://www.slgz.cn/html/about/2011/0316/23790.html" title="客户至上 真诚服务 诚信为本">订制论文</a></td></tr><tr><td style="padding-left: 0px;" height="24" width="23"><img src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/call.gif" alt="" align="right" border="0" height="16" width="16"></td><td style="color: rgb(0, 102, 0); font-size: 9px; font-weight: bold; font-family: Arial; background-repeat: repeat; background-attachment: scroll; padding: 0px 0px 0px 3px; background-position: 0% center;" align="left" height="24">13545062927</td></tr><!--end--></tbody></table></td></tr></tbody></table></td></tr><tr><td style="padding: 0px; font-size: 13px;" height="1"><img src="Android%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8F%8C%E5%B1%8F%E5%88%87%E6%8D%A2%E6%98%BE%E7%A4%BA%E7%9A%84%E8%AE%BE%E8%AE%A11_files/qq_bottom.gif" height="76" width="90"></td></tr></tbody></table></td></tr></tbody></table><map name="MapMapMap" onclick="far_close()" style="cursor:handle"><area shape="rect" coords="55,8,102,30"></map></div>
+<!-- /footer -->
+
+
+</body></html>

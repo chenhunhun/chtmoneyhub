@@ -1,0 +1,63 @@
+body{line-height:18px;margin-top:2px;font-size:12px; background:#fff;  font-family:arial;word-break:break-all}
+
+a {color:#069}
+a:hover{color:#B84839}
+
+.f14,h1{font-size:14px}
+
+.nt1{color:#848484;font-size:12px;}
+
+
+
+
+
+
+
+#Lg{margin:2px  2px 30px;border-top:1px dotted #ccc}
+#footer{margin:30px 10px 2px; text-align:center;line-height:26px;border-top:1px solid #dfdfdf;clear:both}
+fieldset{padding:4px 6px}
+.answer_info{text-align:right;color:#aaa;padding-top:10px}
+
+.c{clear:both}
+
+
+
+
+
+
+
+.mb{width:950px;margin:0 auto}
+.topmenu{background:#6293BB;}
+.topshadow{background:url(../img/shadow.png) repeat-x bottom;height:6px;line-height:6px}
+
+.bl{ width:670px; float:left}
+.br{ width:260px;float:right}
+
+.tt{background:url(../img/header_bg.gif) repeat-x bottom;padding-bottom:8px;margin-bottom:6px}
+.tt1{font-size:14px;font-weight:bold;color:#000}
+
+.tt2 h4{background:url(../img/arrow.gif) no-repeat  1px 3px }
+.tt2 h4 a{margin-left:32px; font-size:14px;text-decoration:underline;}
+
+dl.code{border:1px dotted #EDB654}
+dl.code dt{font-weight:bold;padding:2px 4px;background:#EDB654}
+dl.code dd{font-size:12px;padding:4px 6px;word-wrap : break-word ;}
+
+.ansli li{
+	margin:8px 2px;
+	 height:16px;
+	 line-height:16px;
+	 overflow:hidden;
+}
+.ansli li a{
+	 background:url(../img/ico1.gif) no-repeat  1px 3px ;padding-left:16px;
+	 text-decoration:underline;
+	 color:#666;
+}
+
+
+#ask{padding:4px;margin:4px 0; border:1px dotted #FF9900}
+
+.ans{padding:4px;margin:8px 0; border:1px dotted #ccc}
+.anser{padding:4px 4px 12px 4px;}
+span.userava{ background:#63686C;color:#fff;padding:0 2px}
