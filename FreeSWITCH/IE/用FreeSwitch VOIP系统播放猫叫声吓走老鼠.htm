@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="zh-CN"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<title>用FreeSwitch VOIP系统播放猫叫声吓走老鼠 | 子夜聆静</title>
+<link rel="profile" href="http://gmpg.org/xfn/11">
+<link rel="stylesheet" type="text/css" media="all" href="%E7%94%A8FreeSwitch%20VOIP%E7%B3%BB%E7%BB%9F%E6%92%AD%E6%94%BE%E7%8C%AB%E5%8F%AB%E5%A3%B0%E5%90%93%E8%B5%B0%E8%80%81%E9%BC%A0_files/style.css">
+<link rel="pingback" href="http://blog.licaiwang.info/xmlrpc.php">
+<link rel="alternate" type="application/rss+xml" title="子夜聆静 » feed" href="http://blog.licaiwang.info/?feed=rss2">
+<link rel="alternate" type="application/rss+xml" title="子夜聆静 » 评论 feed" href="http://blog.licaiwang.info/?feed=comments-rss2">
+<link rel="alternate" type="application/rss+xml" title="子夜聆静 » 用FreeSwitch VOIP系统播放猫叫声吓走老鼠 评论 feed" href="http://blog.licaiwang.info/?feed=rss2&amp;p=450">
+<link rel="stylesheet" id="wm-css" href="%E7%94%A8FreeSwitch%20VOIP%E7%B3%BB%E7%BB%9F%E6%92%AD%E6%94%BE%E7%8C%AB%E5%8F%AB%E5%A3%B0%E5%90%93%E8%B5%B0%E8%80%81%E9%BC%A0_files/style_002.css" type="text/css" media="all">
+<script src="%E7%94%A8FreeSwitch%20VOIP%E7%B3%BB%E7%BB%9F%E6%92%AD%E6%94%BE%E7%8C%AB%E5%8F%AB%E5%A3%B0%E5%90%93%E8%B5%B0%E8%80%81%E9%BC%A0_files/ga.js" async="" type="text/javascript"></script><script type="text/javascript" src="%E7%94%A8FreeSwitch%20VOIP%E7%B3%BB%E7%BB%9F%E6%92%AD%E6%94%BE%E7%8C%AB%E5%8F%AB%E5%A3%B0%E5%90%93%E8%B5%B0%E8%80%81%E9%BC%A0_files/l10n.js"></script>
+<script type="text/javascript" src="%E7%94%A8FreeSwitch%20VOIP%E7%B3%BB%E7%BB%9F%E6%92%AD%E6%94%BE%E7%8C%AB%E5%8F%AB%E5%A3%B0%E5%90%93%E8%B5%B0%E8%80%81%E9%BC%A0_files/jquery.js"></script>
+<script type="text/javascript" src="%E7%94%A8FreeSwitch%20VOIP%E7%B3%BB%E7%BB%9F%E6%92%AD%E6%94%BE%E7%8C%AB%E5%8F%AB%E5%A3%B0%E5%90%93%E8%B5%B0%E8%80%81%E9%BC%A0_files/comment-reply.js"></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://blog.licaiwang.info/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://blog.licaiwang.info/wp-includes/wlwmanifest.xml"> 
+<link rel="index" title="子夜聆静" href="http://blog.licaiwang.info/">
+<link rel="start" title="爱上一个人的6个预兆" href="http://blog.licaiwang.info/?p=4">
+<link rel="prev" title="2003元AMD 4核电脑配置" href="http://blog.licaiwang.info/?p=444">
+<link rel="next" title="办公室绿色植物－合果芋" href="http://blog.licaiwang.info/?p=453">
+<meta name="generator" content="WordPress 3.1.2">
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-23259353-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script> 
+</head><body class="single single-post postid-450 single-format-standard"><div id="c_n_z_z" style="display:none">
+<script src="%E7%94%A8FreeSwitch%20VOIP%E7%B3%BB%E7%BB%9F%E6%92%AD%E6%94%BE%E7%8C%AB%E5%8F%AB%E5%A3%B0%E5%90%93%E8%B5%B0%E8%80%81%E9%BC%A0_files/stat.php" language="JavaScript"></script><script src="%E7%94%A8FreeSwitch%20VOIP%E7%B3%BB%E7%BB%9F%E6%92%AD%E6%94%BE%E7%8C%AB%E5%8F%AB%E5%A3%B0%E5%90%93%E8%B5%B0%E8%80%81%E9%BC%A0_files/cnzz_core.php" charset="utf-8" type="text/javascript"></script><a href="http://www.cnzz.com/stat/website.php?web_id=3084758" target="_blank" title="站长统计">站长统计</a> 
+</div>
+<!-- All in One SEO Pack 1.6.13.4 by Michael Torbert of Semper Fi Web Design[78,151] -->
+<meta name="keywords" content="voip,生活,杂七杂八">
+<link rel="canonical" href="http://blog.licaiwang.info/?p=450">
+<!-- /all in one seo pack -->
+
+<link rel="stylesheet" href="%E7%94%A8FreeSwitch%20VOIP%E7%B3%BB%E7%BB%9F%E6%92%AD%E6%94%BE%E7%8C%AB%E5%8F%AB%E5%A3%B0%E5%90%93%E8%B5%B0%E8%80%81%E9%BC%A0_files/wp-syntax.css" type="text/css" media="screen">
+
+
+
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="http://blog.licaiwang.info/" title="子夜聆静" rel="home">子夜聆静</a>
+					</span>
+				</div>
+				<div id="site-description">红豆纷飞</div>
+
+										<img src="%E7%94%A8FreeSwitch%20VOIP%E7%B3%BB%E7%BB%9F%E6%92%AD%E6%94%BE%E7%8C%AB%E5%8F%AB%E5%A3%B0%E5%90%93%E8%B5%B0%E8%80%81%E9%BC%A0_files/1.jpg" alt="" height="198" width="940">
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+			  				<div class="skip-link screen-reader-text"><a href="#content" title="跳至正文">跳至正文</a></div>
+								<div class="menu-header"><ul id="menu-top" class="menu"><li id="menu-item-257" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-257"><a title="taget=_blank" href="http://mai8mai8.taobao.com/">淘宝网店</a></li>
+<li id="menu-item-358" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-358"><a href="http://blog.licaiwang.info/?cat=3">转载文章</a></li>
+<li id="menu-item-438" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-438"><a title="理财记账网" href="http://licaiwang.info/">理财网</a></li>
+</ul></div>			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="http://blog.licaiwang.info/?p=444" rel="prev"><span class="meta-nav">←</span> 2003元AMD 4核电脑配置</a></div>
+					<div class="nav-next"><a href="http://blog.licaiwang.info/?p=453" rel="next">办公室绿色植物－合果芋 <span class="meta-nav">→</span></a></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-450" class="post-450 post type-post status-publish format-standard hentry category-24 tag-voip tag-57">
+					<h1 class="entry-title">用FreeSwitch VOIP系统播放猫叫声吓走老鼠</h1>
+
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">发表于</span> <a href="http://blog.licaiwang.info/?p=450" title="19:09" rel="bookmark"><span class="entry-date">2011-12-07</span></a> <span class="meta-sep">由</span> <span class="author vcard"><a class="url fn n" href="http://blog.licaiwang.info/?author=1" title="查看所有由 flyingnn 发布的文章">flyingnn</a></span>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						<g:plusone href="http://blog.licaiwang.info/?p=450" size="medium" annotation="none"></g:plusone><p>办公室里老鼠开会,搞得到处都是小黑豆,甚是烦恼.</p>
+<p>在办公室吃的东西,没有及时清除剩下的垃圾,晚上就成为了老鼠们丰富的晚餐了.</p>
+<p>甚至在还在办公桌上面吃喝拉撒,搞得一团糟.</p>
+<p>于是想到了用猫声音来吓的想法:</p>
+<p>1. 在网上SEARCH 到一个网站,有很多猫叫的声音,都是WAV文件格式的,下载了好几个;<br>
+cat sound: http://kessels.com/CatSounds/index.html</p>
+<p>2. 简单的用WIN自带的录音机编辑一下:</p>
+<p>2.1 先是录一段空白的声音;<br>
+2.2 新建文件,间隔插入下载到的猫叫声音和空白声音文件,长度在1分钟内,然后保存成新的猫叫声音文件;</p>
+<p>3. 想到之前搞的FREESWITCH VOIP电话系统有会议电话功能,打入有背景音乐播放,于是更改了相关的设置:</p>
+<p>3.1 把声音文件cat.wav copy 到Free switch 的目录: freeswitch/sounds/en/us/callie/conference/8000/cat.wav;</p>
+<p>3.2 更改拨号计划,加一个会议电话拨号:</p>
+<p>vi conf/dialplan/default.xml</p>
+<p>&lt;extension name=”nb_conferences”&gt;<br>
+&lt;condition field=”destination_number” expression=”^(30\d{2})$”&gt;<br>
+&lt;action application=”answer”/&gt;<br>
+&lt;action application=”conference” data=”$1-${domain_name}@default”/&gt;<br>
+&lt;/condition&gt;<br>
+&lt;/extension&gt;</p>
+<p>3.3 更改会议电话的背景音乐文件为猫叫的声音文件:</p>
+<p>vi conf/autoload_configs/conference.conf.xml</p>
+<p>更改声音的速率,根据你的WAV文件来设定<br>
+&lt;param name=”rate” value=”22000″/&gt;</p>
+<p>指定声音文件路径<br>
+&lt;param name=”moh-sound” value=”conference/8000/cat-sound-22k-8bit.wav”/&gt;</p>
+<p>3.4 重启会议电话模块,让改动生效:</p>
+<p>freeswitch@internal&gt; reload mod_conference</p>
+<p>4. 使用方法:</p>
+<p>用内线拨打VOIP系统的会议电话功能号码,上面设为3000-3999间的任一个数字,先是听到一段英文,然后就听到你设定的猫叫声音了.<br>
+不同的电话,要拨打不同的号码,要不然,就进入会议了,没有背景的猫叫声了.</p>
+
+<!-- Quick Adsense WordPress Plugin: http://techmilieu.com/quick-adsense -->
+<div style="float:none;margin:10px 0 10px 0;text-align:center;">
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-8912810412778794";
+/* blog-licaiwang */
+google_ad_slot = "0332882534";
+google_ad_width = 250;
+google_ad_height = 250;
+//-->
+</script>
+<script type="text/javascript" src="%E7%94%A8FreeSwitch%20VOIP%E7%B3%BB%E7%BB%9F%E6%92%AD%E6%94%BE%E7%8C%AB%E5%8F%AB%E5%A3%B0%E5%90%93%E8%B5%B0%E8%80%81%E9%BC%A0_files/show_ads.js">
+</script><ins style="display:inline-table;border:none;height:250px;margin:0;padding:0;position:relative;visibility:visible;width:250px"><ins id="aswift_0_anchor" style="display:block;border:none;height:250px;margin:0;padding:0;position:relative;visibility:visible;width:250px"><iframe allowtransparency="true" hspace="0" marginwidth="0" marginheight="0" onload="var i=this.id,s=window.google_iframe_oncopy,H=s&amp;&amp;s.handlers,h=H&amp;&amp;H[i],w=this.contentWindow,d;try{d=w.document}catch(e){}if(h&amp;&amp;d&amp;&amp;(!d.body||!d.body.firstChild)){if(h.call){i+='.call';setTimeout(h,0)}else if(h.match){i+='.nav';w.location.replace(h)}s.log&amp;&amp;s.log.push(i)}" vspace="0" id="aswift_0" name="aswift_0" style="left: 0px; position: absolute; top: 0px;" frameborder="0" height="250" scrolling="no" width="250"></iframe></ins></ins>
+</div>
+
+<div style="font-size:0px;height:0px;line-height:0px;margin:0;padding:0;clear:both"></div>
+
+<p>Related posts:</p><ol><li><a href="http://blog.licaiwang.info/?p=210" rel="bookmark" title="三个人,三个鬼">三个人,三个鬼</a></li>
+</ol>											</div><!-- .entry-content -->
+
+
+					<div class="entry-utility">
+						此条目发表在 <a href="http://blog.licaiwang.info/?cat=24" title="查看 杂七杂八 的全部文章" rel="category">杂七杂八</a> 分类目录，贴了 <a href="http://blog.licaiwang.info/?tag=voip" rel="tag">voip</a>, <a href="http://blog.licaiwang.info/?tag=%e7%94%9f%e6%b4%bb" rel="tag">生活</a> 标签。将<a href="http://blog.licaiwang.info/?p=450" title="链向 用FreeSwitch VOIP系统播放猫叫声吓走老鼠 的固定链接" rel="bookmark">固定链接</a>加入收藏夹。											</div><!-- .entry-utility -->
+				</div><!-- #post-## -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="http://blog.licaiwang.info/?p=444" rel="prev"><span class="meta-nav">←</span> 2003元AMD 4核电脑配置</a></div>
+					<div class="nav-next"><a href="http://blog.licaiwang.info/?p=453" rel="next">办公室绿色植物－合果芋 <span class="meta-nav">→</span></a></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+
+
+								<div id="respond">
+				<h3 id="reply-title">发表评论 <small><a rel="nofollow" id="cancel-comment-reply-link" href="http://blog.licaiwang.info/?p=450#respond" style="display: none;">取消回复</a></small></h3>
+									<form action="http://blog.licaiwang.info/wp-comments-post.php" method="post" id="commentform">
+																			<p class="comment-notes">电子邮件地址不会被公开。 必填项已被标记为 <span class="required">*</span></p>							<p class="comment-form-author"><label for="author">名称</label> <span class="required">*</span><input id="author" name="author" size="30" aria-required="true" type="text"></p>
+<p class="comment-form-email"><label for="email">电子邮件</label> <span class="required">*</span><input id="email" name="email" size="30" aria-required="true" type="text"></p>
+<p class="comment-form-url"><label for="url">网站</label><input id="url" name="url" size="30" type="text"></p>
+												<p class="comment-form-comment"><label for="comment">评论</label><textarea id="comment" name="comment" cols="45" rows="8" aria-required="true"></textarea></p>						<p class="form-allowed-tags">您可以使用这些 <abbr title="HyperText Markup Language">HTML</abbr> 标签和属性： <code>&lt;a
+ href="" title=""&gt; &lt;abbr title=""&gt; &lt;acronym title=""&gt; 
+&lt;b&gt; &lt;blockquote cite=""&gt; &lt;cite&gt; &lt;code&gt; &lt;del 
+datetime=""&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=""&gt; &lt;strike&gt; 
+&lt;strong&gt; &lt;pre lang="" line="" escaped="" highlight=""&gt; </code></p>						<p class="form-submit">
+							<input name="submit" id="submit" value="发表评论" type="submit">
+							<input name="comment_post_ID" value="450" id="comment_post_ID" type="hidden">
+<input name="comment_parent" id="comment_parent" value="0" type="hidden">
+						</p>
+						<p style="display: none;"><input id="akismet_comment_nonce" name="akismet_comment_nonce" value="9a49fed479" type="hidden"></p>					</form>
+							</div><!-- #respond -->
+						
+</div><!-- #comments -->
+
+
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+
+		<div id="primary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+
+<li id="search-2" class="widget-container widget_search"><form role="search" method="get" id="searchform" action="http://blog.licaiwang.info/">
+	<div><label class="screen-reader-text" for="s">搜索：</label>
+	<input name="s" id="s" type="text">
+	<input id="searchsubmit" value="搜索" type="submit">
+	</div>
+	</form></li><li id="linkcat-2" class="widget-container widget_links"><h3 class="widget-title">我的收藏</h3>
+	<ul class="xoxo blogroll">
+<li><a href="http://mai8mai8.taobao.com/" title="手机话费充值—Q币充值—游戏点卡">淘宝网店</a></li>
+<li><a href="http://licaiwang.info/" target="_blank">理财网</a></li>
+
+	</ul>
+</li>
+<li id="categories-2" class="widget-container widget_categories"><h3 class="widget-title">分类目录</h3>		<ul>
+	<li class="cat-item cat-item-50"><a href="http://blog.licaiwang.info/?cat=50" title="查看 APPLE 下的所有文章">APPLE</a>
+</li>
+	<li class="cat-item cat-item-30"><a href="http://blog.licaiwang.info/?cat=30" title="查看 EM Signaling 下的所有文章">EM Signaling</a>
+</li>
+	<li class="cat-item cat-item-31"><a href="http://blog.licaiwang.info/?cat=31" title="查看 FXO FXS EM 下的所有文章">FXO FXS EM</a>
+</li>
+	<li class="cat-item cat-item-5"><a href="http://blog.licaiwang.info/?cat=5" title="linux相关">Linux</a>
+</li>
+	<li class="cat-item cat-item-6"><a href="http://blog.licaiwang.info/?cat=6" title="pbx,交换机相关">PABX</a>
+</li>
+	<li class="cat-item cat-item-17"><a href="http://blog.licaiwang.info/?cat=17" title="Program">Program</a>
+</li>
+	<li class="cat-item cat-item-43"><a href="http://blog.licaiwang.info/?cat=43" title="查看 shopping 下的所有文章">shopping</a>
+</li>
+	<li class="cat-item cat-item-13"><a href="http://blog.licaiwang.info/?cat=13" title="查看 Windows 下的所有文章">Windows</a>
+</li>
+	<li class="cat-item cat-item-1"><a href="http://blog.licaiwang.info/?cat=1" title="查看 未分类 下的所有文章">未分类</a>
+</li>
+	<li class="cat-item cat-item-24"><a href="http://blog.licaiwang.info/?cat=24" title="查看 杂七杂八 下的所有文章">杂七杂八</a>
+</li>
+	<li class="cat-item cat-item-37"><a href="http://blog.licaiwang.info/?cat=37" title="查看 电子通信 下的所有文章">电子通信</a>
+</li>
+	<li class="cat-item cat-item-4"><a href="http://blog.licaiwang.info/?cat=4" title="网络摘录">网摘</a>
+</li>
+	<li class="cat-item cat-item-20"><a href="http://blog.licaiwang.info/?cat=20" title="查看 网站 下的所有文章">网站</a>
+</li>
+	<li class="cat-item cat-item-18"><a href="http://blog.licaiwang.info/?cat=18" title="查看 网络技术 下的所有文章">网络技术</a>
+</li>
+	<li class="cat-item cat-item-3"><a href="http://blog.licaiwang.info/?cat=3" title="由子夜聆静转载">转载</a>
+</li>
+		</ul>
+</li><li id="recent-comments-2" class="widget-container widget_recent_comments"><h3 class="widget-title">近期评论</h3><ul id="recentcomments"><li class="recentcomments"><a href="http://blog.licaiwang.info/" rel="external nofollow" class="url">flyingnn</a> 在 <a href="http://blog.licaiwang.info/?p=400#comment-33">用php下载文件不全，最大只有1.9多M</a> 上的评论</li><li class="recentcomments">flyingnn 在 <a href="http://blog.licaiwang.info/?p=373#comment-29">电脑配置单&lt;2011-07&gt;</a> 上的评论</li><li class="recentcomments">AA 在 <a href="http://blog.licaiwang.info/?p=373#comment-28">电脑配置单&lt;2011-07&gt;</a> 上的评论</li></ul></li>		<li id="recent-posts-2" class="widget-container widget_recent_entries">		<h3 class="widget-title">最近文章</h3>		<ul>
+				<li><a href="http://blog.licaiwang.info/?p=546" title="wordpress default themes Twenty Ten pre overflow">wordpress default themes Twenty Ten pre overflow</a></li>
+				<li><a href="http://blog.licaiwang.info/?p=538" title="C# winform datatable export to excel xml format">C# winform datatable export to excel xml format</a></li>
+				<li><a href="http://blog.licaiwang.info/?p=535" title="MS SQL SERVER字符串生成時間比較">MS SQL SERVER字符串生成時間比較</a></li>
+				<li><a href="http://blog.licaiwang.info/?p=531" title="D8數字話機無法撥打外線">D8數字話機無法撥打外線</a></li>
+				<li><a href="http://blog.licaiwang.info/?p=529" title="SQL 查询表格中所有记录的最新记录">SQL 查询表格中所有记录的最新记录</a></li>
+				</ul>
+		</li><li id="tag_cloud-3" class="widget-container widget_tag_cloud"><h3 class="widget-title">标签</h3><div class="tagcloud"><a href="http://blog.licaiwang.info/?tag=bitcoin" class="tag-link-41" title="2 个话题" style="font-size: 10.9647pt;">bitcoin</a>
+<a href="http://blog.licaiwang.info/?tag=btc" class="tag-link-42" title="1 个话题" style="font-size: 8pt;">BTC</a>
+<a href="http://blog.licaiwang.info/?tag=c" class="tag-link-47" title="6 个话题" style="font-size: 17.0588pt;">C#</a>
+<a href="http://blog.licaiwang.info/?tag=css" class="tag-link-65" title="1 个话题" style="font-size: 8pt;">CSS</a>
+<a href="http://blog.licaiwang.info/?tag=delphi" class="tag-link-46" title="2 个话题" style="font-size: 10.9647pt;">delphi</a>
+<a href="http://blog.licaiwang.info/?tag=drupal" class="tag-link-58" title="1 个话题" style="font-size: 8pt;">drupal</a>
+<a href="http://blog.licaiwang.info/?tag=excel" class="tag-link-52" title="3 个话题" style="font-size: 12.9412pt;">EXCEL</a>
+<a href="http://blog.licaiwang.info/?tag=git" class="tag-link-53" title="2 个话题" style="font-size: 10.9647pt;">GIT</a>
+<a href="http://blog.licaiwang.info/?tag=godaddy" class="tag-link-39" title="1 个话题" style="font-size: 8pt;">godaddy</a>
+<a href="http://blog.licaiwang.info/?tag=google" class="tag-link-62" title="2 个话题" style="font-size: 10.9647pt;">Google</a>
+<a href="http://blog.licaiwang.info/?tag=host" class="tag-link-56" title="2 个话题" style="font-size: 10.9647pt;">HOST</a>
+<a href="http://blog.licaiwang.info/?tag=html" class="tag-link-23" title="7 个话题" style="font-size: 17.8824pt;">html</a>
+<a href="http://blog.licaiwang.info/?tag=ipad" class="tag-link-51" title="1 个话题" style="font-size: 8pt;">IPAD</a>
+<a href="http://blog.licaiwang.info/?tag=iptables" class="tag-link-21" title="1 个话题" style="font-size: 8pt;">iptables</a>
+<a href="http://blog.licaiwang.info/?tag=java" class="tag-link-35" title="6 个话题" style="font-size: 17.0588pt;">Java</a>
+<a href="http://blog.licaiwang.info/?tag=javascript" class="tag-link-26" title="2 个话题" style="font-size: 10.9647pt;">JavaScript</a>
+<a href="http://blog.licaiwang.info/?tag=lab-view" class="tag-link-60" title="1 个话题" style="font-size: 8pt;">Lab View</a>
+<a href="http://blog.licaiwang.info/?tag=linux" class="tag-link-5" title="4 个话题" style="font-size: 14.5882pt;">Linux</a>
+<a href="http://blog.licaiwang.info/?tag=ms-sql" class="tag-link-48" title="6 个话题" style="font-size: 17.0588pt;">ms sql</a>
+<a href="http://blog.licaiwang.info/?tag=mysql" class="tag-link-25" title="2 个话题" style="font-size: 10.9647pt;">mysql</a>
+<a href="http://blog.licaiwang.info/?tag=office" class="tag-link-14" title="1 个话题" style="font-size: 8pt;">Office</a>
+<a href="http://blog.licaiwang.info/?tag=pabx" class="tag-link-6" title="1 个话题" style="font-size: 8pt;">PABX</a>
+<a href="http://blog.licaiwang.info/?tag=php" class="tag-link-15" title="13 个话题" style="font-size: 22pt;">PHP</a>
+<a href="http://blog.licaiwang.info/?tag=plc" class="tag-link-59" title="1 个话题" style="font-size: 8pt;">PLC</a>
+<a href="http://blog.licaiwang.info/?tag=python" class="tag-link-16" title="3 个话题" style="font-size: 12.9412pt;">Python</a>
+<a href="http://blog.licaiwang.info/?tag=qq" class="tag-link-27" title="1 个话题" style="font-size: 8pt;">QQ</a>
+<a href="http://blog.licaiwang.info/?tag=server" class="tag-link-45" title="4 个话题" style="font-size: 14.5882pt;">Server</a>
+<a href="http://blog.licaiwang.info/?tag=tornado" class="tag-link-64" title="1 个话题" style="font-size: 8pt;">tornado</a>
+<a href="http://blog.licaiwang.info/?tag=v2ex" class="tag-link-63" title="2 个话题" style="font-size: 10.9647pt;">V2EX</a>
+<a href="http://blog.licaiwang.info/?tag=vb" class="tag-link-49" title="1 个话题" style="font-size: 8pt;">VB</a>
+<a href="http://blog.licaiwang.info/?tag=voip" class="tag-link-38" title="2 个话题" style="font-size: 10.9647pt;">voip</a>
+<a href="http://blog.licaiwang.info/?tag=wiki" class="tag-link-55" title="2 个话题" style="font-size: 10.9647pt;">wiki</a>
+<a href="http://blog.licaiwang.info/?tag=%e4%ba%ac%e4%b8%9c" class="tag-link-44" title="4 个话题" style="font-size: 14.5882pt;">京东</a>
+<a href="http://blog.licaiwang.info/?tag=%e5%a8%b1%e4%b9%90" class="tag-link-22" title="2 个话题" style="font-size: 10.9647pt;">娱乐</a>
+<a href="http://blog.licaiwang.info/?tag=%e5%a8%b1%e4%b9%90%e5%9c%ba" class="tag-link-36" title="1 个话题" style="font-size: 8pt;">娱乐场</a>
+<a href="http://blog.licaiwang.info/?tag=%e6%af%94%e7%89%b9%e5%b8%81" class="tag-link-40" title="1 个话题" style="font-size: 8pt;">比特币</a>
+<a href="http://blog.licaiwang.info/?tag=%e6%b0%b4%e6%9e%9c" class="tag-link-54" title="1 个话题" style="font-size: 8pt;">水果</a>
+<a href="http://blog.licaiwang.info/?tag=taobao" class="tag-link-9" title="1 个话题" style="font-size: 8pt;">淘宝</a>
+<a href="http://blog.licaiwang.info/?tag=%e7%94%9f%e6%b4%bb" class="tag-link-57" title="4 个话题" style="font-size: 14.5882pt;">生活</a>
+<a href="http://blog.licaiwang.info/?tag=%e7%94%b5%e5%ad%90" class="tag-link-33" title="2 个话题" style="font-size: 10.9647pt;">电子</a>
+<a href="http://blog.licaiwang.info/?tag=%e7%94%b5%e8%84%91%e9%85%8d%e7%bd%ae" class="tag-link-61" title="6 个话题" style="font-size: 17.0588pt;">电脑配置</a>
+<a href="http://blog.licaiwang.info/?tag=%e7%bd%91%e7%bb%9c" class="tag-link-19" title="4 个话题" style="font-size: 14.5882pt;">网络</a>
+<a href="http://blog.licaiwang.info/?tag=net-buy" class="tag-link-10" title="4 个话题" style="font-size: 14.5882pt;">网购</a>
+<a href="http://blog.licaiwang.info/?tag=%e8%87%aa%e5%8a%a8%e5%8c%96" class="tag-link-34" title="1 个话题" style="font-size: 8pt;">自动化</a></div>
+</li><li id="text-4" class="widget-container widget_text"><h3 class="widget-title">Amazon 电子书阅读</h3>			<div class="textwidget"><iframe src="%E7%94%A8FreeSwitch%20VOIP%E7%B3%BB%E7%BB%9F%E6%92%AD%E6%94%BE%E7%8C%AB%E5%8F%AB%E5%A3%B0%E5%90%93%E8%B5%B0%E8%80%81%E9%BC%A0_files/cm.htm" style="width: 120px; height: 240px;" marginwidth="0" marginheight="0" frameborder="0" scrolling="no"></iframe></div>
+		</li><li id="archives-2" class="widget-container widget_archive"><h3 class="widget-title">文章归档</h3>		<ul>
+			<li><a href="http://blog.licaiwang.info/?m=201204" title="2012 年四月">2012 年四月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=201203" title="2012 年三月">2012 年三月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=201201" title="2012 年一月">2012 年一月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=201112" title="2011 年十二月">2011 年十二月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=201111" title="2011 年十一月">2011 年十一月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=201108" title="2011 年八月">2011 年八月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=201107" title="2011 年七月">2011 年七月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=201106" title="2011 年六月">2011 年六月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=201105" title="2011 年五月">2011 年五月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=201003" title="2010 年三月">2010 年三月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=201001" title="2010 年一月">2010 年一月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=200908" title="2009 年八月">2009 年八月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=200812" title="2008 年十二月">2008 年十二月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=200811" title="2008 年十一月">2008 年十一月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=200810" title="2008 年十月">2008 年十月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=200809" title="2008 年九月">2008 年九月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=200806" title="2008 年六月">2008 年六月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=200805" title="2008 年五月">2008 年五月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=200804" title="2008 年四月">2008 年四月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=200801" title="2008 年一月">2008 年一月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=200712" title="2007 年十二月">2007 年十二月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=200710" title="2007 年十月">2007 年十月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=200709" title="2007 年九月">2007 年九月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=200708" title="2007 年八月">2007 年八月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=200707" title="2007 年七月">2007 年七月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=200706" title="2007 年六月">2007 年六月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=200705" title="2007 年五月">2007 年五月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=200704" title="2007 年四月">2007 年四月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=200703" title="2007 年三月">2007 年三月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=200702" title="2007 年二月">2007 年二月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=200701" title="2007 年一月">2007 年一月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=200612" title="2006 年十二月">2006 年十二月</a></li>
+	<li><a href="http://blog.licaiwang.info/?m=200607" title="2006 年七月">2006 年七月</a></li>
+		</ul>
+</li><li id="meta-2" class="widget-container widget_meta"><h3 class="widget-title">功能</h3>			<ul>
+						<li><a href="http://blog.licaiwang.info/wp-login.php">登录</a></li>
+			<li><a href="http://blog.licaiwang.info/?feed=rss2" title="使用 RSS 2.0 同步站点内容">文章 <abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="http://blog.licaiwang.info/?feed=comments-rss2" title="使用 RSS 同步站点的近期评论">评论 <abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="http://wordpress.org/" title="基于 WordPress，优美的个人信息发布平台。">WordPress.org</a></li>
+						</ul>
+</li>
+<!-- Quick Adsense Wordpress Plugin: http://techmilieu.com/quick-adsense -->
+<li id="adswidget1-quick-adsense" class="widget-container adswidget">
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-8912810412778794";
+/* pic */
+google_ad_slot = "9442283955";
+google_ad_width = 200;
+google_ad_height = 200;
+//-->
+</script>
+<script type="text/javascript" src="%E7%94%A8FreeSwitch%20VOIP%E7%B3%BB%E7%BB%9F%E6%92%AD%E6%94%BE%E7%8C%AB%E5%8F%AB%E5%A3%B0%E5%90%93%E8%B5%B0%E8%80%81%E9%BC%A0_files/show_ads.js">
+</script><ins style="display:inline-table;border:none;height:200px;margin:0;padding:0;position:relative;visibility:visible;width:200px"><ins id="aswift_1_anchor" style="display:block;border:none;height:200px;margin:0;padding:0;position:relative;visibility:visible;width:200px"><iframe allowtransparency="true" hspace="0" marginwidth="0" marginheight="0" onload="var i=this.id,s=window.google_iframe_oncopy,H=s&amp;&amp;s.handlers,h=H&amp;&amp;H[i],w=this.contentWindow,d;try{d=w.document}catch(e){}if(h&amp;&amp;d&amp;&amp;(!d.body||!d.body.firstChild)){if(h.call){i+='.call';setTimeout(h,0)}else if(h.match){i+='.nav';w.location.replace(h)}s.log&amp;&amp;s.log.push(i)}" vspace="0" id="aswift_1" name="aswift_1" style="left: 0px; position: absolute; top: 0px;" frameborder="0" height="200" scrolling="no" width="200"></iframe></ins></ins>
+</li>			</ul>
+		</div><!-- #primary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="http://blog.licaiwang.info/" title="子夜聆静" rel="home">
+					子夜聆静				</a>
+			</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="http://cn.wordpress.org/" title="优雅的个人发布平台" rel="generator">自豪地采用 WordPress。</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+<script type="text/javascript" src="%E7%94%A8FreeSwitch%20VOIP%E7%B3%BB%E7%BB%9F%E6%92%AD%E6%94%BE%E7%8C%AB%E5%8F%AB%E5%A3%B0%E5%90%93%E8%B5%B0%E8%80%81%E9%BC%A0_files/plusone.js"></script>
+
+</body></html>
