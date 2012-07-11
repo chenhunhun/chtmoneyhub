@@ -1,8 +1,0 @@
-LIBRARY	"ecitic"
-
-EXPORTS
-    FetchBillFunc @1
-    FreeMemory    @2
-    
-    
-    ; Explicit exports can go here
