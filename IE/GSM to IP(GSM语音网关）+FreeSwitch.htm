@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html class="mod-without-msyahei"><!--STATUS OK--><head> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <title> GSM  to IP(GSM语音网关）+FreeSwitch_古道_百度空间</title> <link rel="shortcut icon" href="http://hi.bdimg.com/static/qbase/img/mod/16_favicon.ico" type="image/x-icon">   <meta name="keywords" content="GSM  to IP(GSM语音网关）+FreeSwitch,Voip"> <meta name="description" content="智能手机应用 LINUX 学习,GSM  to IP(GSM语音网关）+FreeSwitch"><script>window.wpo={start:new Date*1,pid:109,page:'qing'}</script><!--[if IE]><script type="text/javascript">(function(){var b=("abbr,article,aside,audio,canvas,datalist,details,dialog,eventsource,figure,footer,header,hgroup,mark,menu,meter,nav,output,progress,section,time,video").split(","),a=b.length;while(a--){document.createElement(b[a])}})();</script><![endif]--><script>
+	/**
+	 * 公共变量：域名
+	 */
+	window.qDomain = {
+		"qing"		:	"http://hi.baidu.com",	//轻博客域名
+		"static"	:	"http://hi.bdimg.com",	//静态文件域名
+		"passport"	:	"https://passport.baidu.com",//passport域名
+		"portrait"	:	"http://tx.bdimg.com",//头像域名
+		"hiup"		:	"http://hiup.baidu.com",	//图片上传域名
+		"photo"		:	"http://hiphotos.baidu.com",	//图片&相册域名
+		"message"	:	"http://msg.baidu.com",	//百度私信域名
+		"friend"	:	"http://frd.baidu.com",	//好友系统域名
+		"mp3"		:	"http://mp3.baidu.com",		//MP3域名
+		"ting"		:	"http://ting.baidu.com",	//ting域名
+		"image"		:	"http://img.baidu.com",	//百度图片域名
+		"qup"		:	"http://hi.baidu.com",     //图片上传域名 发布用
+		"www"		:	"http://www.baidu.com"		//百度公网域名
+		
+	};
+
+	/**
+	 * 公共变量：用户（主人）相关
+	 */
+	window.qUserInfo = {
+		"userName"	: "zykbcatv", //百度用户名
+		"portrait"	: "9f257a796b6263617476d300", //用户portrait
+		"qingUrl"	: "\/zykbcatv", //用户url
+		"spaceName"	: "古道", //用户空间名
+		"right"	: "0", //用户权限
+		"avatarStatus" : "1", //用户头像状态
+		"flagNeedInvite"	: "0", //是否有邀请机制
+		"flagNotInvited"	: "0", //是否已经被邀请
+		"version"	: "2" //用户新老版本
+	};
+
+
+	/**
+	 * 公共变量：用户(访客，主人看自己页面时，访客即为主人)相关
+	 */
+	window.qVisitorInfo = {
+		"userName"	: "caoqqqwww", //百度用户名
+		"portrait"	: "98b563616f717171777777aa23", //用户portrait
+		"isHost"	: false,   //是否为主人
+		"loginStatus"	: "not_activate", //登陆状态
+		"qingUrl"	: "", //用户url
+		"right"	: "0", //用户权限
+		"version"	: "0" //用户新老版本
+	};
+	
+	/**
+	 * 公共变量：页面相关
+	 */
+	window.qPageInfo = {
+		"pageUrl"  : "http:\/\/hi.baidu.com\/zykbcatv\/item\/4d2e5d7e21cc86346dc37c8c", //当前页面的url
+		"referUrl" : "http:\/\/www.baidu.com\/s?wd=freeswitch%20voip%20%CA%B5%D5%BD&pn=60&tn=sitehao123&rsv_page=1" //refer地址
+	};
+
+	/**
+	 * 公共变量：主人头像各种尺寸的完整地址
+	 */
+	window.qUserAvatar = {
+		size20 : "http://hiphotos.baidu.com/space/scrop=20;q=100/sign=0b5db7587d1ed21b7d9769badd53eff4/35a85edf8db1cb13c59d1ab9dd54564e93584ba7.jpg",
+		size40 : "http://hiphotos.baidu.com/space/scrop=40;q=100/sign=f1d7c1810ef41bd5de0dafab21e7b5fb/35a85edf8db1cb13c59d1ab9dd54564e93584ba7.jpg",
+		size65 : "http://hiphotos.baidu.com/space/scrop=65;q=100/sign=823d084fad6eddc422b9f3a449e680c8/35a85edf8db1cb13c59d1ab9dd54564e93584ba7.jpg",
+		size110 : "http://hiphotos.baidu.com/space/scrop=110;q=100/sign=06da70bd62d0f703e2ecd28378c7600c/35a85edf8db1cb13c59d1ab9dd54564e93584ba7.jpg",
+		size160 : "http://hiphotos.baidu.com/space/scrop=160;q=100/sign=06da70bd62d0f703e2ecd28378c7600b/35a85edf8db1cb13c59d1ab9dd54564e93584ba7.jpg"
+	};
+
+	/**
+	 * 公共变量：访客头像各种尺寸的完整地址
+	 */
+	window.qVisitorAvatar = {
+		size20 : "",
+		size40 : "",
+		size65 : "",
+		size110 : "",
+		size160 : ""
+	};
+
+ 	/**
+	 * 公共变量：bdstoken
+	 */
+	 window.qBdsToken = "4232d3fcc69c8edf1d979133bb22b027";
+
+	/**
+	 * 公共变量：错误相关
+	 */
+	 window.qErrorInfo = {
+		"no" : 	"0", //错误号
+		"msg" : "" //错误消息
+	 };
+
+	 /**
+	  * 服务器相关信息
+	  */
+	 window.qServerInfo = {
+	 	"timeStamp" : "1340008581" //服务器时间
+	 }
+
+	 /**
+	  * 长连接
+	  * @type {Object}
+	  */
+	 window.qLongPolling = {
+	 	"url" : "http:\/\/m.hi.baidu.com\/i\/msg\/listen" //长连接监听地址
+	 };
+</script><!--[if (lt IE 8.0)]><link href="http://hi.bdimg.com/static/qbase/css/qbase.css?v=463d0d8f.css" type=text/css rel=stylesheet><![endif]--><!--[if (!IE)|(gte IE 8.0)]><!--><link href="GSM%20to%20IP%28GSM%E8%AF%AD%E9%9F%B3%E7%BD%91%E5%85%B3%EF%BC%89+FreeSwitch_files/qbase_datauri.css" type="text/css" rel="stylesheet"><!--<![endif]-->    <!--[if (lt IE 8.0)]><link rel=stylesheet type=text/css href="http://hi.bdimg.com/static/qcomment/css/qcomment.css?v=b14d92dd.css"><![endif]--><!--[if (!IE)|(gte IE 8.0)]><!--><link rel="stylesheet" type="text/css" href="GSM%20to%20IP%28GSM%E8%AF%AD%E9%9F%B3%E7%BD%91%E5%85%B3%EF%BC%89+FreeSwitch_files/qcomment_datauri.css"><!--<![endif]-->   <!--[if (lt IE 8.0)]><link type=text/css rel=stylesheet href="http://hi.bdimg.com/static/qhome/css/detail/20001/detail.css?v=e23298f2.css"><![endif]--><!--[if (!IE)|(gte IE 8.0)]><!--><link type="text/css" rel="stylesheet" href="GSM%20to%20IP%28GSM%E8%AF%AD%E9%9F%B3%E7%BD%91%E5%85%B3%EF%BC%89+FreeSwitch_files/detail_datauri.css"><!--<![endif]-->  <script src="GSM%20to%20IP%28GSM%E8%AF%AD%E9%9F%B3%E7%BD%91%E5%85%B3%EF%BC%89+FreeSwitch_files/qing.js"></script>  <script>
+    /*最终页页面变量*/ 
+    window.detailPage = {
+        threadId : "4d2e5d7e21cc86346dc37c8c",
+        contentType : "text",
+        originAuthorName : "",
+        originPortrait : "",
+        originThreadId : ""       
+    }; 
+    </script><script type="text/javascript">window.wpo=window.wpo||{};wpo.head=new Date*1;baidu.dom.ready(function(){wpo.dom=new Date*1});baidu.on(window,"load",function(){var b=wpo.load=new Date*1;setTimeout(function(){var g=["pid="+wpo.pid,"head="+(wpo.head-wpo.start),"tti="+(wpo.tti-wpo.start),"dom="+(wpo.dom-wpo.start),"load="+(wpo.load-wpo.start),"page="+wpo.page,"r="+b],a="wpo_"+b,c=window[a]=new Image;c.onload=(c.onerror=function(){window[a]=null});c.src="http://nsclick.baidu.com/v.gif?type=2009&fn=wpo&"+g.join("&");c=null},0)});</script> <style type="text/css"></style><link type="text/css" rel="stylesheet" href="GSM%20to%20IP%28GSM%E8%AF%AD%E9%9F%B3%E7%BD%91%E5%85%B3%EF%BC%89+FreeSwitch_files/bdsstyle.css"></head> <body><iframe style="display: none;" frameborder="0"></iframe><div style="right: 0px; top: 240px; position: fixed; height: 330px; overflow: hidden;" id="bdshare"><img src="GSM%20to%20IP%28GSM%E8%AF%AD%E9%9F%B3%E7%BD%91%E5%85%B3%EF%BC%89+FreeSwitch_files/r4.gif" alt="" style="float: left; margin-top: 58px;"><iframe id="bdsIfr" style="position: absolute; display: none; z-index: 9999;" frameborder="0"></iframe><div style="display: none; left: 24px;" id="bdshare_m"><div id="bdshare_m_c"><h6>分享到</h6><ul><li><a href="#" class="bds_qzone qqkj">QQ空间</a></li><li><a href="#" class="bds_tsina xlwb">新浪微博</a></li><li><a href="#" class="bds_baidu bdsc">百度搜藏</a></li><li><a href="#" class="bds_renren rrw">人人网</a></li><li><a href="#" class="bds_tqq txwb">腾讯微博</a></li><li><a href="#" class="bds_kaixin001 kxw">开心网</a></li><li><a href="#" class="bds_tqf txpy">腾讯朋友</a></li><li><a href="#" class="bds_more">更多...</a></li></ul><p><a href="#" class="goWebsite">百度分享</a></p></div></div></div>  <header class="mod-topbar" id="modTopbar"><iframe class="mod-topbar-bgframe"></iframe><div class="mod-topbar-pseudo-real"><div class="wrapper-box clearfix"><div class="left-box"><a href="http://hi.baidu.com/" class="logo-box"><span id="baiduSpaceLogo" class="q-logo"></span></a></div><div class="center-box"><ul class="q-menubox"><li class="q-menuitem"><a href="http://hi.baidu.com/tag">推荐</a></li></ul></div><div class="right-box"><ul class="q-navbox"><li class="q-navitem"><a href="https://passport.baidu.com/center">caoqqqwww</a></li><li class="q-navitem q-nav-sp"><span></span></li><li class="q-navitem"><a href="https://passport.baidu.com/?logout&amp;bdstoken=4232d3fcc69c8edf1d979133bb22b027&amp;u=http://hi.baidu.com/zykbcatv/item/4d2e5d7e21cc86346dc37c8c">退出</a></li></ul></div></div><script type="text/javascript">qing.registNS("qmod.topbar");qmod.topbar.ListenerMgr=(function(){var b=function(d){qui.showLogin({});qing.event.stop(d)};var a={click:{"q-goto-login":b}};var c=function(){qext.fn.addEventMap(qing.dom.q("mod-topbar")[0],["click"],a)};return{run:c}})();qmod.topbar.Main=(function(){var b=function(){qext.FontDetect.detect(["微软雅黑","Microsoft Yahei","\u5FAE\u8F6F\u96C5\u9ED1"],function(d){var e=qing.dom.query("html")[0];if(d){qing.dom.addClass(e,"mod-with-msyahei")}else{qing.dom.addClass(e,"mod-without-msyahei")}})};var a=function(){if(qVisitorInfo.loginStatus!=="activated"){return false}qing.QMsg.msgBubble.initialize({maxUnreadNum:99,maxUnreadViewListNum:10,unReadNumTipsTpl:['<div class="mod-msg-unread-num hide">','<div class="left-border"></div>','<div class="content"></div>','<div class="right-border"></div>',"</div>"].join(""),bubbleTpl:['<div class="bubble-icon-container">','<div class="bubble-icon"></div>',"</div>",'<div class="mod-msg-bubble-container">','<div class="bubble-content">','<div class="grid-36">','<div class="bubble-title-container clearfix">','<div class="bubble-title">消息</div>','<a onclick="qing.QMsg.msgBubble.closeBubble();return false;" title="关闭" href="#" class="bubble-title-close" target="_blank"></a>',"</div>",'<ul class="bubble-msg-list" id="bubble-msg-list">',"#{msgList}","</ul>","</div>",'<div class="bubble-more">','<a href="/qmsg" class="a-normal" target="_blank">查看全部消息</a>',"</div>","</div>",'<div class="bubble-bottom"></div>',"</div>"].join(""),msgItemTpl:['<li onclick="window.open(\'#{openurl}\');return false;" onmouseover="qing.QMsg.msgBubble.itemMouseOn(this)" onmouseout="qing.QMsg.msgBubble.itemMouseOut(this)">','<span class="msg-item-icon#{class}"></span>','<span class="msg-item-word">#{content}</span>',"</li>"].join("")})};var c=function(){qing.dom.ready(function(){b();qmod.topbar.ListenerMgr.run();a()})};return{init:c}})();qmod.topbar.Main.init();</script></div></header>  <section class="mod-page-body"> <div class="mod-page-main wordwrap clearfix">  <div class="x-page-container">
+    <section class="mod-topspaceinfo"><div class="head-topbar"></div><div class="container"><h1><a class="space-name" href="http://hi.baidu.com/new/zykbcatv">古道</a></h1><p class="space-description">智能手机应用 LINUX 学习</p></div><div class="head-footer"></div></section>    <div class="mod-blogpage-wraper">
+        <div class="blog-bg-main-repeat hide"></div>
+        <div class="grid-80 mod-blogpage">
+            <div class="blog-bg-main hide"></div>
+            
+        <div class="mod-text-content mod-post-content">   
+                      <div class="content-head clearfix">  <div class="content-other-info"> <span>2011-11-12 20:05</span> </div>   <h2 class="title content-title">GSM  to IP(GSM语音网关）+FreeSwitch</h2>  </div> <div id="content" class="content text-content clearfix"> <p>从知道VOIP，就一直有个想法，自己弄一个VOIP服务器，测试、使用均可。</p><p>慢慢的了解到Asterisk，了解到小型化的的VOIP网关，可以GSM to IP, PSTN to IP，设置简单，方便上手。</p><p>&nbsp;</p><p>国外的朋友比较喜欢用的skype就是有一个自有协议的大型网络电话平台。因诸多因素限制，国内的VOIP一直是游走在连缘地带，</p><p>很多地方的电信/网通封锁相关VOIP应用，应用也相对较少。</p><p>&nbsp;</p><p>skype
+在国内是不能显示号码的，用skype打电话，对方的来电显示会显示私人号码或者一个非正常的号码，在这个充满陷阱的时代，随时有被挂掉的可能性。最近准
+备出门，谋划自己搭建一个小的平台，最好是全硬件嵌入式，不需要PC辅助的类型，支持正确来电显示，专业的说法叫“全透”。</p><p>&nbsp;</p><p>开始寻觅到一个GSM to IP的东东，买回来琢磨了半天才发现不是IPPBX，还要SIP server的支持才行。卖家推荐我用FreeSwitch来做这个SIP server.&nbsp;</p><p>完全不懂这个FreeSwitch.开始学习摸索。。。折腾。。。</p><p>FreeSwitch支持LINUX,也支持Windows</p><p>官方网站：www.freeswitch.org</p><p>下载地址：<a href="http://files.freeswitch.org/windows_installer/installer/">http://files.freeswitch.org/windows_installer/installer/</a>&nbsp; &nbsp; （windows版本下载地址分32位与64位）</p><p>WIKI:<a href="http://wiki.freeswitch.org/wiki/Installation_for_Windows">http://wiki.freeswitch.org/wiki/Installation_for_Windows</a>&nbsp;(英文的）</p><p>安装很简单，运行截图</p><p><img src="GSM%20to%20IP%28GSM%E8%AF%AD%E9%9F%B3%E7%BD%91%E5%85%B3%EF%BC%89+FreeSwitch_files/9da0f5a4b8a0a9819152ee82.png" small="0"></p><p>待后续</p><p>&nbsp;</p><p></p> </div>   <div class="mod-post-info clearfix"> <div class="tag-box clearfix">  <a class="tag" href="http://hi.baidu.com/tag/Voip/feeds">#Voip</a>  </div> <div class="op-box"> <span class="pv">浏览(534)</span><a class="comment-bnt" id="commentBnt" href="#" onclick="return false">评论<span class="comment-nub hide"></span></a><a href="#" id="shareBnt" onclick="return false" class="share-bnt">转载<span id="shareNub" class="share-nub"></span></a> </div></div>              </div>
+    
+            <div class="mod-share-detail" id="shareDetail" style="display:none"></div>
+            
+            <div class="mod-detail-pager clearfix">
+                                    <div class="detail-nav-pre">
+                       <a href="http://hi.baidu.com/zykbcatv/item/28ffce340bcee799b80c038c" hidefocus="" title="上一篇"></a>
+                    </div>
+                                                    <div class="detail-nav-next">
+                        <a href="http://hi.baidu.com/zykbcatv/item/4ce9ff0f58f96d90a3df43b6" hidefocus="" title="下一篇"></a>
+                    </div>
+                            </div>
+                            <div id="commentDetail" class="mod-comment-detail clearfix">
+                    <div class="comment-title">评论</div>
+                    <div style="display: block; height: auto; overflow: visible;" class="comment-content"><div id="qcmt1328475" class="qcmt-wraper-box-comment"><div class="cmt-border-top"></div><div class="qcmt-arrow-wraper" style="left:700px;"><div class="qcmt-arrow-border"></div><div class="qcmt-arrow-shadow"></div><div class="qcmt-arrow"></div><div class="qcmt-arrow-inner"></div></div><div class="qcmt-input-box clearfix"><div class="qcmt-input-textarea-box"><div class="qcmt-textarea-wraper"><div class="qcmt-textarea-minishadow"><textarea style="overflow: hidden;" class="qcmt-textarea-box"></textarea></div></div><div class="qcmt-input-textnum-tip right hide"><span class="num-box num-total">500</span><span class="num-box num-l">/</span><span class="num-box now-num">0</span></div><div class="qcmt-input-repost-checkbox left"><div class="qcmt-reply-friend hide"><input name="comment" class="qcmt-reply-friend-check" id="repostCheckFriend" checked="checked" type="checkbox">&nbsp;<label for="repostCheckFriend">同时评论给&nbsp; </label></div><div class="qcmt-reply-author hide"><input name="comment" class="qcmt-reply-author-check" id="repostCheckAuthor" checked="checked" type="checkbox">&nbsp;<label for="repostCheckAuthor">同时评论给原文作者&nbsp; </label></div></div></div><div class="qcmt-sub-bt-box"><a href="#" class="cmt-add button button-save button-cmt clearfix"><span class="button-left">&nbsp;</span><span class="button-text">发布</span><span class="button-right">&nbsp;</span></a></div></div><div class="qcmt-main-wraper"><div class="qcmt-main-box"><div class="qcmt-list-wraper"><div class="cmt-list"></div></div><div class="qcmt-footer-wraper"><div class="qcmt-footer-box clearfix"><a class="qcmt-collapse" href="#"><span class="collapse-arrow"></span><span class="collapse-tip">收起</span></a><span class="qcmt-vl hide">|</span><a class="cmt-seemore cmt-seenext hide" href="http://hi.baidu.com/zykbcatv/item/4d2e5d7e21cc86346dc37c8c#reply" target="_blank"><span class="seemore-arrow hide"></span><span class="seemore-tip">查看更多</span></a><span class="seemore-loading hide"></span></div></div></div></div></div></div>
+                </div>
+                    </div>
+    </div>
+ </div> </div> </section>  <footer class="mod-footer"><div class="clearfix hidden-box"></div><div class="footer-box"><div class="inner-box"><a href="http://hi.baidu.com/go/show/introduce" target="_blank">帮助中心</a><span>&nbsp;|&nbsp;</span><a href="http://tieba.baidu.com/f?kw=%B0%D9%B6%C8%BF%D5%BC%E4&amp;fr=wwwt" target="_blank">空间客服</a><span>&nbsp;|&nbsp;</span><a href="http://tousu.baidu.com/hi/add" target="_blank">投诉中心</a><span>&nbsp;|&nbsp;</span><a href="http://www.baidu.com/search/hi_contract.html" target="_blank">空间协议</a></div><div class="copy-box">©2012&nbsp;Baidu</div></div></footer>  <script src="GSM%20to%20IP%28GSM%E8%AF%AD%E9%9F%B3%E7%BD%91%E5%85%B3%EF%BC%89+FreeSwitch_files/mod_foot.js"></script>     <script>
+            window.CurrentApplyedTpl = '';
+        </script> <script type="text/javascript">(function(){qext.stat.ns("m_20120425_"+window.CurrentApplyedTpl)})();</script> 
+    <script src="GSM%20to%20IP%28GSM%E8%AF%AD%E9%9F%B3%E7%BD%91%E5%85%B3%EF%BC%89+FreeSwitch_files/qcmt_import.js"></script>    <script src="GSM%20to%20IP%28GSM%E8%AF%AD%E9%9F%B3%E7%BD%91%E5%85%B3%EF%BC%89+FreeSwitch_files/detail.js"></script>
+        <script src="GSM%20to%20IP%28GSM%E8%AF%AD%E9%9F%B3%E7%BD%91%E5%85%B3%EF%BC%89+FreeSwitch_files/bds_s_v2.js" type="text/javascript" id="bdshare_js" data="type=slide&amp;mini=1&amp;img=4&amp;uid=713670"></script>
+    <script src="GSM%20to%20IP%28GSM%E8%AF%AD%E9%9F%B3%E7%BD%91%E5%85%B3%EF%BC%89+FreeSwitch_files/shell_v2.js" type="text/javascript" id="bdshell_js"></script>
+    <script type="text/javascript">
+        var bds_config = {'bdTop':240};
+                    var all_img = qing.g('content').getElementsByTagName('img');
+            if(all_img.length>0){
+                bds_config.bdPic = all_img[0].src;
+            }
+                document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?v=39745224.js?cdnversion=" + new Date().getHours();
+    </script>
+     <script>wpo.tti=new Date*1;</script><script>
+			var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+			document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F8c869b543955d43e496c2efee5b55823' type='text/javascript'%3E%3C/script%3E"));
+		</script><script src="GSM%20to%20IP%28GSM%E8%AF%AD%E9%9F%B3%E7%BD%91%E5%85%B3%EF%BC%89+FreeSwitch_files/h.js" type="text/javascript"></script><div id="qBack2topBtn" style="bottom: 1%; margin-left: 490px; width: 57px; height: 57px; overflow: hidden; cursor: pointer; left: 50%; -moz-transition-property: opacity; position: fixed; opacity: 0; display: none;"><div style="width: 57px; height: 57px; overflow: hidden; opacity: 0;"></div></div></body></html>
