@@ -1,1 +1,0 @@
-"C:\Program Files\JS Builder\JSBuildConsole.exe" E:\dailybuild\moneyhub_trunk\_Bin\MoneyHub.jsb /verbose
