@@ -1,0 +1,296 @@
+此种方法能实现，其中默认转移后按0，可进入三方通话。
+用transfer只能实现代接转移。
+
+Misc. Dialplan Tools att xfer
+From FreeSWITCH Wiki
+Jump to: navigation, search
+Contents
+[hide]
+
+    * 1 Attended Transfer
+          o 1.1 Example1
+          o 1.2 Example2
+    * 2 See Also
+
+Attended Transfer
+
+Make an attended transfer.
+
+Usage:
+
+att_xfer <channel_url>
+
+
+Example1
+
+Make a dialplan feature which read the number to make an attended transfer.
+
+<extension name="att_xfer">
+     <condition field="destination_number" expression="^att_xfer$">
+       <action application="read" data="3 4 sounds/getdigits.wav attxfer_callthis 30000 #"/>
+       <action application="att_xfer" data="sofia/default/${attxfer_callthis}"/>
+     </condition>
+</extension>
+
+Then bind this feature to DTMF 3.
+
+<action application="bind_meta_app" data="3 a a execute_extension::att_xfer XML features"/>
+
+During call press *3 to activate the feature. Feed it the number then it will make the call.
+
+If you hang up (after the other leg answered and you decided what to do), then it will transfer the call and bridge them together.
+
+If the other leg hang up thus indicating it doesn't want the transfer then you get it back.
+
+If the other leg is a voicemail or doesn't answered you can hangup that leg by pressing DTMF # (fixed in r14438)
+
+If you press DTMF 0 then it will convert it to a three-way, hangup and complete the transfer.
+
+See also bind_meta_app and read
+Example2
+
+In your dialplan add bind_meta_app key that will transfer the call to the extensions that will execute the att_xfer application.
+
+Example:
+
+<extension name="local_number">
+  <condition field="destination_number" expression="^(\d{3})$">
+    <action application="set" data="dialed_extension=$1"/>
+    <action application="export" data="dialed_extension=$1"/>
+    <action application="bind_meta_app" data="1 b s execute_extension::attented_xfer XML features"/>
+    <action application="set" data="transfer_ringback=$${hold_music}"/>
+    <action application="set" data="call_timeout=10"/>
+    <action application="set" data="hangup_after_bridge=true"/>
+    <action application="bridge" data="user/${dialed_extension}@${domain_name}"/>
+  </condition>
+</extension>
+
+In the features.xml add the extensions attended_xfer. The extensions below first waits for input from the user (30sec) and then makes attended transfer to the entered extension.
+
+Example:
+
+<extension name="attented_xfer">
+    <condition field="destination_number" expression="^attented_xfer$">
+      <action application="set" data="continue_on_fail=true"/>
+      <action application="read" data="3 4 ivr/ivr-enter_ext.wav attxfer_callthis 30000 #"/>
+      <action application="set" data="origination_cancel_key=#"/>
+      <action application="att_xfer" data="user/${attxfer_callthis}@${domain_name}"/>
+    </condition>
+</extension>
+
+From revision 14650, there is new parameter that can be set - origination_cancel_key. This feature is used when you want to cancel a transfer and to return to the first caller.
+Feature code 	Purpose 	When to use
+0 	it will convert the call to three-way conference 	After the last party answers the call
+# 	to hangup the call and to initiate the transfer 	After the last party answers the call
+* 	it will hangup the B leg and bridge A to C (fixed in r15013) 	After the last party answers the call
+# 	it will cancel the call and will return you the the caller 	Before the answer of the call by the last party
+See Also 
+
+*********************我们先看execute_extension的用法
+
+You can execute an extension from within another extension with this dialplan application. 
+
+execute_extension executes an extension like a macro then returns where transfer actually goes to the new extension instantly. When you don't need to do anything else use transfer and exit what you are doing and the channel goes back to the dialplan 
+
+execute_extension will keep the current scope and build a one time extension, execute it, and return right back to where it was called from. 
+
+The transfer actually alters the channels state, so if you are in a script you should exit the script as soon as you call transfer. 
+
+Usage
+<action application="execute_extension" data="extension [dialplan] [context]"/>
+If you do not specify the dialplan and context, it defaults to the current one. Please note that the extension parameter indicates a value that will be matched by dialplan_hunt() as a destination_number. It will not match on the extension's name= value. See the is_transfer example below on how to match on a name. 
+
+Examples
+   <extension name="hold_music">
+     <condition field="destination_number" expression="^9999$"/>
+     <condition field="${sip_has_crypto}" expression="^(AES_CM_128_HMAC_SHA1_32|AES_CM_128_HMAC_SHA1_80)$">
+       <action application="answer"/>
+       <action application="execute_extension" data="is_secure XML features"/>
+       <action application="playback" data="$${moh_uri}"/>
+       <anti-action application="answer"/>
+       <anti-action application="playback" data="$${moh_uri}"/>
+     </condition>
+   </extension>
+Another example is in features.xml: 
+
+   <extension name="dx">
+     <condition field="destination_number" expression="^dx$">
+       <action application="answer"/>
+       <action application="read" data="11 11 'tone_stream://%(10000,0,350,440)' digits 5000 #"/>
+       <action application="execute_extension" data="is_transfer XML features"/>
+     </condition>
+   </extension>
+
+   <extension name="is_transfer">
+     <condition field="destination_number" expression="^is_transfer$"/>
+     <condition field="${digits}" expression="^(\d+)$">
+       <action application="transfer" data="-bleg ${digits} XML default"/>
+       <anti-action application="eval" data="w00t"/>
+     </condition>
+   </extension>
+************************************第二read的用法
+Read DTMF (touch-tone) digits. 
+
+Usage
+read <min> <max> <sound file> <variable name> <timeout> <terminators>
+Parameters
+min = Minimum number of digits to fetch. 
+max = Maximum number of digits to fetch. 
+sound file = Sound file to play before digits are fetched. 
+variable name = Channel variable that digits should be placed in. 
+timeout = Number of milliseconds to wait on each digit 
+terminators = Digits used to end input if less than <min> digits have been pressed. (Typically '#') 
+Examples
+Read and playback digits. In this example 400 is the destination number min digits 0 max 10 with # as a terminator. The timeout argument is an inter-digit timeout
+
+
+<extension name="Read Example">
+<condition field="destination_number" expression="^400$">
+<action application="answer"/>
+<action application="sleep" data="1"/>
+<action application="read" data="0 10 $${base_dir}/sounds/en/us/callie/conference/8000/conf-pin.wav res 10000 #"/>
+<action application="phrase" data="spell,${res}"/>
+<action application="hangup"/>
+</condition>
+</extension>
+You can also have multiple terminators just comma separate them. 
+
+<extension name="Read Example">
+<condition field="destination_number" expression="^400$">
+<action application="answer"/>
+<action application="sleep" data="1"/>
+<action application="read" data="0 10 $${base_dir}/sounds/en/us/callie/conference/8000/conf-pin.wav res 10000 #,*"/>
+<action application="phrase" data="spell,${res}"/>
+<action application="hangup"/>
+</condition>
+</extension>
+**************************************************第三bind meta app按键转移的用法
+Misc. Dialplan Tools bind meta app
+From FreeSWITCH Wiki
+Jump to: navigation, search
+Contents [hide]
+1 Description
+2 Usage
+3 Examples
+4 Feature update
+5 See Also
+ 
+Description
+bind_meta_app binds an application to the specified call leg(s). During a bridged call, the DTMF sequence on the bound call leg will trigger the execution of the application. The call leg that is not bound will not hear the DTMF sequence being dialed. Once bound to a call leg, the application binding will survive for the lifetime of the call leg. 
+
+Important: This feature will not work when bypass_media=true, because the endpoints will be communicating directly with each other, and the key presses will not be sent to FreeSWITCH. 
+
+Key can also only be 0-9 ... * or # will revert to 0 
+
+Usage
+<action application="bind_meta_app" data="KEY LISTEN_TO RESPOND_ON APPLICATION[::PARAMETERS]"/>
+Explanation of parameters 
+
+KEY is the button you want to respond to after the * button is pressed. If you wanted to respond to *1, you would put 1 in place of KEY. You are limited to a single digit.
+
+LISTEN_TO is which call leg(s) to listen on. Acceptable parameters are a, b or ab.
+
+RESPOND_ON is which call leg(s) to perform the action on. Acceptable parameters are s or o. s means same and o means opposite in cases where you use both a and b 
+APPLICATION is which application you want to execute.
+
+PARAMETERS are the arguments you want or need to provide to the APPLICATION. You must put :: after the APPLICATION for these arguments to be handled properly.
+
+
+
+
+Examples
+<action application="bind_meta_app" data="1 a s execute_extension::dx XML features"/>
+When *1 is pressed on the A call leg, the execute_extension application is executed upon the A call leg. The extension that is executed is the dx extension in the XML dialplan under the features context. 
+
+
+
+
+<action application="bind_meta_app" data="2 a s record_session::$${base_dir}/recordings/${caller_id_number}.${strftime(%Y-%m-%d-%H-%M-%S)}.wav"/>
+When *2 is pressed on the A call leg, the session audio starts recording on the A call leg. It saves the audio to the $$(base_dir)/recordings/${caller_id_number}.$(strftime(%Y-%m-%d-%H-%M-%S)}.wav file. (i.e. /usr/local/freeswitch/recordings/1234.2008-04-09-10-11-12.wav). Important note: In default diaplan example record_session is listening for DMTF on the B leg, so callee can only activate the recording. 
+
+Feature update 
+As of July 31st you may now customize the meta key. It will default to '*' but you can use the bind_meta_key channel variable to select a different meta key: 
+
+<action application="set" data="bind_meta_key=#"/>
+<action application="bind_meta_app" data="2 a s foo"/>
+See Also
+
+**************************************************第四att xfer的用法
+Misc. Dialplan Tools att xfer
+From FreeSWITCH Wiki
+Jump to: navigation, search
+Contents [hide]
+1 Attended Transfer 
+1.1 Example1
+1.2 Example2
+2 See Also
+ 
+Attended Transfer 
+Make an attended transfer. 
+
+Usage: 
+
+att_xfer <channel_url>
+
+
+
+Example1
+Make a dialplan feature which read the number to make an attended transfer. 
+
+<extension name="att_xfer">
+     <condition field="destination_number" expression="^att_xfer$">
+       <action application="read" data="3 4 sounds/getdigits.wav attxfer_callthis 30000 #"/>
+       <action application="att_xfer" data="sofia/default/${attxfer_callthis}"/>
+     </condition>
+</extension>
+Then bind this feature to DTMF 3. 
+
+<action application="bind_meta_app" data="3 a a execute_extension::att_xfer XML features"/>
+During call press *3 to activate the feature. Feed it the number then it will make the call. 
+
+If you hang up (after the other leg answered and you decided what to do), then it will transfer the call and bridge them together. 
+
+If the other leg hang up thus indicating it doesn't want the transfer then you get it back. 
+
+If the other leg is a voicemail or doesn't answered you can hangup that leg by pressing DTMF # (fixed in r14438) 
+
+If you press DTMF 0 then it will convert it to a three-way, hangup and complete the transfer. 
+
+See also bind_meta_app and read 
+
+Example2
+In your dialplan add bind_meta_app key that will transfer the call to the extensions that will execute the att_xfer application. 
+
+Example: 
+
+<extension name="local_number">
+  <condition field="destination_number" expression="^(\d{3})$">
+    <action application="set" data="dialed_extension=$1"/>
+    <action application="export" data="dialed_extension=$1"/>
+    <action application="bind_meta_app" data="1 b s execute_extension::attented_xfer XML features"/>
+    <action application="set" data="transfer_ringback=$${hold_music}"/>
+    <action application="set" data="call_timeout=10"/>
+    <action application="set" data="hangup_after_bridge=true"/>
+    <action application="bridge" data="user/${dialed_extension}@${domain_name}"/>
+  </condition>
+</extension>
+In the features.xml add the extensions attended_xfer. The extensions below first waits for input from the user (30sec) and then makes attended transfer to the entered extension. 
+
+Example: 
+
+<extension name="attented_xfer">
+    <condition field="destination_number" expression="^attented_xfer$">
+      <action application="set" data="continue_on_fail=true"/>
+      <action application="read" data="3 4 ivr/ivr-enter_ext.wav attxfer_callthis 30000 #"/>
+      <action application="set" data="origination_cancel_key=#"/>
+      <action application="att_xfer" data="user/${attxfer_callthis}@${domain_name}"/>
+    </condition>
+</extension>
+From revision 14650, there is new parameter that can be set - origination_cancel_key. This feature is used when you want to cancel a transfer and to return to the first caller. 
+
+Feature code   Purpose                                                        when to use  
+0           it will convert the call to three-way conference                After the last party answers the call  
+#           to hangup the call and to initiate the transfer                 After the last party answers the call  
+*           it will hangup the B leg and bridge A to C (fixed in r15013)    After the last party answers the call  
+#           it will cancel the call and will return you the the caller      Before the answer of the call by the last party  
+See Also 

@@ -1,0 +1,79 @@
+OpenBTS
+OpenBTS
+OpenBTS 是一个开源的UNIX项目，它基于 通用软件无线电平台（USRP）实现GSM空中接口（UM 接口）来规范GSM手机（的连接），基于 Asterisk 软交换（Asterisk software PBX）来连接呼叫。结合司空见惯的 GSM空中接口和VoIP有可能形成一个新型的无线网络，它可以以很低的布局和运营成本用于一些还未开垦的区域及一些发展中国家。
+
+简单地表述，我们从事于一种新型的无线网络，它的布局和运营成本是现存传统技术的十分之一。尽管如此，它还兼容了市场上的大多数手机。还可以以远低于搭建传统的GSM造价和复杂程度被用于私有网络的应用（快速地搭建无线交换，等等）。
+
+网页构架在此基于各种主题版块，如果你也想添加一些有用的内容。用“guest”作为用户名，“gnuradio”作为密码登录 Wiki 进行相关编辑。
+源码（Source Code）
+使用 svn 来抓取项目的源代码：
+
+我们正在转移系统到 git 上，一旦转移工作完成后，便会修改这些相关的操作。现在还是可以使用 svn 来查看代码，但随时有可能无法查看 --- 2010-01-04 注.
+
+svn co http://gnuradio.org/svn/openbts/trunk/openbts
+或
+
+svn co http://gnuradio.org/svn/openbts/branches/releases/xx
+其中 "xx" 是最近的发行版本号。
+
+项目背景（Project Background）
+OpenBTS/Background. OpenBTS 项目背景信息以及项目长远目标。
+OpenBTS/Plan. 眼前的进展情况以及未来几个月的计划。
+OpenBTS/FAQ. 项目的一般常见问题.
+着手（染指）OpenBTS
+我想运行OpenBTS!
+OpenBTS/Releases. 哪儿可以得到OpenBTS，每个发行版中都包含哪些内容。
+OpenBTS/BuildingAndRunning. 如何构建和运行OpenBTS以及收发应用程序。
+Tickets. OpenBTS 仍旧保留来自 GNU Radio 的 ticket-tracker。我们将持续这个传统并试图保持它尽快更新。
+OpenBTS/smqueue. 如何构建和运行 smqueue RFC-3428 来存储和转发服务，我们的 SMSC 替换方案。
+OpenBTS/support. 哪儿可以寻求到帮助。
+PBX 的配置
+OpenBTS 基于外部的 SIP PBX 来实现它的呼叫交换功能。
+
+Asterisk
+OpenBTS/SettingUpAsterisk. 如何配置 Asterisk 同 OpenBTS 和 smqueue 一起工作.
+OpenBTS/Asteriskscript. 一个简单的拨号策略，它能够把 SIP 字条和真实的号码区分开来，能够最大化体现灵活，安全及容易使用的特性。但它目前还无法同 Smqueue 相兼容。
+FreeSWITCH
+OpenBTS/SettingUpFreeSWITCH. 如何配置 FreeSWITCH 同 OpenBTS 一起来工作。
+OpenBTS 硬件设备及测试
+综述
+OpenBTS/DesktopTestingKit. 有关测试你所需的和你应当知道的。
+OpenBTS/MS_Camping. 移动基地帐篷（野营）的手机要求和带测试手机帐篷（野营）的几点建议。
+移动手机
+OpenBTS/Compatibility. 所知的同 OpenBTS 工作及不能工作的手机。理论上，所有的手机都应当“工作”，所以这是一个颇有争议的话题。请用你的新发现来更新。
+OpenBTS/NokiaDCT3. 我们为何更喜欢Nokia DCT-3 系列手持。
+时钟（Clocks)
+OpenBTS/Clocks. BTS时钟品质和时钟相关的程序瑕疵的阐述。
+OpenBTS/ClockModifications. 如何使用外部 52MHz 时钟。 硬件和软件的相关指导。
+OpenBTS/ClockCalibration. 如何校验USRP的时钟或校验可能的偏差。
+火人节的测试
+我们利用火人节的机会来运行测试网络。
+
+2009
+http://openbts.sourceforge.net/FieldTest2/index.html. 一些描述和链接的收藏。
+OpenBTS/BM2009RF. BM 2009 模拟链路。我们对它的掌握已经变得相当的娴熟。这真令人叹为观止，用很少的钱做如此好的规划。
+2008
+http://openbts.sourceforge.net/FieldTest/index.html. 详细描述“著名”的2008火人节场地测试。
+OpenBTS/BM2008RF. “简陋起家”. 职业的 RF 工程师们，请承诺不要嘲笑。
+GSM 一般信息
+The Um Interface. 这是一个有关 GSM 空中接口-Um 的概述，这原本是作为 OpenBTS 文档的一部分，我们把它放在 Wikipedia 上是想让面对更多的读者。“你必须理解它以便才能理解 GSM 文档中的大多数代码”。
+BTS 设计和网络管理的应考虑的问题
+OpenBTS/MS_Camping. 移动基地帐篷（野营）的手机要求和带测试手机帐篷（野营）的几点建议。
+OpenBTS/Clocks. BTS时钟品质和时钟相关的程序瑕疵的阐述。
+OpenBTS/The_Standard_Links
+OpenBTS/Reading_The_Standard. 对新来着的建议。
+OpenBTS Software Implementation
+OpenBTS/IdleFilling. GSM 空闲状态插入的要求以及 OpenBTS 如何实现它。
+OpenBTS/SMS. SMS 的特性以及我们如何使用它。
+OpenBTS/Mobility. 移动管理的过程。
+OpenBTS/MTC. 到目前为止，我们做过的最复杂的呼叫交换。 
+OpenBTS/Profile.  我们的前景。
+OpenBTS 硬件的实现
+OpenBTS/BM2008RF 2008 火人节 RF 链路。 “简陋起家”. 职业的 RF 工程师们，请承诺不要嘲笑。
+OpenBTS/BM2009RF 2009 火人节 RF 链路。 我们对它的掌握已经变得相当的娴熟。这真令人叹为观止，用很少的钱做如此好的规划。
+OpenBTS/Clocks. BTS时钟品质和时钟相关的程序瑕疵的阐述。
+OpenBTS 网络集成的场景
+OpenBTS/NetworkIntegration/Independent. 配置系统而不需 GSM 提供商的协作，同样提供到标准 GSM 的漫游。 
+杂类
+OpenBTS/Logo
+OpenBTS 是 Kestrel Signal Processing, Inc. 的注册商标。
