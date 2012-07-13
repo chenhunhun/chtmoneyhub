@@ -198,6 +198,10 @@ http://chromium-browser-source.commondatastorage.googleapis.com/
 
 gclient sync --revision src@85305 --force
 
+ svn co http://src.chromium.org/chrome/trunk/tools/depot_tools
+
+gclient.bat
+
 
 
 hg clone --insecure https://blog-sample-code.jtianling.googlecode.com/hg/ jtianling-blog-sample-code
