@@ -1,1 +1,0 @@
-.\Release\TestCHK.exe ..\Release
